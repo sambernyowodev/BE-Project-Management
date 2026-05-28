@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Query } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { PurchaseOrdersService } from './purchase-orders.service';
 import { CreatePurchaseOrderDto } from './dto/purchase-order.dto';
@@ -6,7 +6,8 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { ApiBaseResponse, ApiBaseListResponse } from '../../common/decorators/api-response.decorator';
 import { PurchaseOrderResponseDto } from './dto/purchase-order-response.dto';
-import { BaseResponseDto } from '../../common/dtos/response.dto';
+import { BaseResponseDto, PaginatedResponseDto } from '../../common/dtos/response.dto';
+import { PaginationDto } from '../../common/dtos/pagination.dto';
 
 @ApiTags('Purchase Orders')
 @ApiBearerAuth()
@@ -25,8 +26,8 @@ export class PurchaseOrdersController {
   @Get()
   @ApiOperation({ summary: 'Get all POs' })
   @ApiBaseListResponse(PurchaseOrderResponseDto)
-  findAll(): Promise<BaseResponseDto<PurchaseOrderResponseDto[]>> {
-    return this.poService.findAll();
+  findAll(@Query() query: PaginationDto): Promise<PaginatedResponseDto<PurchaseOrderResponseDto>> {
+    return this.poService.findAll(query);
   }
 
   @Get(':id')

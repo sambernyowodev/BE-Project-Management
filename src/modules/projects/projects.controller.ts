@@ -8,6 +8,7 @@ import {
   Param,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { ProjectsService } from './projects.service';
@@ -15,7 +16,8 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { ApiBaseResponse, ApiBaseListResponse } from '../../common/decorators/api-response.decorator';
 import { ProjectResponseDto, ProjectMemberResponseDto } from './dto/project-response.dto';
-import { BaseResponseDto } from '../../common/dtos/response.dto';
+import { BaseResponseDto, PaginatedResponseDto } from '../../common/dtos/response.dto';
+import { PaginationDto } from '../../common/dtos/pagination.dto';
 import { CreateProjectDto, UpdateProjectDto, AddProjectMemberDto } from './dto/project.dto';
 
 @ApiTags('Projects')
@@ -35,8 +37,8 @@ export class ProjectsController {
   @Get()
   @ApiOperation({ summary: 'Get all projects' })
   @ApiBaseListResponse(ProjectResponseDto)
-  findAll(): Promise<BaseResponseDto<ProjectResponseDto[]>> {
-    return this.projectsService.findAll();
+  findAll(@Query() query: PaginationDto): Promise<PaginatedResponseDto<ProjectResponseDto>> {
+    return this.projectsService.findAll(query);
   }
 
   @Get(':id')

@@ -2,6 +2,7 @@ import { BaseDto } from '../../../common/dtos/base.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { RoleResponseDto } from '../../roles/dto/role-response.dto';
+import { ProjectResponseDto } from '../../projects/dto/project-response.dto';
 
 export class RoleRateResponseDto extends BaseDto {
 
@@ -41,4 +42,9 @@ export class RoleRateResponseDto extends BaseDto {
   @Expose()
   @Type(() => RoleResponseDto)
   role?: RoleResponseDto;
+
+  @ApiPropertyOptional({ type: () => ProjectResponseDto })
+  @Expose()
+  @Type(() => ProjectResponseDto)
+  project?: ProjectResponseDto;
 }

@@ -5,7 +5,9 @@ import { SalesOrder } from './entities/sales-order.entity';
 import { CreateSalesOrderDto } from './dto/sales-order.dto';
 import { PurchaseOrdersService } from '../purchase-orders/purchase-orders.service';
 import { SalesOrderStatus } from '../../common/enums';
-import { BaseResponseDto } from '../../common/dtos/response.dto';
+import { BaseResponseDto, PaginatedResponseDto } from '../../common/dtos/response.dto';
+import { PaginationDto } from '../../common/dtos/pagination.dto';
+import { applyPagination } from '../../common/utils/query.util';
 import { SalesOrderResponseDto } from './dto/sales-order-response.dto';
 import { mapToDto, mapToDtoArray } from '../../common/utils/mapper.util';
 
@@ -32,9 +34,27 @@ export class SalesOrdersService {
     return { success: true, data: mapToDto(SalesOrderResponseDto, saved) };
   }
 
-  async findAll(): Promise<BaseResponseDto<SalesOrderResponseDto[]>> {
-    const data = await this.soRepo.find({ relations: { po: true, project: true } });
-    return { success: true, data: mapToDtoArray(SalesOrderResponseDto, data) };
+  async findAll(query: PaginationDto): Promise<PaginatedResponseDto<SalesOrderResponseDto>> {
+    const qb = this.soRepo.createQueryBuilder('so')
+      .leftJoinAndSelect('so.po', 'po')
+      .leftJoinAndSelect('so.project', 'project');
+    
+    applyPagination(qb, query, ['soNumber', 'soName', 'status']);
+    
+    const [sos, total] = await qb.getManyAndCount();
+    const perPage = query.perPage || 10;
+    const page = query.page || 1;
+    
+    return {
+      success: true,
+      data: mapToDtoArray(SalesOrderResponseDto, sos),
+      meta: {
+        total,
+        page,
+        perPage,
+        totalPages: Math.ceil(total / perPage),
+      },
+    };
   }
 
   async findOne(id: number): Promise<BaseResponseDto<SalesOrderResponseDto>> {

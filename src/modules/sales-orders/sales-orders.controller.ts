@@ -6,6 +6,7 @@ import {
   Param,
   Put,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { SalesOrdersService } from './sales-orders.service';
@@ -14,7 +15,8 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { SalesOrderStatus } from '../../common/enums';
 import { ApiBaseResponse, ApiBaseListResponse } from '../../common/decorators/api-response.decorator';
 import { SalesOrderResponseDto } from './dto/sales-order-response.dto';
-import { BaseResponseDto } from '../../common/dtos/response.dto';
+import { BaseResponseDto, PaginatedResponseDto } from '../../common/dtos/response.dto';
+import { PaginationDto } from '../../common/dtos/pagination.dto';
 
 @ApiTags('Sales Orders')
 @ApiBearerAuth()
@@ -33,8 +35,8 @@ export class SalesOrdersController {
   @Get()
   @ApiOperation({ summary: 'Get all SOs' })
   @ApiBaseListResponse(SalesOrderResponseDto)
-  findAll(): Promise<BaseResponseDto<SalesOrderResponseDto[]>> {
-    return this.soService.findAll();
+  findAll(@Query() query: PaginationDto): Promise<PaginatedResponseDto<SalesOrderResponseDto>> {
+    return this.soService.findAll(query);
   }
 
   @Get(':id')

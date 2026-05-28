@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Patch, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { ProjectActivitiesService } from './project-activities.service';
-import { CreateProjectActivityDto } from './dto/project-activity.dto';
+import { CreateProjectActivityDto, UpdateProjectActivityDto, UpdateProgressDto } from './dto/project-activity.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { ApiBaseResponse, ApiBaseListResponse } from '../../common/decorators/api-response.decorator';
 import { ProjectActivityResponseDto } from './dto/project-activity-response.dto';
@@ -33,5 +33,31 @@ export class ProjectActivitiesController {
   @ApiBaseResponse(ProjectActivityResponseDto)
   findOne(@Param('id') id: string): Promise<BaseResponseDto<ProjectActivityResponseDto>> {
     return this.activitiesService.findOne(+id);
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: 'Update a project activity' })
+  @ApiBaseResponse(ProjectActivityResponseDto)
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateProjectActivityDto,
+  ): Promise<BaseResponseDto<ProjectActivityResponseDto>> {
+    return this.activitiesService.update(+id, dto);
+  }
+
+  @Patch(':id/progress')
+  @ApiOperation({ summary: 'Quick update activity progress percentage' })
+  @ApiBaseResponse(ProjectActivityResponseDto)
+  updateProgress(
+    @Param('id') id: string,
+    @Body() dto: UpdateProgressDto,
+  ): Promise<BaseResponseDto<ProjectActivityResponseDto>> {
+    return this.activitiesService.updateProgress(+id, dto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete a project activity' })
+  remove(@Param('id') id: string): Promise<BaseResponseDto<null>> {
+    return this.activitiesService.remove(+id);
   }
 }

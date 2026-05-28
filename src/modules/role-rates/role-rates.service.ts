@@ -3,7 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
 import { RoleRate } from './entities/role-rate.entity';
 import { CreateRoleRateDto } from './dto/create-role-rate.dto';
-import { BaseResponseDto } from '../../common/dtos/response.dto';
+import { BaseResponseDto, PaginatedResponseDto } from '../../common/dtos/response.dto';
+import { PaginationDto } from '../../common/dtos/pagination.dto';
+import { applyPagination } from '../../common/utils/query.util';
 import { RoleRateResponseDto } from './dto/role-rate-response.dto';
 import { mapToDto, mapToDtoArray } from '../../common/utils/mapper.util';
 
@@ -24,9 +26,27 @@ export class RoleRatesService {
     return { success: true, data: mapToDto(RoleRateResponseDto, saved) };
   }
 
-  async findAll(): Promise<BaseResponseDto<RoleRateResponseDto[]>> {
-    const data = await this.roleRateRepo.find({ relations: { role: true, project: true } });
-    return { success: true, data: mapToDtoArray(RoleRateResponseDto, data) };
+  async findAll(query: PaginationDto): Promise<PaginatedResponseDto<RoleRateResponseDto>> {
+    const qb = this.roleRateRepo.createQueryBuilder('roleRate')
+      .leftJoinAndSelect('roleRate.role', 'role')
+      .leftJoinAndSelect('roleRate.project', 'project');
+    
+    applyPagination(qb, query, ['role.name', 'project.name']);
+    
+    const [rates, total] = await qb.getManyAndCount();
+    const perPage = query.perPage || 10;
+    const page = query.page || 1;
+    
+    return {
+      success: true,
+      data: mapToDtoArray(RoleRateResponseDto, rates),
+      meta: {
+        total,
+        page,
+        perPage,
+        totalPages: Math.ceil(total / perPage),
+      },
+    };
   }
 
   async getGlobalRates(): Promise<BaseResponseDto<RoleRateResponseDto[]>> {

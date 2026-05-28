@@ -3,7 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import { PurchaseOrder } from './entities/purchase-order.entity';
 import { CreatePurchaseOrderDto } from './dto/purchase-order.dto';
-import { BaseResponseDto } from '../../common/dtos/response.dto';
+import { BaseResponseDto, PaginatedResponseDto } from '../../common/dtos/response.dto';
+import { PaginationDto } from '../../common/dtos/pagination.dto';
+import { applyPagination } from '../../common/utils/query.util';
 import { PurchaseOrderResponseDto } from './dto/purchase-order-response.dto';
 import { mapToDto, mapToDtoArray } from '../../common/utils/mapper.util';
 
@@ -28,9 +30,26 @@ export class PurchaseOrdersService {
     return { success: true, data: mapToDto(PurchaseOrderResponseDto, saved) };
   }
 
-  async findAll(): Promise<BaseResponseDto<PurchaseOrderResponseDto[]>> {
-    const data = await this.poRepo.find({ relations: { project: true } });
-    return { success: true, data: mapToDtoArray(PurchaseOrderResponseDto, data) };
+  async findAll(query: PaginationDto): Promise<PaginatedResponseDto<PurchaseOrderResponseDto>> {
+    const qb = this.poRepo.createQueryBuilder('po')
+      .leftJoinAndSelect('po.project', 'project');
+    
+    applyPagination(qb, query, ['poNumber', 'poName', 'customer', 'status']);
+    
+    const [pos, total] = await qb.getManyAndCount();
+    const perPage = query.perPage || 10;
+    const page = query.page || 1;
+    
+    return {
+      success: true,
+      data: mapToDtoArray(PurchaseOrderResponseDto, pos),
+      meta: {
+        total,
+        page,
+        perPage,
+        totalPages: Math.ceil(total / perPage),
+      },
+    };
   }
 
   async findOne(id: number): Promise<BaseResponseDto<PurchaseOrderResponseDto>> {

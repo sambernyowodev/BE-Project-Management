@@ -55,6 +55,10 @@ export class ProjectResponseDto {
 
   @ApiProperty()
   @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
   projectCode: string;
 
   @ApiProperty()
@@ -89,15 +93,51 @@ export class ProjectResponseDto {
   @Expose()
   endDate?: Date;
 
+  @ApiPropertyOptional()
+  @Expose()
+  actualStart?: Date;
+
+  @ApiPropertyOptional()
+  @Expose()
+  actualEnd?: Date;
+
   @ApiProperty({ enum: ProjectStatus })
   @Expose()
   status: ProjectStatus;
 
   @ApiPropertyOptional()
   @Expose()
+  totalMandays?: number;
+
+  @ApiPropertyOptional()
+  @Expose()
+  progressPct?: number;
+
+  @ApiPropertyOptional()
+  @Expose()
+  repositoryLink?: string;
+
+  @ApiPropertyOptional()
+  @Expose()
+  timelineLink?: string;
+
+  @ApiPropertyOptional()
+  @Expose()
   timelineRemark?: string;
+
+  @ApiPropertyOptional()
+  @Expose()
+  remarks?: string;
 
   @ApiProperty()
   @Expose()
   isActive: boolean;
+
+  @ApiPropertyOptional()
+  @Expose()
+  createdAt?: Date;
+
+  @ApiPropertyOptional()
+  @Expose()
+  updatedAt?: Date;
 }

@@ -1,10 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository, Like, DataSource, In } from 'typeorm';
 import { Project } from './entities/project.entity';
 import { ProjectMember } from './entities/project-member.entity';
+import { PurchaseOrder } from '../purchase-orders/entities/purchase-order.entity';
+import { SalesOrder } from '../sales-orders/entities/sales-order.entity';
+import { BillingInvoice } from '../billing/entities/billing-invoice.entity';
+import { BillingInvoiceDetail } from '../billing/entities/billing-invoice-detail.entity';
+import { SupportTicket } from '../support-tickets/entities/support-ticket.entity';
+import { SupportTicketDetail } from '../support-tickets/entities/support-ticket-detail.entity';
+import { ProjectActivity } from '../project-activities/entities/project-activity.entity';
+import { RoleRate } from '../role-rates/entities/role-rate.entity';
+import { PoSoMember } from '../po-so-members/entities/po-so-member.entity';
 import { CreateProjectDto, UpdateProjectDto, AddProjectMemberDto } from './dto/project.dto';
-import { BaseResponseDto } from '../../common/dtos/response.dto';
+import { BaseResponseDto, PaginatedResponseDto } from '../../common/dtos/response.dto';
+import { PaginationDto } from '../../common/dtos/pagination.dto';
+import { applyPagination } from '../../common/utils/query.util';
 import { ProjectResponseDto, ProjectMemberResponseDto } from './dto/project-response.dto';
 import { mapToDto, mapToDtoArray } from '../../common/utils/mapper.util';
 
@@ -15,6 +26,7 @@ export class ProjectsService {
     private readonly projectRepo: Repository<Project>,
     @InjectRepository(ProjectMember)
     private readonly memberRepo: Repository<ProjectMember>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(dto: CreateProjectDto, userId: number): Promise<BaseResponseDto<ProjectResponseDto>> {
@@ -30,9 +42,25 @@ export class ProjectsService {
     return { success: true, data: mapToDto(ProjectResponseDto, saved) };
   }
 
-  async findAll(): Promise<BaseResponseDto<ProjectResponseDto[]>> {
-    const data = await this.projectRepo.find({ order: { createdAt: 'DESC' } });
-    return { success: true, data: mapToDtoArray(ProjectResponseDto, data) };
+  async findAll(query: PaginationDto): Promise<PaginatedResponseDto<ProjectResponseDto>> {
+    const qb = this.projectRepo.createQueryBuilder('project');
+    
+    applyPagination(qb, query, ['projectCode', 'name', 'picClient', 'status']);
+    
+    const [projects, total] = await qb.getManyAndCount();
+    const perPage = query.perPage || 10;
+    const page = query.page || 1;
+    
+    return {
+      success: true,
+      data: mapToDtoArray(ProjectResponseDto, projects),
+      meta: {
+        total,
+        page,
+        perPage,
+        totalPages: Math.ceil(total / perPage),
+      },
+    };
   }
 
   async findOne(id: number): Promise<BaseResponseDto<ProjectResponseDto>> {
@@ -56,7 +84,83 @@ export class ProjectsService {
     const project = await this.projectRepo.findOne({ where: { id } });
     if (!project) throw new NotFoundException(`Project ${id} not found`);
     
-    await this.projectRepo.remove(project);
+    await this.dataSource.transaction(async (manager) => {
+      // 1. Get project member IDs to delete their po_so_members
+      const members = await manager.find(ProjectMember, {
+        where: { projectId: id },
+        select: { id: true },
+      }) as any[];
+      const memberIds = members.map((m) => m.id);
+
+      // 2. Get purchase order IDs and sales order IDs to delete their po_so_members
+      const purchaseOrders = await manager.find(PurchaseOrder, {
+        where: { projectId: id },
+        select: { id: true },
+      }) as any[];
+      const poIds = purchaseOrders.map((po) => po.id);
+
+      const salesOrders = await manager.find(SalesOrder, {
+        where: { projectId: id },
+        select: { id: true },
+      }) as any[];
+      const soIds = salesOrders.map((so) => so.id);
+
+      // 3. Delete po_so_members
+      if (memberIds.length > 0) {
+        await manager.delete(PoSoMember, { projectMemberId: In(memberIds) });
+      }
+      if (poIds.length > 0) {
+        await manager.delete(PoSoMember, { poId: In(poIds) });
+      }
+      if (soIds.length > 0) {
+        await manager.delete(PoSoMember, { soId: In(soIds) });
+      }
+
+      // 4. Delete billing_invoice_details and billing_invoices
+      const invoices = await manager.find(BillingInvoice, {
+        where: { projectId: id },
+        select: { id: true },
+      }) as any[];
+      const invoiceIds = invoices.map((inv) => inv.id);
+      if (invoiceIds.length > 0) {
+        await manager.delete(BillingInvoiceDetail, { invoiceId: In(invoiceIds) });
+        await manager.delete(BillingInvoice, { id: In(invoiceIds) });
+      }
+
+      // 5. Delete sales_orders
+      if (soIds.length > 0) {
+        await manager.delete(SalesOrder, { id: In(soIds) });
+      }
+
+      // 6. Delete purchase_orders
+      if (poIds.length > 0) {
+        await manager.delete(PurchaseOrder, { id: In(poIds) });
+      }
+
+      // 7. Delete support_tickets and their details
+      const tickets = await manager.find(SupportTicket, {
+        where: { projectId: id },
+        select: { id: true },
+      }) as any[];
+      const ticketIds = tickets.map((t) => t.id);
+      if (ticketIds.length > 0) {
+        await manager.delete(SupportTicketDetail, { supportTicketId: In(ticketIds) });
+        await manager.delete(SupportTicket, { id: In(ticketIds) });
+      }
+
+      // 8. Delete project_activities
+      await manager.delete(ProjectActivity, { projectId: id });
+
+      // 9. Delete role_rates
+      await manager.delete(RoleRate, { projectId: id });
+
+      // 10. Delete project_members
+      await manager.delete(ProjectMember, { projectId: id });
+
+      // 11. Delete the project itself
+      await manager.delete(Project, { id });
+    });
+
     return { success: true, data: null, message: 'Project deleted successfully' };
   }
 

@@ -633,6 +633,8 @@ async function bootstrap() {
     { code: 'UIUX', name: 'UI/UX Designer', description: 'UI/UX Designer' },
     { code: 'DEV_FE', name: 'Developer Front-End', description: 'Developer Front-End' },
     { code: 'DEV_BE', name: 'Developer Back-End', description: 'Developer Back-End' },
+    { code: 'TL', name: 'Tech Lead', description: 'Technical Lead' },
+    { code: 'QC', name: 'Quality Control', description: 'Quality Control / Tester' },
   ];
 
   const savedRoles: Record<string, Role> = {};

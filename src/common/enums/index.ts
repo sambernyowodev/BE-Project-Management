@@ -1,10 +1,10 @@
 export enum ProjectStatus {
   PLANNING = 'PLANNING',
-  IN_PROGRESS = 'IN_PROGRESS',
+  IN_PROGRESS = 'IN PROGRESS',
   SIT = 'SIT',
   UAT = 'UAT',
   CLOSED = 'CLOSED',
-  ON_HOLD = 'ON_HOLD',
+  ON_HOLD = 'ON HOLD',
   CANCELLED = 'CANCELLED',
   FUT = 'FUT',
 }
@@ -17,8 +17,8 @@ export enum ProjectPhase {
   SRS = 'SRS',
   CRQ = 'CRQ',
   DEVELOPMENT = 'DEVELOPMENT',
-  UT_SIT = 'UT_SIT',
-  TRA_TC = 'TRA_TC',
+  UT_SIT = 'UT SIT',
+  TRA_TC = 'TRA TC',
   REVIEW = 'REVIEW',
   SIT = 'SIT',
   UAT = 'UAT',
@@ -31,7 +31,7 @@ export enum ProjectPhase {
 export enum PurchaseOrderStatus {
   DRAFT = 'DRAFT',
   ACTIVE = 'ACTIVE',
-  IN_PROGRESS = 'IN_PROGRESS',
+  IN_PROGRESS = 'IN PROGRESS',
   COMPLETED = 'COMPLETED',
   CLOSED = 'CLOSED',
   CANCELLED = 'CANCELLED',
@@ -40,7 +40,7 @@ export enum PurchaseOrderStatus {
 export enum SalesOrderStatus {
   DRAFT = 'DRAFT',
   ACTIVE = 'ACTIVE',
-  IN_PROGRESS = 'IN_PROGRESS',
+  IN_PROGRESS = 'IN PROGRESS',
   DELIVERED = 'DELIVERED',
   INVOICED = 'INVOICED',
   PAID = 'PAID',
@@ -50,20 +50,20 @@ export enum SalesOrderStatus {
 
 export enum SupportTicketStatus {
   OPEN = 'OPEN',
-  IN_PROGRESS = 'IN_PROGRESS',
-  DEV_DONE = 'DEV_DONE',
-  SIT_DONE = 'SIT_DONE',
-  UAT_DONE = 'UAT_DONE',
+  IN_PROGRESS = 'IN PROGRESS',
+  DEV_DONE = 'DEV DONE',
+  SIT_DONE = 'SIT DONE',
+  UAT_DONE = 'UAT DONE',
   DONE = 'DONE',
-  ON_HOLD = 'ON_HOLD',
+  ON_HOLD = 'ON HOLD',
   CANCELLED = 'CANCELLED',
 }
 
 export enum SupportTicketDetailStatus {
   OPEN = 'OPEN',
-  IN_PROGRESS = 'IN_PROGRESS',
+  IN_PROGRESS = 'IN PROGRESS',
   DONE = 'DONE',
-  ON_HOLD = 'ON_HOLD',
+  ON_HOLD = 'ON HOLD',
 }
 
 export enum InvoiceStatus {

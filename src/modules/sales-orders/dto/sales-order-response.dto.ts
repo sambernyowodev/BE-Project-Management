@@ -80,4 +80,9 @@ export class SalesOrderResponseDto extends BaseDto {
   @Expose()
   @Type(() => PurchaseOrderResponseDto)
   purchaseOrder?: PurchaseOrderResponseDto;
+
+  @ApiPropertyOptional({ type: () => PurchaseOrderResponseDto })
+  @Expose()
+  @Type(() => PurchaseOrderResponseDto)
+  po?: PurchaseOrderResponseDto;
 }

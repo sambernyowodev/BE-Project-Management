@@ -34,6 +34,26 @@ export class CreateProjectDto {
   @IsOptional()
   @IsString()
   customer?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDateString()
+  startDate?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDateString()
+  endDate?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  totalMandays?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  picInternal?: string;
 }
 
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {
@@ -46,16 +66,26 @@ export class UpdateProjectDto extends PartialType(CreateProjectDto) {
   @IsOptional()
   @IsString()
   timelineRemark?: string;
-  
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsDateString()
-  startDate?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
-  @IsDateString()
-  endDate?: string;
+  @IsNumber()
+  progressPct?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  repositoryLink?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  timelineLink?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  remarks?: string;
 }
 
 export class AddProjectMemberDto {

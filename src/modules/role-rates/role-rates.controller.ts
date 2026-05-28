@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Query } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { RoleRatesService } from './role-rates.service';
 import { CreateRoleRateDto } from './dto/create-role-rate.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { ApiBaseResponse, ApiBaseListResponse } from '../../common/decorators/api-response.decorator';
 import { RoleRateResponseDto } from './dto/role-rate-response.dto';
-import { BaseResponseDto } from '../../common/dtos/response.dto';
+import { BaseResponseDto, PaginatedResponseDto } from '../../common/dtos/response.dto';
+import { PaginationDto } from '../../common/dtos/pagination.dto';
 
 @ApiTags('Role Rates')
 @ApiBearerAuth()
@@ -24,8 +25,8 @@ export class RoleRatesController {
   @Get()
   @ApiOperation({ summary: 'Get all role rates' })
   @ApiBaseListResponse(RoleRateResponseDto)
-  findAll(): Promise<BaseResponseDto<RoleRateResponseDto[]>> {
-    return this.roleRatesService.findAll();
+  findAll(@Query() query: PaginationDto): Promise<PaginatedResponseDto<RoleRateResponseDto>> {
+    return this.roleRatesService.findAll(query);
   }
 
   @Get('global')

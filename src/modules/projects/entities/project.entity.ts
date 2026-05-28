@@ -82,6 +82,12 @@ export class Project extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   remarks: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true, name: 'pic_internal' })
+  picInternal: string;
+
+  @Column({ type: 'text', nullable: true, name: 'timeline_remark' })
+  timelineRemark: string;
+
   @Column({ type: 'boolean', default: true, name: 'is_active' })
   isActive: boolean;
 
