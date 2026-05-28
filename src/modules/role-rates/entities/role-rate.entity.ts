@@ -1,6 +1,6 @@
+import { BaseEntity } from '../../../common/entities/base.entity';
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   ManyToOne,
   JoinColumn,
@@ -11,9 +11,7 @@ import { Project } from '../../projects/entities/project.entity';
 
 @Entity('role_rates')
 @Unique('uk_role_project_effective', ['roleId', 'projectId', 'effectiveFrom'])
-export class RoleRate {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint', unsigned: true })
-  id: number;
+export class RoleRate extends BaseEntity {
 
   @Column({ type: 'bigint', unsigned: true, name: 'role_id' })
   roleId: number;

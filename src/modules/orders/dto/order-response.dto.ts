@@ -1,13 +1,11 @@
+import { BaseDto } from '../../../common/dtos/base.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { ProjectResponseDto } from '../../projects/dto/project-response.dto';
 import { UserResponseDto } from '../../users/dto/user-response.dto';
 import { RoleResponseDto } from '../../roles/dto/role-response.dto';
 
-export class PoSoMemberResponseDto {
-  @ApiProperty()
-  @Expose()
-  id: number;
+export class PoSoMemberResponseDto extends BaseDto {
 
   @ApiProperty()
   @Expose()
@@ -45,9 +43,6 @@ export class PoSoMemberResponseDto {
 }
 
 export class OrderResponseDto {
-  @ApiProperty()
-  @Expose()
-  id: number;
 
   @ApiProperty()
   @Expose()

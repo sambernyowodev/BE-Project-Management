@@ -1,6 +1,6 @@
+import { BaseEntity } from '../../../common/entities/base.entity';
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   ManyToOne,
   JoinColumn,
@@ -10,9 +10,7 @@ import { User } from '../../users/entities/user.entity';
 import { ProjectPhase } from '../../../common/enums';
 
 @Entity('project_activities')
-export class ProjectActivity {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint', unsigned: true })
-  id: number;
+export class ProjectActivity extends BaseEntity {
 
   @Column({ type: 'bigint', unsigned: true, name: 'project_id' })
   projectId: number;

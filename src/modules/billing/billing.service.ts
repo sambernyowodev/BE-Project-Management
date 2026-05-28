@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, LessThanOrEqual, MoreThanOrEqual, IsNull } from 'typeorm';
+import { Repository } from 'typeorm';
 import { BillingInvoice } from './entities/billing-invoice.entity';
 import { BillingInvoiceDetail } from './entities/billing-invoice-detail.entity';
 import { PurchaseOrder } from '../purchase-orders/entities/purchase-order.entity';
@@ -24,7 +24,7 @@ export class BillingService {
     private readonly poSoMemberRepo: Repository<PoSoMember>,
     @InjectRepository(RoleRate)
     private readonly roleRateRepo: Repository<RoleRate>,
-  ) {}
+  ) { }
 
   async generatePreview(dto: GenerateInvoiceDto): Promise<BaseResponseDto<any>> {
     const po = await this.poRepo.findOne({
@@ -146,7 +146,7 @@ export class BillingService {
       totalAmount: preview.totalAmount,
       taxAmount: preview.taxAmount,
       grandTotal: preview.grandTotal,
-      createdById: userId,
+      createdBy: userId,
     });
 
     const savedInvoice = await this.invoiceRepo.save(invoice);

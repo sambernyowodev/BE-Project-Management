@@ -1,11 +1,9 @@
+import { BaseDto } from '../../../common/dtos/base.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { RoleResponseDto } from '../../roles/dto/role-response.dto';
 
-export class RoleRateResponseDto {
-  @ApiProperty()
-  @Expose()
-  id: number;
+export class RoleRateResponseDto extends BaseDto {
 
   @ApiProperty()
   @Expose()

@@ -118,9 +118,11 @@ export interface paths {
         };
         /** Get project details */
         get: operations["ProjectsController_findOne"];
-        put?: never;
+        /** Update project */
+        put: operations["ProjectsController_update"];
         post?: never;
-        delete?: never;
+        /** Delete project */
+        delete: operations["ProjectsController_remove"];
         options?: never;
         head?: never;
         patch?: never;
@@ -534,6 +536,12 @@ export interface components {
         };
         RoleResponseDto: {
             id: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            createdBy?: number;
+            updatedBy?: number;
             code: string;
             name: string;
             description?: string;
@@ -548,6 +556,12 @@ export interface components {
         };
         RoleRateResponseDto: {
             id: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            createdBy?: number;
+            updatedBy?: number;
             roleId: number;
             projectId?: number;
             ratePerManday: number;
@@ -573,18 +587,19 @@ export interface components {
             effectiveUntil?: string;
         };
         ProjectResponseDto: {
-            id: number;
             projectCode: string;
             name: string;
             description?: string;
             picClient?: string;
             picInternal?: string;
+            platform?: string;
+            customer?: string;
             /** Format: date-time */
             startDate: string;
             /** Format: date-time */
             endDate?: string;
             /** @enum {string} */
-            status: "PLANNING" | "IN_PROGRESS" | "SIT" | "UAT" | "CLOSED" | "ON_HOLD" | "CANCELLED";
+            status: "PLANNING" | "IN_PROGRESS" | "SIT" | "UAT" | "CLOSED" | "ON_HOLD" | "CANCELLED" | "FUT";
             timelineRemark?: string;
             isActive: boolean;
         };
@@ -595,8 +610,26 @@ export interface components {
             platform?: string;
             customer?: string;
         };
+        UpdateProjectDto: {
+            name?: string;
+            description?: string;
+            picClient?: string;
+            platform?: string;
+            customer?: string;
+            /** @enum {string} */
+            status?: "PLANNING" | "IN_PROGRESS" | "SIT" | "UAT" | "CLOSED" | "ON_HOLD" | "CANCELLED" | "FUT";
+            timelineRemark?: string;
+            startDate?: string;
+            endDate?: string;
+        };
         UserResponseDto: {
             id: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            createdBy?: number;
+            updatedBy?: number;
             email: string;
             fullName: string;
             employeeId?: string;
@@ -605,6 +638,12 @@ export interface components {
         };
         ProjectMemberResponseDto: {
             id: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            createdBy?: number;
+            updatedBy?: number;
             projectId: number;
             userId: number;
             roleId: number;
@@ -626,6 +665,12 @@ export interface components {
         };
         ProjectActivityResponseDto: {
             id: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            createdBy?: number;
+            updatedBy?: number;
             projectId: number;
             createdById: number;
             title: string;
@@ -633,10 +678,7 @@ export interface components {
             /** Format: date-time */
             activityDate: string;
             mandaysLog: number;
-            /** Format: date-time */
-            createdAt: string;
             project?: components["schemas"]["ProjectResponseDto"];
-            createdBy?: components["schemas"]["UserResponseDto"];
         };
         CreateProjectActivityDto: {
             projectId: number;
@@ -648,6 +690,12 @@ export interface components {
         };
         PurchaseOrderResponseDto: {
             id: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            createdBy?: number;
+            updatedBy?: number;
             poNumber: string;
             poName: string;
             projectId: number;
@@ -667,10 +715,7 @@ export interface components {
             remarks?: string;
             isActive: boolean;
             createdById: number;
-            /** Format: date-time */
-            createdAt: string;
             project?: components["schemas"]["ProjectResponseDto"];
-            createdBy?: components["schemas"]["UserResponseDto"];
         };
         CreatePurchaseOrderDto: {
             poName: string;
@@ -680,6 +725,12 @@ export interface components {
         };
         SalesOrderResponseDto: {
             id: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            createdBy?: number;
+            updatedBy?: number;
             soNumber: string;
             soName: string;
             projectId: number;
@@ -700,11 +751,8 @@ export interface components {
             remarks?: string;
             isActive: boolean;
             createdById: number;
-            /** Format: date-time */
-            createdAt: string;
             project?: components["schemas"]["ProjectResponseDto"];
             purchaseOrder?: components["schemas"]["PurchaseOrderResponseDto"];
-            createdBy?: components["schemas"]["UserResponseDto"];
         };
         CreateSalesOrderDto: {
             soName: string;
@@ -714,6 +762,12 @@ export interface components {
         };
         PoSoMemberResponseDto: {
             id: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            createdBy?: number;
+            updatedBy?: number;
             poId: number;
             soId?: number;
             projectMemberId: number;
@@ -742,6 +796,12 @@ export interface components {
         };
         SupportTicketResponseDto: {
             id: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            createdBy?: number;
+            updatedBy?: number;
             ticketCode: string;
             projectId?: number;
             projectName: string;
@@ -780,6 +840,12 @@ export interface components {
         };
         SupportTicketDetailResponseDto: {
             id: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            createdBy?: number;
+            updatedBy?: number;
             supportTicketId: number;
             subIssue: string;
             hoursSpent: number;
@@ -806,6 +872,12 @@ export interface components {
         };
         BillingInvoiceDetailResponseDto: {
             id: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            createdBy?: number;
+            updatedBy?: number;
             billingInvoiceId: number;
             roleId?: number;
             description: string;
@@ -815,7 +887,6 @@ export interface components {
             role?: components["schemas"]["RoleResponseDto"];
         };
         BillingInvoiceResponseDto: {
-            id: number;
             invoiceNumber: string;
             projectId: number;
             poId?: number;
@@ -849,7 +920,7 @@ export interface components {
              * @example user@example.com
              */
             email: string;
-            /** @example password123 */
+            /** @example Password123 */
             password: string;
         };
         LoginDto: {
@@ -1095,6 +1166,52 @@ export interface operations {
                         data?: components["schemas"]["ProjectResponseDto"];
                     };
                 };
+            };
+        };
+    };
+    ProjectsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateProjectDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["ProjectResponseDto"];
+                    };
+                };
+            };
+        };
+    };
+    ProjectsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

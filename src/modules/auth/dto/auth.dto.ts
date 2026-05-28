@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, MinLength, Matches } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginDto {
@@ -22,8 +22,11 @@ export class RegisterDto {
   @IsNotEmpty({ message: 'Email tidak boleh kosong' })
   email: string;
 
-  @ApiProperty({ example: 'password123' })
-  @MinLength(6, { message: 'Password minimal 6 karakter' })
+  @ApiProperty({ example: 'Password123' })
+  @MinLength(8, { message: 'Password minimal 8 karakter' })
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/, {
+    message: 'Password harus mengandung huruf besar, huruf kecil, dan angka',
+  })
   @IsNotEmpty({ message: 'Password tidak boleh kosong' })
   password: string;
 }

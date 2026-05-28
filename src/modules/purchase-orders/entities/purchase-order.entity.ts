@@ -1,19 +1,15 @@
+import { BaseEntity } from '../../../common/entities/base.entity';
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
 import { Project } from '../../projects/entities/project.entity';
-import { User } from '../../users/entities/user.entity';
 import { PurchaseOrderStatus } from '../../../common/enums';
 
 @Entity('purchase_orders')
-export class PurchaseOrder {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint', unsigned: true })
-  id: number;
+export class PurchaseOrder extends BaseEntity {
 
   @Column({ type: 'varchar', length: 100, unique: true, name: 'po_number' })
   poNumber: string;
@@ -78,22 +74,8 @@ export class PurchaseOrder {
   @Column({ type: 'boolean', default: true, name: 'is_active' })
   isActive: boolean;
 
-  @Column({
-    type: 'bigint',
-    unsigned: true,
-    nullable: true,
-    name: 'created_by',
-  })
-  createdById: number;
-
   @ManyToOne(() => Project)
   @JoinColumn({ name: 'project_id' })
   project: Project;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'created_by' })
-  createdBy: User;
-
-  @CreateDateColumn({ type: 'datetime', name: 'created_at' })
-  createdAt: Date;
 }

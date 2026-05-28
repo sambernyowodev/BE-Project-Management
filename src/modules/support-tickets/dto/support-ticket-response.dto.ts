@@ -1,13 +1,11 @@
+import { BaseDto } from '../../../common/dtos/base.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { ProjectResponseDto } from '../../projects/dto/project-response.dto';
 import { UserResponseDto } from '../../users/dto/user-response.dto';
 import { SupportTicketStatus } from '../../../common/enums';
 
-export class SupportTicketResponseDto {
-  @ApiProperty()
-  @Expose()
-  id: number;
+export class SupportTicketResponseDto extends BaseDto {
 
   @ApiProperty()
   @Expose()

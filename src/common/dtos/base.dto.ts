@@ -1,26 +1,24 @@
-import { BaseDto } from '../../../common/dtos/base.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
-export class UserResponseDto extends BaseDto {
-
+export abstract class BaseDto {
   @ApiProperty()
   @Expose()
-  email: string;
-
-  @ApiProperty()
-  @Expose()
-  fullName: string;
+  id: number;
 
   @ApiPropertyOptional()
   @Expose()
-  employeeId?: string;
+  createdAt?: Date;
 
   @ApiPropertyOptional()
   @Expose()
-  avatarUrl?: string;
+  updatedAt?: Date;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @Expose()
-  isActive: boolean;
+  createdBy?: number;
+
+  @ApiPropertyOptional()
+  @Expose()
+  updatedBy?: number;
 }

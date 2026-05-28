@@ -1,19 +1,17 @@
+import { BaseEntity } from '../../../common/entities/base.entity';
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import { Project } from './project.entity';
 import { User } from '../../users/entities/user.entity';
 import { Role } from '../../roles/entities/role.entity';
 
 @Entity('project_members')
-export class ProjectMember {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint', unsigned: true })
-  id: number;
+export class ProjectMember extends BaseEntity {
 
   @Column({ type: 'bigint', unsigned: true, name: 'project_id' })
   projectId: number;

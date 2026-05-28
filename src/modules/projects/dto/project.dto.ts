@@ -6,7 +6,8 @@ import {
   IsDateString,
   IsEnum,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ProjectStatus } from '../../../common/enums';
 
 export class CreateProjectDto {
   @ApiProperty()
@@ -33,6 +34,28 @@ export class CreateProjectDto {
   @IsOptional()
   @IsString()
   customer?: string;
+}
+
+export class UpdateProjectDto extends PartialType(CreateProjectDto) {
+  @ApiProperty({ required: false, enum: ProjectStatus })
+  @IsOptional()
+  @IsEnum(ProjectStatus)
+  status?: ProjectStatus;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  timelineRemark?: string;
+  
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDateString()
+  startDate?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDateString()
+  endDate?: string;
 }
 
 export class AddProjectMemberDto {

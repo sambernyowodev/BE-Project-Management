@@ -6,6 +6,7 @@ export enum ProjectStatus {
   CLOSED = 'CLOSED',
   ON_HOLD = 'ON_HOLD',
   CANCELLED = 'CANCELLED',
+  FUT = 'FUT',
 }
 
 export enum ProjectPhase {

@@ -1,6 +1,6 @@
+import { BaseEntity } from '../../../common/entities/base.entity';
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   ManyToOne,
   JoinColumn,
@@ -10,9 +10,7 @@ import { Project } from '../../projects/entities/project.entity';
 import { SalesOrderStatus } from '../../../common/enums';
 
 @Entity('sales_orders')
-export class SalesOrder {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint', unsigned: true })
-  id: number;
+export class SalesOrder extends BaseEntity {
 
   @Column({ type: 'varchar', length: 100, unique: true, name: 'so_number' })
   soNumber: string;

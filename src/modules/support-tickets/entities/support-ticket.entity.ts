@@ -1,18 +1,16 @@
+import { BaseEntity } from '../../../common/entities/base.entity';
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   ManyToOne,
   JoinColumn,
-} from 'typeorm';
+  } from 'typeorm';
 import { Project } from '../../projects/entities/project.entity';
 import { User } from '../../users/entities/user.entity';
 import { SupportTicketStatus } from '../../../common/enums';
 
 @Entity('support_tickets')
-export class SupportTicket {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint', unsigned: true })
-  id: number;
+export class SupportTicket extends BaseEntity {
 
   @Column({ type: 'varchar', length: 50, unique: true, name: 'ticket_code' })
   ticketCode: string;

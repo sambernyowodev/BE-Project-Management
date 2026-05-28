@@ -1,8 +1,7 @@
+import { BaseEntity } from '../../../common/entities/base.entity';
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
@@ -12,9 +11,7 @@ import { User } from '../../users/entities/user.entity';
 import { InvoiceStatus } from '../../../common/enums';
 
 @Entity('billing_invoices')
-export class BillingInvoice {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint', unsigned: true })
-  id: number;
+export class BillingInvoice extends BaseEntity {
 
   @Column({
     type: 'varchar',
@@ -99,13 +96,7 @@ export class BillingInvoice {
   @Column({ type: 'text', nullable: true })
   remarks: string;
 
-  @Column({
-    type: 'bigint',
-    unsigned: true,
-    nullable: true,
-    name: 'created_by',
-  })
-  createdById: number;
+
 
   @ManyToOne(() => PurchaseOrder)
   @JoinColumn({ name: 'po_id' })
@@ -115,10 +106,5 @@ export class BillingInvoice {
   @JoinColumn({ name: 'project_id' })
   project: Project;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'created_by' })
-  createdBy: User;
 
-  @CreateDateColumn({ type: 'datetime', name: 'created_at' })
-  createdAt: Date;
 }

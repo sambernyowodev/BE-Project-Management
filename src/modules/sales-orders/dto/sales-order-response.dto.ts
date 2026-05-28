@@ -1,14 +1,11 @@
+import { BaseDto } from '../../../common/dtos/base.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { ProjectResponseDto } from '../../projects/dto/project-response.dto';
-import { UserResponseDto } from '../../users/dto/user-response.dto';
 import { PurchaseOrderResponseDto } from '../../purchase-orders/dto/purchase-order-response.dto';
 import { SalesOrderStatus } from '../../../common/enums';
 
-export class SalesOrderResponseDto {
-  @ApiProperty()
-  @Expose()
-  id: number;
+export class SalesOrderResponseDto extends BaseDto {
 
   @ApiProperty()
   @Expose()
@@ -74,10 +71,6 @@ export class SalesOrderResponseDto {
   @Expose()
   createdById: number;
 
-  @ApiProperty()
-  @Expose()
-  createdAt: Date;
-
   @ApiPropertyOptional({ type: () => ProjectResponseDto })
   @Expose()
   @Type(() => ProjectResponseDto)
@@ -87,9 +80,4 @@ export class SalesOrderResponseDto {
   @Expose()
   @Type(() => PurchaseOrderResponseDto)
   purchaseOrder?: PurchaseOrderResponseDto;
-
-  @ApiPropertyOptional({ type: () => UserResponseDto })
-  @Expose()
-  @Type(() => UserResponseDto)
-  createdBy?: UserResponseDto;
 }

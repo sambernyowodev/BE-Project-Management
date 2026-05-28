@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import { Project } from './entities/project.entity';
 import { ProjectMember } from './entities/project-member.entity';
-import { CreateProjectDto, AddProjectMemberDto } from './dto/project.dto';
+import { CreateProjectDto, UpdateProjectDto, AddProjectMemberDto } from './dto/project.dto';
 import { BaseResponseDto } from '../../common/dtos/response.dto';
 import { ProjectResponseDto, ProjectMemberResponseDto } from './dto/project-response.dto';
 import { mapToDto, mapToDtoArray } from '../../common/utils/mapper.util';
@@ -23,7 +23,7 @@ export class ProjectsService {
     const project = this.projectRepo.create({
       ...dto,
       projectCode,
-      createdById: userId,
+      createdBy: userId,
     });
 
     const saved = await this.projectRepo.save(project);
@@ -39,6 +39,25 @@ export class ProjectsService {
     const project = await this.projectRepo.findOne({ where: { id } });
     if (!project) throw new NotFoundException(`Project ${id} not found`);
     return { success: true, data: mapToDto(ProjectResponseDto, project) };
+  }
+
+  async update(id: number, dto: UpdateProjectDto): Promise<BaseResponseDto<ProjectResponseDto>> {
+    const project = await this.projectRepo.findOne({ where: { id } });
+    if (!project) throw new NotFoundException(`Project ${id} not found`);
+    
+    // Merge updates
+    this.projectRepo.merge(project, dto);
+    const updated = await this.projectRepo.save(project);
+    
+    return { success: true, data: mapToDto(ProjectResponseDto, updated) };
+  }
+
+  async remove(id: number): Promise<BaseResponseDto<null>> {
+    const project = await this.projectRepo.findOne({ where: { id } });
+    if (!project) throw new NotFoundException(`Project ${id} not found`);
+    
+    await this.projectRepo.remove(project);
+    return { success: true, data: null, message: 'Project deleted successfully' };
   }
 
   async addMember(

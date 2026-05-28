@@ -22,7 +22,7 @@ export class PurchaseOrdersService {
     const po = this.poRepo.create({
       ...dto,
       poNumber,
-      createdById: userId,
+      createdBy: userId,
     });
     const saved = await this.poRepo.save(po);
     return { success: true, data: mapToDto(PurchaseOrderResponseDto, saved) };

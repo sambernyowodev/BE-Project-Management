@@ -1,19 +1,12 @@
+import { BaseEntity } from '../../../common/entities/base.entity';
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
 } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
 import { ProjectStatus } from '../../../common/enums';
 
 @Entity('projects')
-export class Project {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint', unsigned: true })
-  id: number;
+export class Project extends BaseEntity {
 
   @Column({ type: 'varchar', length: 50, unique: true, name: 'project_code' })
   projectCode: string;
@@ -92,21 +85,4 @@ export class Project {
   @Column({ type: 'boolean', default: true, name: 'is_active' })
   isActive: boolean;
 
-  @Column({
-    type: 'bigint',
-    unsigned: true,
-    nullable: true,
-    name: 'created_by',
-  })
-  createdById: number;
-
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'created_by' })
-  createdBy: User;
-
-  @CreateDateColumn({ type: 'datetime', name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'datetime', name: 'updated_at' })
-  updatedAt: Date;
 }

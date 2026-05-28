@@ -1,6 +1,6 @@
+import { BaseEntity } from '../../../common/entities/base.entity';
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   ManyToOne,
   JoinColumn,
@@ -11,9 +11,7 @@ import { Role } from '../../roles/entities/role.entity';
 
 @Entity('user_roles')
 @Unique('uk_user_role', ['userId', 'roleId'])
-export class UserRole {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint', unsigned: true })
-  id: number;
+export class UserRole extends BaseEntity {
 
   @Column({ type: 'bigint', unsigned: true, name: 'user_id' })
   userId: number;

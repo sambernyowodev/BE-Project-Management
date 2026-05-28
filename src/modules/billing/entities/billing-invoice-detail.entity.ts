@@ -1,6 +1,6 @@
+import { BaseEntity } from '../../../common/entities/base.entity';
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   ManyToOne,
   JoinColumn,
@@ -9,9 +9,7 @@ import { BillingInvoice } from './billing-invoice.entity';
 import { Role } from '../../roles/entities/role.entity';
 
 @Entity('billing_invoice_details')
-export class BillingInvoiceDetail {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint', unsigned: true })
-  id: number;
+export class BillingInvoiceDetail extends BaseEntity {
 
   @Column({ type: 'bigint', unsigned: true, name: 'invoice_id' })
   invoiceId: number;

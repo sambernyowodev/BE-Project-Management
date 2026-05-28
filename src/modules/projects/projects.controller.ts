@@ -2,6 +2,8 @@ import {
   Controller,
   Get,
   Post,
+  Put,
+  Delete,
   Body,
   Param,
   UseGuards,
@@ -14,7 +16,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { ApiBaseResponse, ApiBaseListResponse } from '../../common/decorators/api-response.decorator';
 import { ProjectResponseDto, ProjectMemberResponseDto } from './dto/project-response.dto';
 import { BaseResponseDto } from '../../common/dtos/response.dto';
-import { CreateProjectDto, AddProjectMemberDto } from './dto/project.dto';
+import { CreateProjectDto, UpdateProjectDto, AddProjectMemberDto } from './dto/project.dto';
 
 @ApiTags('Projects')
 @ApiBearerAuth()
@@ -42,6 +44,19 @@ export class ProjectsController {
   @ApiBaseResponse(ProjectResponseDto)
   findOne(@Param('id') id: string): Promise<BaseResponseDto<ProjectResponseDto>> {
     return this.projectsService.findOne(+id);
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: 'Update project' })
+  @ApiBaseResponse(ProjectResponseDto)
+  update(@Param('id') id: string, @Body() dto: UpdateProjectDto): Promise<BaseResponseDto<ProjectResponseDto>> {
+    return this.projectsService.update(+id, dto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete project' })
+  remove(@Param('id') id: string): Promise<BaseResponseDto<null>> {
+    return this.projectsService.remove(+id);
   }
 
   @Get(':id/members')

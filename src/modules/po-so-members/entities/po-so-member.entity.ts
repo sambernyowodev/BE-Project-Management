@@ -1,6 +1,6 @@
+import { BaseEntity } from '../../../common/entities/base.entity';
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   ManyToOne,
   JoinColumn,
@@ -11,9 +11,7 @@ import { ProjectMember } from '../../projects/entities/project-member.entity';
 import { Role } from '../../roles/entities/role.entity';
 
 @Entity('po_so_members')
-export class PoSoMember {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint', unsigned: true })
-  id: number;
+export class PoSoMember extends BaseEntity {
 
   @Column({ type: 'bigint', unsigned: true, name: 'po_id' })
   poId: number;

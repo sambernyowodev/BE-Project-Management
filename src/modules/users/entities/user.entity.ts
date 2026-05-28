@@ -1,15 +1,11 @@
+import { BaseEntity } from '../../../common/entities/base.entity';
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+  } from 'typeorm';
 
 @Entity('users')
-export class User {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint', unsigned: true })
-  id: number;
+export class User extends BaseEntity {
 
   @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
@@ -34,10 +30,4 @@ export class User {
 
   @Column({ type: 'boolean', default: true, name: 'is_active' })
   isActive: boolean;
-
-  @CreateDateColumn({ type: 'datetime', name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'datetime', name: 'updated_at' })
-  updatedAt: Date;
 }
