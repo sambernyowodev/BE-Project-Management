@@ -7,7 +7,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { ProjectStatus } from '../../../common/enums';
+import { ProjectStatus, ProjectType } from '../../../common/enums';
 
 export class CreateProjectDto {
   @ApiProperty()
@@ -54,6 +54,11 @@ export class CreateProjectDto {
   @IsOptional()
   @IsString()
   picInternal?: string;
+
+  @ApiProperty({ required: false, enum: ProjectType })
+  @IsOptional()
+  @IsEnum(ProjectType)
+  type?: ProjectType;
 }
 
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {

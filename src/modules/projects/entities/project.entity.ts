@@ -3,7 +3,7 @@ import {
   Entity,
   Column,
 } from 'typeorm';
-import { ProjectStatus } from '../../../common/enums';
+import { ProjectStatus, ProjectType } from '../../../common/enums';
 
 @Entity('projects')
 export class Project extends BaseEntity {
@@ -25,10 +25,18 @@ export class Project extends BaseEntity {
 
   @Column({
     type: 'enum',
+    enum: ProjectType,
+    default: ProjectType.NEW,
+  })
+  type: ProjectType;
+
+  @Column({
+    type: 'enum',
     enum: ProjectStatus,
     default: ProjectStatus.PLANNING,
   })
   status: ProjectStatus;
+
 
   @Column({
     type: 'decimal',

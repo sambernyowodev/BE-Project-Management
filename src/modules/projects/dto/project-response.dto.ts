@@ -3,7 +3,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { UserResponseDto } from '../../users/dto/user-response.dto';
 import { RoleResponseDto } from '../../roles/dto/role-response.dto';
-import { ProjectStatus } from '../../../common/enums';
+import { ProjectStatus, ProjectType } from '../../../common/enums';
 
 export class ProjectMemberResponseDto extends BaseDto {
 
@@ -128,6 +128,10 @@ export class ProjectResponseDto {
   @ApiPropertyOptional()
   @Expose()
   remarks?: string;
+
+  @ApiProperty({ enum: ProjectType })
+  @Expose()
+  type: ProjectType;
 
   @ApiProperty()
   @Expose()

@@ -73,3 +73,9 @@ export enum InvoiceStatus {
   OVERDUE = 'OVERDUE',
   CANCELLED = 'CANCELLED',
 }
+
+export enum ProjectType {
+  NEW = 'New',
+  SUPPORT = 'Support',
+}
+

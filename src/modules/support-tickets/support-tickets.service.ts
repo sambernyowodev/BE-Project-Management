@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { SupportTicket } from './entities/support-ticket.entity';
 import { SupportTicketDetail } from './entities/support-ticket-detail.entity';
+import { ProjectsService } from '../projects/projects.service';
 import {
   CreateSupportTicketDto,
   CreateSupportTicketDetailDto,
@@ -23,21 +24,59 @@ export class SupportTicketsService {
     @InjectRepository(SupportTicketDetail)
     private readonly detailRepo: Repository<SupportTicketDetail>,
     private readonly dataSource: DataSource,
+    private readonly projectsService: ProjectsService,
   ) {}
 
-  async create(dto: CreateSupportTicketDto): Promise<BaseResponseDto<SupportTicketResponseDto>> {
+  async create(dto: CreateSupportTicketDto, userId?: number): Promise<BaseResponseDto<SupportTicketResponseDto>> {
+    let projectId = dto.projectId;
+    let projectName = dto.projectName;
+
+    if (!projectId && projectName) {
+      const project = await this.projectsService.findOrCreateSupportProject(projectName, userId);
+      projectId = project.id;
+      projectName = project.name;
+    } else if (projectId) {
+      const projectRes = await this.projectsService.findOne(projectId);
+      if (projectRes && projectRes.data) {
+        projectName = projectRes.data.name;
+      }
+    }
+
+    if (projectId) {
+      await this.processTicketAssignments(projectId, dto);
+    }
+
     const ticketCode = `TKT-${Date.now()}`;
     const ticket = this.ticketRepo.create({
       ...dto,
+      projectId,
+      projectName,
       ticketCode,
     });
     const saved = await this.ticketRepo.save(ticket);
-    return { success: true, data: mapToDto(SupportTicketResponseDto, saved) };
+
+    // Reload with relations
+    const fullTicket = await this.ticketRepo.findOne({
+      where: { id: saved.id },
+      relations: {
+        project: true,
+        businessAnalyst: true,
+        uiUx: true,
+        devFe: true,
+        devBe: true,
+      },
+    });
+
+    return { success: true, data: mapToDto(SupportTicketResponseDto, fullTicket) };
   }
 
   async findAll(query: PaginationDto): Promise<PaginatedResponseDto<SupportTicketResponseDto>> {
     const qb = this.ticketRepo.createQueryBuilder('ticket')
-      .leftJoinAndSelect('ticket.project', 'project');
+      .leftJoinAndSelect('ticket.project', 'project')
+      .leftJoinAndSelect('ticket.businessAnalyst', 'businessAnalyst')
+      .leftJoinAndSelect('ticket.uiUx', 'uiUx')
+      .leftJoinAndSelect('ticket.devFe', 'devFe')
+      .leftJoinAndSelect('ticket.devBe', 'devBe');
     
     applyPagination(qb, query, ['ticketCode', 'issueTitle', 'status', 'projectName']);
     
@@ -58,7 +97,16 @@ export class SupportTicketsService {
   }
 
   async findOne(id: number): Promise<BaseResponseDto<SupportTicketResponseDto>> {
-    const ticket = await this.ticketRepo.findOne({ where: { id } });
+    const ticket = await this.ticketRepo.findOne({
+      where: { id },
+      relations: {
+        project: true,
+        businessAnalyst: true,
+        uiUx: true,
+        devFe: true,
+        devBe: true,
+      },
+    });
     if (!ticket) throw new NotFoundException(`Ticket ${id} not found`);
     return { success: true, data: mapToDto(SupportTicketResponseDto, ticket) };
   }
@@ -82,13 +130,55 @@ export class SupportTicketsService {
     return { success: true, data: mapToDtoArray(SupportTicketDetailResponseDto, data) };
   }
 
-  async update(id: number, dto: UpdateSupportTicketDto): Promise<BaseResponseDto<SupportTicketResponseDto>> {
+  async update(id: number, dto: UpdateSupportTicketDto, userId?: number): Promise<BaseResponseDto<SupportTicketResponseDto>> {
     const ticket = await this.ticketRepo.findOne({ where: { id } });
     if (!ticket) throw new NotFoundException(`Ticket ${id} not found`);
     
-    this.ticketRepo.merge(ticket, dto as any);
+    let projectId = dto.projectId;
+    let projectName = dto.projectName;
+
+    if (projectId === undefined && projectName) {
+      const project = await this.projectsService.findOrCreateSupportProject(projectName, userId);
+      projectId = project.id;
+      projectName = project.name;
+    } else if (projectId) {
+      const projectRes = await this.projectsService.findOne(projectId);
+      if (projectRes && projectRes.data) {
+        projectName = projectRes.data.name;
+      }
+    }
+
+    const mergedProjectId = projectId !== undefined ? projectId : ticket.projectId;
+
+    if (mergedProjectId) {
+      await this.processTicketAssignments(mergedProjectId, {
+        businessAnalystId: dto.businessAnalystId !== undefined ? dto.businessAnalystId : ticket.businessAnalystId,
+        uiUxId: dto.uiUxId !== undefined ? dto.uiUxId : ticket.uiUxId,
+        devFeId: dto.devFeId !== undefined ? dto.devFeId : ticket.devFeId,
+        devBeId: dto.devBeId !== undefined ? dto.devBeId : ticket.devBeId,
+      });
+    }
+
+    this.ticketRepo.merge(ticket, {
+      ...dto,
+      ...(projectId !== undefined ? { projectId } : {}),
+      ...(projectName !== undefined ? { projectName } : {}),
+    } as any);
+
     const updated = await this.ticketRepo.save(ticket);
-    return { success: true, data: mapToDto(SupportTicketResponseDto, updated) };
+
+    const fullTicket = await this.ticketRepo.findOne({
+      where: { id: updated.id },
+      relations: {
+        project: true,
+        businessAnalyst: true,
+        uiUx: true,
+        devFe: true,
+        devBe: true,
+      },
+    });
+
+    return { success: true, data: mapToDto(SupportTicketResponseDto, fullTicket) };
   }
 
   async remove(id: number): Promise<BaseResponseDto<null>> {
@@ -104,5 +194,30 @@ export class SupportTicketsService {
     });
 
     return { success: true, data: null, message: 'Ticket deleted successfully' };
+  }
+
+  private async processTicketAssignments(
+    projectId: number,
+    dto: {
+      businessAnalystId?: number;
+      uiUxId?: number;
+      devFeId?: number;
+      devBeId?: number;
+    },
+  ) {
+    if (!projectId) return;
+
+    if (dto.businessAnalystId) {
+      await this.projectsService.ensureProjectMember(projectId, dto.businessAnalystId, 'BA');
+    }
+    if (dto.uiUxId) {
+      await this.projectsService.ensureProjectMember(projectId, dto.uiUxId, 'UIUX');
+    }
+    if (dto.devFeId) {
+      await this.projectsService.ensureProjectMember(projectId, dto.devFeId, 'DEV_FE');
+    }
+    if (dto.devBeId) {
+      await this.projectsService.ensureProjectMember(projectId, dto.devBeId, 'DEV_BE');
+    }
   }
 }

@@ -7,6 +7,7 @@ import {
   UpdateSupportTicketDto,
 } from './dto/support-ticket.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { ApiBaseResponse, ApiBaseListResponse } from '../../common/decorators/api-response.decorator';
 import { SupportTicketResponseDto } from './dto/support-ticket-response.dto';
 import { SupportTicketDetailResponseDto } from './dto/support-ticket-detail-response.dto';
@@ -23,8 +24,11 @@ export class SupportTicketsController {
   @Post()
   @ApiOperation({ summary: 'Create a new support ticket' })
   @ApiBaseResponse(SupportTicketResponseDto)
-  create(@Body() dto: CreateSupportTicketDto): Promise<BaseResponseDto<SupportTicketResponseDto>> {
-    return this.ticketsService.create(dto);
+  create(
+    @Body() dto: CreateSupportTicketDto,
+    @CurrentUser() user: any,
+  ): Promise<BaseResponseDto<SupportTicketResponseDto>> {
+    return this.ticketsService.create(dto, user?.id);
   }
 
   @Get()
@@ -64,8 +68,9 @@ export class SupportTicketsController {
   update(
     @Param('id') id: string,
     @Body() dto: UpdateSupportTicketDto,
+    @CurrentUser() user: any,
   ): Promise<BaseResponseDto<SupportTicketResponseDto>> {
-    return this.ticketsService.update(+id, dto);
+    return this.ticketsService.update(+id, dto, user?.id);
   }
 
   @Delete(':id')

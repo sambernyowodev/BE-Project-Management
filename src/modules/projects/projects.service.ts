@@ -3,6 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like, DataSource, In } from 'typeorm';
 import { Project } from './entities/project.entity';
 import { ProjectMember } from './entities/project-member.entity';
+import { Role } from '../roles/entities/role.entity';
+import { ProjectStatus, ProjectType } from '../../common/enums';
+
 import { PurchaseOrder } from '../purchase-orders/entities/purchase-order.entity';
 import { SalesOrder } from '../sales-orders/entities/sales-order.entity';
 import { BillingInvoice } from '../billing/entities/billing-invoice.entity';
@@ -184,6 +187,43 @@ export class ProjectsService {
       relations: { user: true, role: true, secondaryRole: true },
     });
     return { success: true, data: mapToDtoArray(ProjectMemberResponseDto, data) };
+  }
+
+  async findOrCreateSupportProject(name: string, userId?: number): Promise<Project> {
+    let project = await this.projectRepo.findOne({ where: { name } });
+    if (!project) {
+      const projectCode = await this.generateProjectCode();
+      project = this.projectRepo.create({
+        name,
+        projectCode,
+        type: ProjectType.SUPPORT,
+        status: ProjectStatus.PLANNING,
+        createdBy: userId,
+      });
+      project = await this.projectRepo.save(project);
+    }
+    return project;
+  }
+
+  async ensureProjectMember(projectId: number, userId: number, roleCode: string): Promise<void> {
+    const existing = await this.memberRepo.findOne({
+      where: { projectId, userId },
+    });
+    if (existing) return;
+
+    // Find the Role
+    const role = await this.dataSource.getRepository(Role).findOne({
+      where: { code: roleCode },
+    });
+    if (!role) return;
+
+    const member = this.memberRepo.create({
+      projectId,
+      userId,
+      roleId: role.id,
+      isActive: true,
+    });
+    await this.memberRepo.save(member);
   }
 
   private async generateProjectCode(): Promise<string> {
