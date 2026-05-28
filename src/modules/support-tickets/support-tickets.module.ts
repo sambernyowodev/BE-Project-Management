@@ -4,7 +4,7 @@ import { SupportTicketsService } from './providers/support-tickets.service';
 import { SupportTicketsController } from './controllers/support-tickets.controller';
 import { SupportTicket } from './entities/support-ticket.entity';
 import { SupportTicketDetail } from './entities/support-ticket-detail.entity';
-import { ProjectsModule } from '../project/projects.module';
+import { ProjectsModule } from '../projects/projects.module';
 import { MasterProjectsModule } from '../master/project/projects.module';
 
 @Module({

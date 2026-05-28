@@ -48,7 +48,7 @@ export class RoleRatesController {
     return this.roleRatesService.create(dto, user.sub);
   }
 
-  @Put()
+  @Put(':id')
   @ApiOperation({ summary: 'Update role rate' })
   @ApiBaseResponse(RoleRateResponseDto)
   update(
@@ -57,5 +57,12 @@ export class RoleRatesController {
     @CurrentUser() user: JwtPayload
   ): Promise<BaseResponseDto<RoleRateResponseDto>> {
     return this.roleRatesService.update(id, dto, user.sub);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get role rate by id' })
+  @ApiBaseResponse(RoleRateResponseDto)
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<BaseResponseDto<RoleRateResponseDto>> {
+    return this.roleRatesService.findOne(id);
   }
 }

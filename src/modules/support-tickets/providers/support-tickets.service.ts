@@ -5,7 +5,7 @@ import { SupportTicket } from '../entities/support-ticket.entity';
 import { SupportTicketDetail } from '../entities/support-ticket-detail.entity';
 import { MasterProject } from '../../master/project/entities/project.entity';
 import { MasterProjectsService } from '../../master/project/providers/projects.service';
-import { ProjectsService } from '../../project/providers/projects.service';
+import { ProjectsService } from '../../projects/providers/projects.service';
 import {
   CreateSupportTicketDto,
   CreateSupportTicketDetailDto,

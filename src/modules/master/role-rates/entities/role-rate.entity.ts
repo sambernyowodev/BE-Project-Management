@@ -7,7 +7,7 @@ import {
   Unique,
 } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity';
-import { Project } from '../../../project/entities/project.entity';
+import { Project } from '../../../projects/entities/project.entity';
 
 @Entity('role_rates')
 @Unique('uk_role_project_effective', ['roleId', 'projectId', 'effectiveFrom'])

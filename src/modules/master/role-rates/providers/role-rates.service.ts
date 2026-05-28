@@ -84,4 +84,15 @@ export class RoleRatesService {
     const saved = await this.roleRateRepo.save(rate);
     return { success: true, data: mapToDto(RoleRateResponseDto, saved) };
   }
+
+  async findOne(id: number): Promise<BaseResponseDto<RoleRateResponseDto>> {
+    const rate = await this.roleRateRepo.findOne({
+      where: { id },
+      relations: { role: true, project: true }
+    });
+    if (!rate) {
+      throw new NotFoundException(`Role rate with id ${id} not found`);
+    }
+    return { success: true, data: mapToDto(RoleRateResponseDto, rate) };
+  }
 }

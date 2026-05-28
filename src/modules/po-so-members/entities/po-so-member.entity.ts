@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { PurchaseOrder } from '../../purchase-orders/entities/purchase-order.entity';
 import { SalesOrder } from '../../sales-orders/entities/sales-order.entity';
-import { ProjectMember } from '../../project/entities/project-member.entity';
+import { ProjectMember } from '../../projects/entities/project-member.entity';
 import { Role } from '../../master/roles/entities/role.entity';
 
 @Entity('po_so_members')
