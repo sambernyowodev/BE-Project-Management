@@ -4,6 +4,9 @@ import { PurchaseOrdersService } from './purchase-orders.service';
 import { CreatePurchaseOrderDto } from './dto/purchase-order.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { ApiBaseResponse, ApiBaseListResponse } from '../../common/decorators/api-response.decorator';
+import { PurchaseOrderResponseDto } from './dto/purchase-order-response.dto';
+import { BaseResponseDto } from '../../common/dtos/response.dto';
 
 @ApiTags('Purchase Orders')
 @ApiBearerAuth()
@@ -14,25 +17,29 @@ export class PurchaseOrdersController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new PO' })
-  create(@Body() dto: CreatePurchaseOrderDto, @CurrentUser() user: any) {
+  @ApiBaseResponse(PurchaseOrderResponseDto)
+  create(@Body() dto: CreatePurchaseOrderDto, @CurrentUser() user: any): Promise<BaseResponseDto<PurchaseOrderResponseDto>> {
     return this.poService.create(dto, user.id);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all POs' })
-  findAll() {
+  @ApiBaseListResponse(PurchaseOrderResponseDto)
+  findAll(): Promise<BaseResponseDto<PurchaseOrderResponseDto[]>> {
     return this.poService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get PO details' })
-  findOne(@Param('id') id: string) {
+  @ApiBaseResponse(PurchaseOrderResponseDto)
+  findOne(@Param('id') id: string): Promise<BaseResponseDto<PurchaseOrderResponseDto>> {
     return this.poService.findOne(+id);
   }
 
   @Get('project/:projectId')
   @ApiOperation({ summary: 'Get POs by Project' })
-  findByProject(@Param('projectId') projectId: string) {
+  @ApiBaseListResponse(PurchaseOrderResponseDto)
+  findByProject(@Param('projectId') projectId: string): Promise<BaseResponseDto<PurchaseOrderResponseDto[]>> {
     return this.poService.findByProject(+projectId);
   }
 }

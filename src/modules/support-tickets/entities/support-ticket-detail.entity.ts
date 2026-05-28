@@ -6,6 +6,8 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { SupportTicket } from './support-ticket.entity';
+import { User } from '../../users/entities/user.entity';
+import { SupportTicketDetailStatus } from '../../../common/enums';
 
 @Entity('support_ticket_details')
 export class SupportTicketDetail {
@@ -29,10 +31,10 @@ export class SupportTicketDetail {
 
   @Column({
     type: 'enum',
-    enum: ['OPEN', 'IN_PROGRESS', 'DONE', 'ON_HOLD'],
-    default: 'OPEN',
+    enum: SupportTicketDetailStatus,
+    default: SupportTicketDetailStatus.OPEN,
   })
-  status: string;
+  status: SupportTicketDetailStatus;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   platform: string;

@@ -4,6 +4,10 @@ import { AuthService } from './auth.service';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { ApiBaseResponse } from '../../common/decorators/api-response.decorator';
+import { AuthResponseDto } from './dto/auth-response.dto';
+import { UserResponseDto } from '../users/dto/user-response.dto';
+import { BaseResponseDto } from '../../common/dtos/response.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -12,13 +16,15 @@ export class AuthController {
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
-  async register(@Body() dto: RegisterDto) {
+  @ApiBaseResponse(AuthResponseDto)
+  async register(@Body() dto: RegisterDto): Promise<BaseResponseDto<AuthResponseDto>> {
     return this.authService.register(dto);
   }
 
   @Post('login')
   @ApiOperation({ summary: 'Login user' })
-  async login(@Body() dto: LoginDto) {
+  @ApiBaseResponse(AuthResponseDto)
+  async login(@Body() dto: LoginDto): Promise<BaseResponseDto<AuthResponseDto>> {
     return this.authService.login(dto);
   }
 
@@ -26,7 +32,8 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get current logged in user' })
-  getProfile(@CurrentUser() user: any) {
-    return user;
+  @ApiBaseResponse(UserResponseDto)
+  getProfile(@CurrentUser() user: any): BaseResponseDto<UserResponseDto> {
+    return { success: true, data: user };
   }
 }

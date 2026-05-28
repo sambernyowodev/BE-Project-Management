@@ -7,6 +7,10 @@ import {
   CreateSupportTicketDto,
   CreateSupportTicketDetailDto,
 } from './dto/support-ticket.dto';
+import { BaseResponseDto } from '../../common/dtos/response.dto';
+import { SupportTicketResponseDto } from './dto/support-ticket-response.dto';
+import { SupportTicketDetailResponseDto } from './dto/support-ticket-detail-response.dto';
+import { mapToDto, mapToDtoArray } from '../../common/utils/mapper.util';
 
 @Injectable()
 export class SupportTicketsService {
@@ -17,39 +21,43 @@ export class SupportTicketsService {
     private readonly detailRepo: Repository<SupportTicketDetail>,
   ) {}
 
-  async create(dto: CreateSupportTicketDto): Promise<SupportTicket> {
+  async create(dto: CreateSupportTicketDto): Promise<BaseResponseDto<SupportTicketResponseDto>> {
     const ticketCode = `TKT-${Date.now()}`;
     const ticket = this.ticketRepo.create({
       ...dto,
       ticketCode,
     });
-    return this.ticketRepo.save(ticket);
+    const saved = await this.ticketRepo.save(ticket);
+    return { success: true, data: mapToDto(SupportTicketResponseDto, saved) };
   }
 
-  async findAll(): Promise<SupportTicket[]> {
-    return this.ticketRepo.find({ order: { createdAt: 'DESC' } } as any);
+  async findAll(): Promise<BaseResponseDto<SupportTicketResponseDto[]>> {
+    const data = await this.ticketRepo.find({ order: { createdAt: 'DESC' } } as any);
+    return { success: true, data: mapToDtoArray(SupportTicketResponseDto, data) };
   }
 
-  async findOne(id: number): Promise<SupportTicket> {
+  async findOne(id: number): Promise<BaseResponseDto<SupportTicketResponseDto>> {
     const ticket = await this.ticketRepo.findOne({ where: { id } });
     if (!ticket) throw new NotFoundException(`Ticket ${id} not found`);
-    return ticket;
+    return { success: true, data: mapToDto(SupportTicketResponseDto, ticket) };
   }
 
   async addDetail(
     ticketId: number,
     dto: CreateSupportTicketDetailDto,
-  ): Promise<SupportTicketDetail> {
-    const ticket = await this.findOne(ticketId);
+  ): Promise<BaseResponseDto<SupportTicketDetailResponseDto>> {
+    const ticketRes = await this.findOne(ticketId);
 
     const detail = this.detailRepo.create({
       ...dto,
-      supportTicketId: ticket.id,
+      supportTicketId: ticketRes.data.id,
     });
-    return this.detailRepo.save(detail);
+    const saved = await this.detailRepo.save(detail);
+    return { success: true, data: mapToDto(SupportTicketDetailResponseDto, saved) };
   }
 
-  async getDetails(ticketId: number): Promise<SupportTicketDetail[]> {
-    return this.detailRepo.find({ where: { supportTicketId: ticketId } });
+  async getDetails(ticketId: number): Promise<BaseResponseDto<SupportTicketDetailResponseDto[]>> {
+    const data = await this.detailRepo.find({ where: { supportTicketId: ticketId } });
+    return { success: true, data: mapToDtoArray(SupportTicketDetailResponseDto, data) };
   }
 }

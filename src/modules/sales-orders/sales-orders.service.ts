@@ -4,6 +4,10 @@ import { Repository, Like } from 'typeorm';
 import { SalesOrder } from './entities/sales-order.entity';
 import { CreateSalesOrderDto } from './dto/sales-order.dto';
 import { PurchaseOrdersService } from '../purchase-orders/purchase-orders.service';
+import { SalesOrderStatus } from '../../common/enums';
+import { BaseResponseDto } from '../../common/dtos/response.dto';
+import { SalesOrderResponseDto } from './dto/sales-order-response.dto';
+import { mapToDto, mapToDtoArray } from '../../common/utils/mapper.util';
 
 @Injectable()
 export class SalesOrdersService {
@@ -13,36 +17,42 @@ export class SalesOrdersService {
     private readonly poService: PurchaseOrdersService,
   ) {}
 
-  async create(dto: CreateSalesOrderDto): Promise<SalesOrder> {
-    const po = await this.poService.findOne(dto.poId);
-    if (!po) throw new NotFoundException('Purchase Order not found');
+  async create(dto: CreateSalesOrderDto): Promise<BaseResponseDto<SalesOrderResponseDto>> {
+    const poRes = await this.poService.findOne(dto.poId);
+    if (!poRes || !poRes.data) throw new NotFoundException('Purchase Order not found');
 
+    const po = poRes.data;
     const soNumber = await this.generateSoNumber(po.poNumber);
 
     const so = this.soRepo.create({
       ...dto,
       soNumber,
     });
-    return this.soRepo.save(so);
+    const saved = await this.soRepo.save(so);
+    return { success: true, data: mapToDto(SalesOrderResponseDto, saved) };
   }
 
-  async findAll(): Promise<SalesOrder[]> {
-    return this.soRepo.find({ relations: { po: true, project: true } });
+  async findAll(): Promise<BaseResponseDto<SalesOrderResponseDto[]>> {
+    const data = await this.soRepo.find({ relations: { po: true, project: true } });
+    return { success: true, data: mapToDtoArray(SalesOrderResponseDto, data) };
   }
 
-  async findOne(id: number): Promise<SalesOrder> {
+  async findOne(id: number): Promise<BaseResponseDto<SalesOrderResponseDto>> {
     const so = await this.soRepo.findOne({
       where: { id },
       relations: { po: true, project: true },
     });
     if (!so) throw new NotFoundException(`SO ${id} not found`);
-    return so;
+    return { success: true, data: mapToDto(SalesOrderResponseDto, so) };
   }
 
-  async updateStatus(id: number, status: string): Promise<SalesOrder> {
-    const so = await this.findOne(id);
+  async updateStatus(id: number, status: SalesOrderStatus): Promise<BaseResponseDto<SalesOrderResponseDto>> {
+    const soRes = await this.findOne(id);
+    const so = await this.soRepo.findOne({ where: { id: soRes.data.id } }); // Fetch entity to save
+    if (!so) throw new NotFoundException();
     so.status = status;
-    return this.soRepo.save(so);
+    const saved = await this.soRepo.save(so);
+    return { success: true, data: mapToDto(SalesOrderResponseDto, saved) };
   }
 
   private async generateSoNumber(poNumber: string): Promise<string> {

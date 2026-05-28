@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Project } from '../../projects/entities/project.entity';
 import { User } from '../../users/entities/user.entity';
+import { SupportTicketStatus } from '../../../common/enums';
 
 @Entity('support_tickets')
 export class SupportTicket {
@@ -56,19 +57,10 @@ export class SupportTicket {
 
   @Column({
     type: 'enum',
-    enum: [
-      'OPEN',
-      'IN_PROGRESS',
-      'DEV_DONE',
-      'SIT_DONE',
-      'UAT_DONE',
-      'DONE',
-      'ON_HOLD',
-      'CANCELLED',
-    ],
-    default: 'OPEN',
+    enum: SupportTicketStatus,
+    default: SupportTicketStatus.OPEN,
   })
-  status: string;
+  status: SupportTicketStatus;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   platform: string;

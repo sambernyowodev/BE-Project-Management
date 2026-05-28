@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
@@ -16,7 +15,6 @@ async function bootstrap() {
 
   // Global Pipes, Interceptors, Filters
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
-  app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
 
   // Swagger Configuration

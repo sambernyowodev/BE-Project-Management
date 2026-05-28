@@ -11,6 +11,10 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { SalesOrdersService } from './sales-orders.service';
 import { CreateSalesOrderDto } from './dto/sales-order.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { SalesOrderStatus } from '../../common/enums';
+import { ApiBaseResponse, ApiBaseListResponse } from '../../common/decorators/api-response.decorator';
+import { SalesOrderResponseDto } from './dto/sales-order-response.dto';
+import { BaseResponseDto } from '../../common/dtos/response.dto';
 
 @ApiTags('Sales Orders')
 @ApiBearerAuth()
@@ -21,25 +25,29 @@ export class SalesOrdersController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new SO' })
-  create(@Body() dto: CreateSalesOrderDto) {
+  @ApiBaseResponse(SalesOrderResponseDto)
+  create(@Body() dto: CreateSalesOrderDto): Promise<BaseResponseDto<SalesOrderResponseDto>> {
     return this.soService.create(dto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all SOs' })
-  findAll() {
+  @ApiBaseListResponse(SalesOrderResponseDto)
+  findAll(): Promise<BaseResponseDto<SalesOrderResponseDto[]>> {
     return this.soService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get SO details' })
-  findOne(@Param('id') id: string) {
+  @ApiBaseResponse(SalesOrderResponseDto)
+  findOne(@Param('id') id: string): Promise<BaseResponseDto<SalesOrderResponseDto>> {
     return this.soService.findOne(+id);
   }
 
   @Put(':id/status')
   @ApiOperation({ summary: 'Update SO Status' })
-  updateStatus(@Param('id') id: string, @Body('status') status: string) {
+  @ApiBaseResponse(SalesOrderResponseDto)
+  updateStatus(@Param('id') id: string, @Body('status') status: SalesOrderStatus): Promise<BaseResponseDto<SalesOrderResponseDto>> {
     return this.soService.updateStatus(+id, status);
   }
 }

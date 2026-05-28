@@ -3,6 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import { PurchaseOrder } from './entities/purchase-order.entity';
 import { CreatePurchaseOrderDto } from './dto/purchase-order.dto';
+import { BaseResponseDto } from '../../common/dtos/response.dto';
+import { PurchaseOrderResponseDto } from './dto/purchase-order-response.dto';
+import { mapToDto, mapToDtoArray } from '../../common/utils/mapper.util';
 
 @Injectable()
 export class PurchaseOrdersService {
@@ -14,31 +17,34 @@ export class PurchaseOrdersService {
   async create(
     dto: CreatePurchaseOrderDto,
     userId: number,
-  ): Promise<PurchaseOrder> {
+  ): Promise<BaseResponseDto<PurchaseOrderResponseDto>> {
     const poNumber = await this.generatePoNumber();
     const po = this.poRepo.create({
       ...dto,
       poNumber,
       createdById: userId,
     });
-    return this.poRepo.save(po);
+    const saved = await this.poRepo.save(po);
+    return { success: true, data: mapToDto(PurchaseOrderResponseDto, saved) };
   }
 
-  async findAll(): Promise<PurchaseOrder[]> {
-    return this.poRepo.find({ relations: { project: true } });
+  async findAll(): Promise<BaseResponseDto<PurchaseOrderResponseDto[]>> {
+    const data = await this.poRepo.find({ relations: { project: true } });
+    return { success: true, data: mapToDtoArray(PurchaseOrderResponseDto, data) };
   }
 
-  async findOne(id: number): Promise<PurchaseOrder> {
+  async findOne(id: number): Promise<BaseResponseDto<PurchaseOrderResponseDto>> {
     const po = await this.poRepo.findOne({
       where: { id },
       relations: { project: true },
     });
     if (!po) throw new NotFoundException(`PO ${id} not found`);
-    return po;
+    return { success: true, data: mapToDto(PurchaseOrderResponseDto, po) };
   }
 
-  async findByProject(projectId: number): Promise<PurchaseOrder[]> {
-    return this.poRepo.find({ where: { projectId } });
+  async findByProject(projectId: number): Promise<BaseResponseDto<PurchaseOrderResponseDto[]>> {
+    const data = await this.poRepo.find({ where: { projectId } });
+    return { success: true, data: mapToDtoArray(PurchaseOrderResponseDto, data) };
   }
 
   private async generatePoNumber(): Promise<string> {

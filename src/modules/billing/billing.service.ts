@@ -7,6 +7,9 @@ import { PurchaseOrder } from '../purchase-orders/entities/purchase-order.entity
 import { PoSoMember } from '../po-so-members/entities/po-so-member.entity';
 import { RoleRate } from '../role-rates/entities/role-rate.entity';
 import { GenerateInvoiceDto } from './dto/billing.dto';
+import { BaseResponseDto } from '../../common/dtos/response.dto';
+import { BillingInvoiceResponseDto } from './dto/billing-response.dto';
+import { mapToDto, mapToDtoArray } from '../../common/utils/mapper.util';
 
 @Injectable()
 export class BillingService {
@@ -23,7 +26,7 @@ export class BillingService {
     private readonly roleRateRepo: Repository<RoleRate>,
   ) {}
 
-  async generatePreview(dto: GenerateInvoiceDto) {
+  async generatePreview(dto: GenerateInvoiceDto): Promise<BaseResponseDto<any>> {
     const po = await this.poRepo.findOne({
       where: { id: dto.poId },
       relations: { project: true },
@@ -100,20 +103,24 @@ export class BillingService {
     const grandTotal = totalAmount + taxAmount;
 
     return {
-      po,
-      project: po.project,
-      period: { start: dto.startDate, end: dto.endDate },
-      roleBreakdown,
-      totalMandays,
-      totalAmount,
-      taxAmount,
-      grandTotal,
-      taxRate,
+      success: true,
+      data: {
+        po,
+        project: po.project,
+        period: { start: dto.startDate, end: dto.endDate },
+        roleBreakdown,
+        totalMandays,
+        totalAmount,
+        taxAmount,
+        grandTotal,
+        taxRate,
+      }
     };
   }
 
-  async createInvoice(dto: GenerateInvoiceDto, userId: number) {
-    const preview = await this.generatePreview(dto);
+  async createInvoice(dto: GenerateInvoiceDto, userId: number): Promise<BaseResponseDto<BillingInvoiceResponseDto>> {
+    const previewRes = await this.generatePreview(dto);
+    const preview = previewRes.data;
 
     const now = new Date();
     const prefix = `INV-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}-`;
@@ -160,14 +167,16 @@ export class BillingService {
     return this.findOne(savedInvoice.id);
   }
 
-  async findAll() {
-    return this.invoiceRepo.find({ relations: { po: true, project: true } });
+  async findAll(): Promise<BaseResponseDto<BillingInvoiceResponseDto[]>> {
+    const data = await this.invoiceRepo.find({ relations: { po: true, project: true } });
+    return { success: true, data: mapToDtoArray(BillingInvoiceResponseDto, data) };
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<BaseResponseDto<BillingInvoiceResponseDto>> {
     const inv = await this.invoiceRepo.findOne({ where: { id }, relations: { po: true, project: true } });
     if (!inv) throw new NotFoundException('Invoice not found');
     const details = await this.detailRepo.find({ where: { invoiceId: id } });
-    return { ...inv, details };
+    const fullInvoice = { ...inv, details };
+    return { success: true, data: mapToDto(BillingInvoiceResponseDto, fullInvoice) };
   }
 }

@@ -526,13 +526,39 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        BaseResponseDto: {
+            /** @example true */
+            success: boolean;
+            /** @example Operation successful */
+            message?: string;
+        };
+        RoleResponseDto: {
+            id: number;
+            code: string;
+            name: string;
+            description?: string;
+        };
         CreateRoleDto: {
             /** @example PM */
             code: string;
             /** @example Project Manager */
             name: string;
             /** @example Handles project management */
-            description: string;
+            description?: string;
+        };
+        RoleRateResponseDto: {
+            id: number;
+            roleId: number;
+            projectId?: number;
+            ratePerManday: number;
+            ratePerHour: number;
+            currency: string;
+            /** Format: date-time */
+            effectiveFrom: string;
+            /** Format: date-time */
+            effectiveUntil?: string;
+            isActive: boolean;
+            role?: components["schemas"]["RoleResponseDto"];
         };
         CreateRoleRateDto: {
             roleId: number;
@@ -546,6 +572,22 @@ export interface components {
             /** @example 2026-12-31 */
             effectiveUntil?: string;
         };
+        ProjectResponseDto: {
+            id: number;
+            projectCode: string;
+            name: string;
+            description?: string;
+            picClient?: string;
+            picInternal?: string;
+            /** Format: date-time */
+            startDate: string;
+            /** Format: date-time */
+            endDate?: string;
+            /** @enum {string} */
+            status: "PLANNING" | "IN_PROGRESS" | "SIT" | "UAT" | "CLOSED" | "ON_HOLD" | "CANCELLED";
+            timelineRemark?: string;
+            isActive: boolean;
+        };
         CreateProjectDto: {
             name: string;
             description?: string;
@@ -553,11 +595,48 @@ export interface components {
             platform?: string;
             customer?: string;
         };
+        UserResponseDto: {
+            id: number;
+            email: string;
+            fullName: string;
+            employeeId?: string;
+            avatarUrl?: string;
+            isActive: boolean;
+        };
+        ProjectMemberResponseDto: {
+            id: number;
+            projectId: number;
+            userId: number;
+            roleId: number;
+            secondaryRoleId?: number;
+            /** Format: date-time */
+            startDate: string;
+            /** Format: date-time */
+            endDate?: string;
+            isActive: boolean;
+            user?: components["schemas"]["UserResponseDto"];
+            role?: components["schemas"]["RoleResponseDto"];
+            secondaryRole?: components["schemas"]["RoleResponseDto"];
+        };
         AddProjectMemberDto: {
             userId: number;
             roleId: number;
             secondaryRoleId?: number;
             assignedMandays?: number;
+        };
+        ProjectActivityResponseDto: {
+            id: number;
+            projectId: number;
+            createdById: number;
+            title: string;
+            description?: string;
+            /** Format: date-time */
+            activityDate: string;
+            mandaysLog: number;
+            /** Format: date-time */
+            createdAt: string;
+            project?: components["schemas"]["ProjectResponseDto"];
+            createdBy?: components["schemas"]["UserResponseDto"];
         };
         CreateProjectActivityDto: {
             projectId: number;
@@ -567,17 +646,91 @@ export interface components {
             durationDays?: number;
             mandays?: number;
         };
+        PurchaseOrderResponseDto: {
+            id: number;
+            poNumber: string;
+            poName: string;
+            projectId: number;
+            customer: string;
+            description?: string;
+            totalMandays: number;
+            totalAmount: number;
+            /** @enum {string} */
+            status: "DRAFT" | "ACTIVE" | "IN_PROGRESS" | "COMPLETED" | "CLOSED" | "CANCELLED";
+            /** Format: date-time */
+            startDate?: string;
+            /** Format: date-time */
+            endDate?: string;
+            /** Format: date-time */
+            signedDate?: string;
+            documentUrl?: string;
+            remarks?: string;
+            isActive: boolean;
+            createdById: number;
+            /** Format: date-time */
+            createdAt: string;
+            project?: components["schemas"]["ProjectResponseDto"];
+            createdBy?: components["schemas"]["UserResponseDto"];
+        };
         CreatePurchaseOrderDto: {
             poName: string;
             projectId: number;
             customer: string;
             description?: string;
         };
+        SalesOrderResponseDto: {
+            id: number;
+            soNumber: string;
+            soName: string;
+            projectId: number;
+            purchaseOrderId: number;
+            customer: string;
+            description?: string;
+            totalMandays: number;
+            totalAmount: number;
+            /** @enum {string} */
+            status: "DRAFT" | "ACTIVE" | "IN_PROGRESS" | "DELIVERED" | "INVOICED" | "PAID" | "CLOSED" | "CANCELLED";
+            /** Format: date-time */
+            startDate?: string;
+            /** Format: date-time */
+            endDate?: string;
+            /** Format: date-time */
+            signedDate?: string;
+            documentUrl?: string;
+            remarks?: string;
+            isActive: boolean;
+            createdById: number;
+            /** Format: date-time */
+            createdAt: string;
+            project?: components["schemas"]["ProjectResponseDto"];
+            purchaseOrder?: components["schemas"]["PurchaseOrderResponseDto"];
+            createdBy?: components["schemas"]["UserResponseDto"];
+        };
         CreateSalesOrderDto: {
             soName: string;
             poId: number;
             projectId: number;
             description?: string;
+        };
+        PoSoMemberResponseDto: {
+            id: number;
+            poId: number;
+            soId?: number;
+            projectMemberId: number;
+            roleId: number;
+            actualMandays: number;
+            actualHours: number;
+            ratePerManday: number;
+            totalCost: number;
+            /** Format: date-time */
+            startDate?: string;
+            /** Format: date-time */
+            endDate?: string;
+            isBillable: boolean;
+            po?: components["schemas"]["PurchaseOrderResponseDto"];
+            so?: components["schemas"]["SalesOrderResponseDto"];
+            projectMember?: components["schemas"]["ProjectMemberResponseDto"];
+            role?: components["schemas"]["RoleResponseDto"];
         };
         AssignPoSoMemberDto: {
             poId: number;
@@ -587,11 +740,58 @@ export interface components {
             actualMandays?: number;
             actualHours?: number;
         };
+        SupportTicketResponseDto: {
+            id: number;
+            ticketCode: string;
+            projectId?: number;
+            projectName: string;
+            picClient?: string;
+            issueTitle: string;
+            issueDescription?: string;
+            hoursSpent: number;
+            mandaysSpent: number;
+            /** @enum {string} */
+            status: "OPEN" | "IN_PROGRESS" | "DEV_DONE" | "SIT_DONE" | "UAT_DONE" | "DONE" | "ON_HOLD" | "CANCELLED";
+            platform?: string;
+            /** Format: date-time */
+            startDate?: string;
+            /** Format: date-time */
+            endDate?: string;
+            businessAnalystId?: number;
+            uiUxId?: number;
+            devFeId?: number;
+            devBeId?: number;
+            folderAttachment?: string;
+            notes?: string;
+            /** Format: date-time */
+            updateDate?: string;
+            isActive: boolean;
+            project?: components["schemas"]["ProjectResponseDto"];
+            businessAnalyst?: components["schemas"]["UserResponseDto"];
+            uiUx?: components["schemas"]["UserResponseDto"];
+            devFe?: components["schemas"]["UserResponseDto"];
+            devBe?: components["schemas"]["UserResponseDto"];
+        };
         CreateSupportTicketDto: {
             projectName: string;
             projectId?: number;
             issueTitle: string;
             issueDescription?: string;
+        };
+        SupportTicketDetailResponseDto: {
+            id: number;
+            supportTicketId: number;
+            subIssue: string;
+            hoursSpent: number;
+            /** @enum {string} */
+            status: "OPEN" | "IN_PROGRESS" | "DONE" | "ON_HOLD";
+            platform?: string;
+            /** Format: date-time */
+            startDate?: string;
+            /** Format: date-time */
+            endDate?: string;
+            devBeNames?: string;
+            supportTicket?: components["schemas"]["SupportTicketResponseDto"];
         };
         CreateSupportTicketDetailDto: {
             subIssue: string;
@@ -604,16 +804,59 @@ export interface components {
             endDate: string;
             taxRate?: number;
         };
+        BillingInvoiceDetailResponseDto: {
+            id: number;
+            billingInvoiceId: number;
+            roleId?: number;
+            description: string;
+            totalMandays: number;
+            ratePerManday: number;
+            amount: number;
+            role?: components["schemas"]["RoleResponseDto"];
+        };
+        BillingInvoiceResponseDto: {
+            id: number;
+            invoiceNumber: string;
+            projectId: number;
+            poId?: number;
+            soId?: number;
+            /** Format: date-time */
+            periodStart: string;
+            /** Format: date-time */
+            periodEnd: string;
+            totalAmount: number;
+            /** @enum {string} */
+            status: "DRAFT" | "SENT" | "PAID" | "OVERDUE" | "CANCELLED";
+            isActive: boolean;
+            createdById: number;
+            /** Format: date-time */
+            createdAt: string;
+            project?: components["schemas"]["ProjectResponseDto"];
+            po?: components["schemas"]["PurchaseOrderResponseDto"];
+            so?: components["schemas"]["SalesOrderResponseDto"];
+            createdBy?: components["schemas"]["UserResponseDto"];
+            details?: components["schemas"]["BillingInvoiceDetailResponseDto"][];
+        };
+        AuthResponseDto: {
+            accessToken: string;
+            user: components["schemas"]["UserResponseDto"];
+        };
         RegisterDto: {
             /** @example John Doe */
             fullName: string;
-            /** @example user@example.com */
+            /**
+             * Format: email
+             * @example user@example.com
+             */
             email: string;
             /** @example password123 */
             password: string;
         };
         LoginDto: {
-            /** @example user@example.com */
+            /**
+             * Format: email
+             * @example user@example.com
+             */
             email: string;
             /** @example password123 */
             password: string;
@@ -640,7 +883,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["RoleResponseDto"][];
+                    };
+                };
             };
         };
     };
@@ -657,11 +904,15 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["RoleResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -680,7 +931,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["RoleResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -697,7 +952,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["RoleRateResponseDto"][];
+                    };
+                };
             };
         };
     };
@@ -714,11 +973,15 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["RoleRateResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -735,7 +998,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["RoleRateResponseDto"][];
+                    };
+                };
             };
         };
     };
@@ -754,7 +1021,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["RoleRateResponseDto"][];
+                    };
+                };
             };
         };
     };
@@ -771,7 +1042,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["ProjectResponseDto"][];
+                    };
+                };
             };
         };
     };
@@ -788,11 +1063,15 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["ProjectResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -811,7 +1090,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["ProjectResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -830,7 +1113,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["ProjectMemberResponseDto"][];
+                    };
+                };
             };
         };
     };
@@ -849,11 +1136,15 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["ProjectMemberResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -870,11 +1161,15 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["ProjectActivityResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -893,7 +1188,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["ProjectActivityResponseDto"][];
+                    };
+                };
             };
         };
     };
@@ -912,7 +1211,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["ProjectActivityResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -929,7 +1232,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["PurchaseOrderResponseDto"][];
+                    };
+                };
             };
         };
     };
@@ -946,11 +1253,15 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["PurchaseOrderResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -969,7 +1280,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["PurchaseOrderResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -988,7 +1303,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["PurchaseOrderResponseDto"][];
+                    };
+                };
             };
         };
     };
@@ -1005,7 +1324,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["SalesOrderResponseDto"][];
+                    };
+                };
             };
         };
     };
@@ -1022,11 +1345,15 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["SalesOrderResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -1045,7 +1372,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["SalesOrderResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -1064,7 +1395,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["SalesOrderResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -1081,11 +1416,15 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["PoSoMemberResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -1104,7 +1443,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["PoSoMemberResponseDto"][];
+                    };
+                };
             };
         };
     };
@@ -1123,7 +1466,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["PoSoMemberResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -1140,7 +1487,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["SupportTicketResponseDto"][];
+                    };
+                };
             };
         };
     };
@@ -1157,11 +1508,15 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["SupportTicketResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -1180,7 +1535,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["SupportTicketResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -1199,7 +1558,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["SupportTicketDetailResponseDto"][];
+                    };
+                };
             };
         };
     };
@@ -1218,11 +1581,15 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["SupportTicketDetailResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -1260,11 +1627,15 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["BillingInvoiceResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -1281,7 +1652,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["BillingInvoiceResponseDto"][];
+                    };
+                };
             };
         };
     };
@@ -1300,7 +1675,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["BillingInvoiceResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -1317,11 +1696,15 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["AuthResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -1338,11 +1721,15 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["AuthResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -1359,7 +1746,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BaseResponseDto"] & {
+                        data?: components["schemas"]["UserResponseDto"];
+                    };
+                };
             };
         };
     };

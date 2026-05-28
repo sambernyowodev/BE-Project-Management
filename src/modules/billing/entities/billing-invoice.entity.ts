@@ -9,6 +9,7 @@ import {
 import { PurchaseOrder } from '../../purchase-orders/entities/purchase-order.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { User } from '../../users/entities/user.entity';
+import { InvoiceStatus } from '../../../common/enums';
 
 @Entity('billing_invoices')
 export class BillingInvoice {
@@ -73,10 +74,10 @@ export class BillingInvoice {
 
   @Column({
     type: 'enum',
-    enum: ['DRAFT', 'SENT', 'PAID', 'OVERDUE', 'CANCELLED'],
-    default: 'DRAFT',
+    enum: InvoiceStatus,
+    default: InvoiceStatus.DRAFT,
   })
-  status: string;
+  status: InvoiceStatus;
 
   @Column({ type: 'date', nullable: true, name: 'invoice_date' })
   invoiceDate: Date;

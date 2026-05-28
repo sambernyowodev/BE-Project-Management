@@ -3,6 +3,9 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { ApiBaseResponse, ApiBaseListResponse } from '../../common/decorators/api-response.decorator';
+import { RoleResponseDto } from './dto/role-response.dto';
+import { BaseResponseDto } from '../../common/dtos/response.dto';
 
 @ApiTags('Roles')
 @ApiBearerAuth()
@@ -13,19 +16,22 @@ export class RolesController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new role' })
-  create(@Body() createRoleDto: CreateRoleDto) {
+  @ApiBaseResponse(RoleResponseDto)
+  create(@Body() createRoleDto: CreateRoleDto): Promise<BaseResponseDto<RoleResponseDto>> {
     return this.rolesService.create(createRoleDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all roles' })
-  findAll() {
+  @ApiBaseListResponse(RoleResponseDto)
+  findAll(): Promise<BaseResponseDto<RoleResponseDto[]>> {
     return this.rolesService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get role by id' })
-  findOne(@Param('id') id: string) {
+  @ApiBaseResponse(RoleResponseDto)
+  findOne(@Param('id') id: string): Promise<BaseResponseDto<RoleResponseDto>> {
     return this.rolesService.findOne(+id);
   }
 }

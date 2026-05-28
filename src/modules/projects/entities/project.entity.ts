@@ -8,6 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { ProjectStatus } from '../../../common/enums';
 
 @Entity('projects')
 export class Project {
@@ -31,18 +32,10 @@ export class Project {
 
   @Column({
     type: 'enum',
-    enum: [
-      'PLANNING',
-      'IN_PROGRESS',
-      'SIT',
-      'UAT',
-      'CLOSED',
-      'ON_HOLD',
-      'CANCELLED',
-    ],
-    default: 'PLANNING',
+    enum: ProjectStatus,
+    default: ProjectStatus.PLANNING,
   })
-  status: string;
+  status: ProjectStatus;
 
   @Column({
     type: 'decimal',

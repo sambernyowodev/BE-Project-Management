@@ -4,6 +4,9 @@ import { BillingService } from './billing.service';
 import { GenerateInvoiceDto } from './dto/billing.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { ApiBaseResponse, ApiBaseListResponse } from '../../common/decorators/api-response.decorator';
+import { BillingInvoiceResponseDto } from './dto/billing-response.dto';
+import { BaseResponseDto } from '../../common/dtos/response.dto';
 
 @ApiTags('Billing')
 @ApiBearerAuth()
@@ -20,19 +23,22 @@ export class BillingController {
 
   @Post('invoice')
   @ApiOperation({ summary: 'Create an invoice based on actuals' })
-  createInvoice(@Body() dto: GenerateInvoiceDto, @CurrentUser() user: any) {
+  @ApiBaseResponse(BillingInvoiceResponseDto)
+  createInvoice(@Body() dto: GenerateInvoiceDto, @CurrentUser() user: any): Promise<BaseResponseDto<BillingInvoiceResponseDto>> {
     return this.billingService.createInvoice(dto, user.id);
   }
 
   @Get('invoices')
   @ApiOperation({ summary: 'Get all invoices' })
-  findAllInvoices() {
+  @ApiBaseListResponse(BillingInvoiceResponseDto)
+  findAllInvoices(): Promise<BaseResponseDto<BillingInvoiceResponseDto[]>> {
     return this.billingService.findAll();
   }
 
   @Get('invoices/:id')
   @ApiOperation({ summary: 'Get invoice details' })
-  findOne(@Param('id') id: string) {
+  @ApiBaseResponse(BillingInvoiceResponseDto)
+  findOne(@Param('id') id: string): Promise<BaseResponseDto<BillingInvoiceResponseDto>> {
     return this.billingService.findOne(+id);
   }
 }

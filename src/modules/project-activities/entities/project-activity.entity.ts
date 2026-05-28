@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Project } from '../../projects/entities/project.entity';
 import { User } from '../../users/entities/user.entity';
+import { ProjectPhase } from '../../../common/enums';
 
 @Entity('project_activities')
 export class ProjectActivity {
@@ -63,27 +64,10 @@ export class ProjectActivity {
 
   @Column({
     type: 'enum',
-    enum: [
-      'FCAB',
-      'REQUIREMENT',
-      'ANALYSIS',
-      'DESIGN',
-      'SRS',
-      'CRQ',
-      'DEVELOPMENT',
-      'UT_SIT',
-      'TRA_TC',
-      'REVIEW',
-      'SIT',
-      'UAT',
-      'NFT',
-      'SECURITY',
-      'RFS',
-      'FUT',
-    ],
-    default: 'DEVELOPMENT',
+    enum: ProjectPhase,
+    default: ProjectPhase.DEVELOPMENT,
   })
-  phase: string;
+  phase: ProjectPhase;
 
   @Column({
     type: 'bigint',

@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { PurchaseOrder } from '../../purchase-orders/entities/purchase-order.entity';
 import { Project } from '../../projects/entities/project.entity';
+import { SalesOrderStatus } from '../../../common/enums';
 
 @Entity('sales_orders')
 export class SalesOrder {
@@ -48,19 +49,10 @@ export class SalesOrder {
 
   @Column({
     type: 'enum',
-    enum: [
-      'DRAFT',
-      'ACTIVE',
-      'IN_PROGRESS',
-      'DELIVERED',
-      'INVOICED',
-      'PAID',
-      'CLOSED',
-      'CANCELLED',
-    ],
-    default: 'DRAFT',
+    enum: SalesOrderStatus,
+    default: SalesOrderStatus.DRAFT,
   })
-  status: string;
+  status: SalesOrderStatus;
 
   @Column({ type: 'date', nullable: true, name: 'start_date' })
   startDate: Date;

@@ -7,6 +7,10 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
+import { BaseResponseDto } from '../../common/dtos/response.dto';
+import { AuthResponseDto } from './dto/auth-response.dto';
+import { UserResponseDto } from '../users/dto/user-response.dto';
+import { mapToDto } from '../../common/utils/mapper.util';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +19,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(dto: RegisterDto) {
+  async register(dto: RegisterDto): Promise<BaseResponseDto<AuthResponseDto>> {
     const existingUser = await this.usersService.findByEmail(dto.email);
     if (existingUser) {
       throw new BadRequestException('Email sudah terdaftar');
@@ -32,10 +36,10 @@ export class AuthService {
     });
 
     // Automatically log in after registration
-    return this.generateToken(newUser);
+    return { success: true, data: this.generateToken(newUser) };
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto): Promise<BaseResponseDto<AuthResponseDto>> {
     const user = await this.usersService.findByEmail(dto.email);
     if (!user) {
       throw new UnauthorizedException('Kredensial tidak valid');
@@ -53,10 +57,10 @@ export class AuthService {
       throw new UnauthorizedException('Akun Anda tidak aktif');
     }
 
-    return this.generateToken(user);
+    return { success: true, data: this.generateToken(user) };
   }
 
-  private generateToken(user: any) {
+  private generateToken(user: any): AuthResponseDto {
     const payload = {
       email: user.email,
       sub: user.id,
@@ -64,12 +68,12 @@ export class AuthService {
     };
     return {
       accessToken: this.jwtService.sign(payload),
-      user: {
+      user: mapToDto(UserResponseDto, {
         id: user.id,
         email: user.email,
         fullName: user.fullName,
         avatarUrl: user.avatarUrl,
-      },
+      }),
     };
   }
 }
