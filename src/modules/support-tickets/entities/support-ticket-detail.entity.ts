@@ -4,9 +4,8 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
-  } from 'typeorm';
+} from 'typeorm';
 import { SupportTicket } from './support-ticket.entity';
-import { User } from '../../users/entities/user.entity';
 import { SupportTicketDetailStatus } from '../../../common/enums';
 
 @Entity('support_ticket_details')

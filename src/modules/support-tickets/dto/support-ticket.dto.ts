@@ -2,15 +2,15 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSupportTicketDto {
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  projectName: string;
-
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'Master project ID (FK to master_projects)', required: false })
   @IsOptional()
   @IsNumber()
-  projectId?: number;
+  masterProjectId?: number;
+
+  @ApiProperty({ description: 'Master project name (used to find/create master project if masterProjectId is not provided)', required: false })
+  @IsOptional()
+  @IsString()
+  masterProjectName?: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -58,13 +58,13 @@ export class CreateSupportTicketDetailDto {
 export class UpdateSupportTicketDto {
   @ApiProperty({ required: false })
   @IsOptional()
-  @IsString()
-  projectName?: string;
+  @IsNumber()
+  masterProjectId?: number;
 
   @ApiProperty({ required: false })
   @IsOptional()
-  @IsNumber()
-  projectId?: number;
+  @IsString()
+  masterProjectName?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -75,11 +75,6 @@ export class UpdateSupportTicketDto {
   @IsOptional()
   @IsString()
   issueDescription?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  picClient?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

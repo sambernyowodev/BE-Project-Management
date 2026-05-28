@@ -1,8 +1,8 @@
 import { BaseDto } from '../../../common/dtos/base.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { ProjectResponseDto } from '../../projects/dto/project-response.dto';
-import { UserResponseDto } from '../../users/dto/user-response.dto';
+import { MasterProjectResponseDto } from '../../master/project/dto/project-response.dto';
+import { UserResponseDto } from '../../master/users/dto/user-response.dto';
 import { SupportTicketStatus } from '../../../common/enums';
 
 export class SupportTicketResponseDto extends BaseDto {
@@ -13,15 +13,7 @@ export class SupportTicketResponseDto extends BaseDto {
 
   @ApiPropertyOptional()
   @Expose()
-  projectId?: number;
-
-  @ApiProperty()
-  @Expose()
-  projectName: string;
-
-  @ApiPropertyOptional()
-  @Expose()
-  picClient?: string;
+  masterProjectId?: number;
 
   @ApiProperty()
   @Expose()
@@ -42,10 +34,6 @@ export class SupportTicketResponseDto extends BaseDto {
   @ApiProperty({ enum: SupportTicketStatus })
   @Expose()
   status: SupportTicketStatus;
-
-  @ApiPropertyOptional()
-  @Expose()
-  platform?: string;
 
   @ApiPropertyOptional()
   @Expose()
@@ -87,10 +75,10 @@ export class SupportTicketResponseDto extends BaseDto {
   @Expose()
   isActive: boolean;
 
-  @ApiPropertyOptional({ type: () => ProjectResponseDto })
+  @ApiPropertyOptional({ type: () => MasterProjectResponseDto })
   @Expose()
-  @Type(() => ProjectResponseDto)
-  project?: ProjectResponseDto;
+  @Type(() => MasterProjectResponseDto)
+  masterProject?: MasterProjectResponseDto;
 
   @ApiPropertyOptional({ type: () => UserResponseDto })
   @Expose()

@@ -5,7 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Project } from '../../projects/entities/project.entity';
+import { Project } from '../../project/entities/project.entity';
 import { PurchaseOrderStatus } from '../../../common/enums';
 
 @Entity('purchase_orders')

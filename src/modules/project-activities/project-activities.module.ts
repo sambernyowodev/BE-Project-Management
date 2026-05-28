@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProjectActivitiesService } from './project-activities.service';
-import { ProjectActivitiesController } from './project-activities.controller';
+import { ProjectActivitiesService } from './providers/project-activities.service';
+import { ProjectActivitiesController } from './controllers/project-activities.controller';
 import { ProjectActivity } from './entities/project-activity.entity';
 
 @Module({
@@ -10,4 +10,4 @@ import { ProjectActivity } from './entities/project-activity.entity';
   providers: [ProjectActivitiesService],
   exports: [ProjectActivitiesService],
 })
-export class ProjectActivitiesModule {}
+export class ProjectActivitiesModule { }

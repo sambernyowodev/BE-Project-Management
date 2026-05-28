@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './modules/users/users.module';
-import { RolesModule } from './modules/roles/roles.module';
-import { RoleRatesModule } from './modules/role-rates/role-rates.module';
-import { ProjectsModule } from './modules/projects/projects.module';
+import { UsersModule } from './modules/master/users/users.module';
+import { RolesModule } from './modules/master/roles/roles.module';
+import { RoleRatesModule } from './modules/master/role-rates/role-rates.module';
+import { MasterProjectsModule } from './modules/master/project/projects.module';
+import { ProjectsModule } from './modules/project/projects.module';
 import { ProjectActivitiesModule } from './modules/project-activities/project-activities.module';
 import { PurchaseOrdersModule } from './modules/purchase-orders/purchase-orders.module';
 import { SalesOrdersModule } from './modules/sales-orders/sales-orders.module';
@@ -39,6 +40,7 @@ import { AuthModule } from './modules/auth/auth.module';
     UsersModule,
     RolesModule,
     RoleRatesModule,
+    MasterProjectsModule,
     ProjectsModule,
     ProjectActivitiesModule,
     PurchaseOrdersModule,

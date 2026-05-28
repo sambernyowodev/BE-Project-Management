@@ -3,8 +3,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { PurchaseOrderResponseDto } from '../../purchase-orders/dto/purchase-order-response.dto';
 import { SalesOrderResponseDto } from '../../sales-orders/dto/sales-order-response.dto';
-import { ProjectMemberResponseDto } from '../../projects/dto/project-response.dto';
-import { RoleResponseDto } from '../../roles/dto/role-response.dto';
+import { ProjectMemberResponseDto } from '../../project/dto/project-response.dto';
+import { RoleResponseDto } from '../../master/roles/dto/role-response.dto';
 
 export class PoSoMemberResponseDto extends BaseDto {
 

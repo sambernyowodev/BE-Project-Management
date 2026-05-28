@@ -1,17 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DataSource } from 'typeorm';
-import { Role } from './modules/roles/entities/role.entity';
-import { User } from './modules/users/entities/user.entity';
-import { UserRole } from './modules/users/entities/user-role.entity';
-import { Project } from './modules/projects/entities/project.entity';
-import { ProjectMember } from './modules/projects/entities/project-member.entity';
+import { Role } from './modules/master/roles/entities/role.entity';
+import { User } from './modules/master/users/entities/user.entity';
+import { UserRole } from './modules/master/users/entities/user-role.entity';
+import { MasterProject } from './modules/master/project/entities/project.entity';
+import { Project } from './modules/project/entities/project.entity';
+import { ProjectMember } from './modules/project/entities/project-member.entity';
 import { PurchaseOrder } from './modules/purchase-orders/entities/purchase-order.entity';
 import { SalesOrder } from './modules/sales-orders/entities/sales-order.entity';
 import { PoSoMember } from './modules/po-so-members/entities/po-so-member.entity';
 import { ProjectStatus, PurchaseOrderStatus, SalesOrderStatus } from './common/enums';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
+import { Like } from 'typeorm';
 
 interface RawProject {
   no: number;
@@ -39,7 +41,7 @@ const rawProjects: RawProject[] = [
     name: 'Polaris Sprint 6',
     po: '4100006096',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mba Isti)',
+    picClient: 'Isti',
     description: 'Forum, Dashboard Chart, Notifikasi, Import Peserta',
     mandays: 84,
     status: 'CLOSED',
@@ -58,7 +60,7 @@ const rawProjects: RawProject[] = [
     name: 'Moana Overtime',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mas Alvin)',
+    picClient: 'Alvin',
     description: 'Enhancement fitur Overtime & Time Card',
     mandays: 85,
     status: 'CLOSED',
@@ -77,7 +79,7 @@ const rawProjects: RawProject[] = [
     name: 'Prime Time Ultimate Sprint 3',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mba Isti)',
+    picClient: 'Isti',
     description: 'Prime Time: Meeting AI +  Form D Enhancement',
     mandays: 130,
     status: 'CLOSED',
@@ -96,7 +98,7 @@ const rawProjects: RawProject[] = [
     name: 'ODC - HCM Career Page Awal',
     po: '4100006461',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mba Isti)',
+    picClient: 'Isti',
     description: 'Migrasi ke ODC Cloud',
     mandays: 423,
     status: 'CLOSED',
@@ -115,7 +117,7 @@ const rawProjects: RawProject[] = [
     name: 'Moana - Teresa (Approval NGPAM)',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mas Alvin)',
+    picClient: 'Alvin',
     description: 'Aplikasi approval NGPAM (akses server/security) di Moana',
     mandays: 30,
     status: 'CLOSED',
@@ -134,7 +136,7 @@ const rawProjects: RawProject[] = [
     name: 'Moana - Leader Dashboard phase 2',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mas Alvin)',
+    picClient: 'Alvin',
     description: 'Dashboard yang digunakan atasan untuk melihat jam kerja dan overtime karyawan serta absensi karyawan',
     mandays: 32,
     status: 'CLOSED',
@@ -153,7 +155,7 @@ const rawProjects: RawProject[] = [
     name: 'Moana - Personal Family Info',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mas Alvin)',
+    picClient: 'Alvin',
     description: 'Aplikasi untuk menambahkan informasi keluarga karyawan',
     mandays: 80,
     status: 'CLOSED',
@@ -172,7 +174,7 @@ const rawProjects: RawProject[] = [
     name: 'Moana - Telemedicine Phase 1',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mas Alvin)',
+    picClient: 'Alvin',
     description: 'Aplikasi untuk melakukan appointment dengan dokter',
     mandays: 21,
     status: 'CLOSED',
@@ -191,7 +193,7 @@ const rawProjects: RawProject[] = [
     name: 'Moana - Telemedicine Phase 2',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mas Alvin)',
+    picClient: 'Alvin',
     description: 'Revamp telemedicine phase 1',
     mandays: 14,
     status: 'CLOSED',
@@ -210,7 +212,7 @@ const rawProjects: RawProject[] = [
     name: 'Moana - Telemedicine Phase 3',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mas Alvin)',
+    picClient: 'Alvin',
     description: 'Meeting AI & Medical Record (web dan mobile)',
     mandays: 61,
     status: 'CLOSED',
@@ -229,7 +231,7 @@ const rawProjects: RawProject[] = [
     name: 'Leadership Kit',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mas Alvin)',
+    picClient: 'Alvin',
     description: 'Aplikasi untuk memberikan materi Leadership dan benefit jabatan baru melalui email',
     mandays: 43,
     status: 'CLOSED',
@@ -248,7 +250,7 @@ const rawProjects: RawProject[] = [
     name: 'Sijep Phase 2',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mas Alvin)',
+    picClient: 'Alvin',
     description: 'Aplikasi untuk memberikan informasi benefit menjelang pensiun',
     mandays: 19.5,
     status: 'CLOSED',
@@ -267,7 +269,7 @@ const rawProjects: RawProject[] = [
     name: 'IPMS360 (CA MAWP) Sprint 1',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mas Alvin)',
+    picClient: 'Alvin',
     description: 'Aplikasi untuk melakukan assessment terhadap karyawan',
     mandays: 14.5,
     status: 'CLOSED',
@@ -286,7 +288,7 @@ const rawProjects: RawProject[] = [
     name: 'IPMS360 (CA MAWP) Sprint 2',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mas Alvin)',
+    picClient: 'Alvin',
     description: 'Aplikasi untuk melakukan assessment terhadap karyawan',
     mandays: 5.5,
     status: 'CLOSED',
@@ -305,7 +307,7 @@ const rawProjects: RawProject[] = [
     name: 'IPMS360 (CA MAWP) Sprint 3',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mas Alvin)',
+    picClient: 'Alvin',
     description: 'Aplikasi untuk melakukan assessment terhadap karyawan',
     mandays: 5,
     status: 'CLOSED',
@@ -324,7 +326,7 @@ const rawProjects: RawProject[] = [
     name: 'Enhance B0 Indihome',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mba Isti)',
+    picClient: 'Isti',
     description: 'Enhancement fitur Form Request Indihome',
     mandays: 17,
     status: 'CLOSED',
@@ -362,7 +364,7 @@ const rawProjects: RawProject[] = [
     name: 'Data Access & UAM',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mas Alvin)',
+    picClient: 'Alvin',
     description: 'Penambahan tab family info dan download pdf pada employee info, penambahan filter download dan menu baru',
     mandays: 301,
     status: 'CLOSED',
@@ -381,7 +383,7 @@ const rawProjects: RawProject[] = [
     name: 'Talent Managemement - Moana AI Job Matching (Job Calculator)',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mas Alvin)',
+    picClient: 'Alvin',
     description: 'Aplikasi Moana berupa dashboard yang berikan informasi terkait rotasi/stay posisi employee, pada dashboard dapat melihat list employe, list candidat, and comparison antar employee',
     mandays: 200,
     status: 'FUT',
@@ -400,7 +402,7 @@ const rawProjects: RawProject[] = [
     name: 'Moana - Ticketing',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mas Alvin)',
+    picClient: 'Alvin',
     description: 'Chatbot yang bisa melakukan assign ticket',
     mandays: 33,
     status: 'CLOSED',
@@ -419,7 +421,7 @@ const rawProjects: RawProject[] = [
     name: 'HCM Career Page Phase 3 Sprint 1',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'Telkomsel HCM (Mba Isti)',
+    picClient: 'Telkomsel Isti',
     description: 'Pengembangan Fitur Recruitment',
     mandays: 174,
     status: 'CLOSED',
@@ -438,7 +440,7 @@ const rawProjects: RawProject[] = [
     name: 'HCM Career Page Phase 3 Sprint 2',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'Telkomsel HCM (Mba Isti)',
+    picClient: 'Telkomsel Isti',
     description: 'Aplikasi untuk proses Rekrutmen Tsel',
     mandays: 232,
     status: 'CLOSED',
@@ -457,7 +459,7 @@ const rawProjects: RawProject[] = [
     name: 'SIAD Mobile Enhancment Internship 2025',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Pak Defri)',
+    picClient: 'Defri',
     description: 'Aplikasi Untuk Karyawan Non-Organik(Intership) Tsel',
     mandays: 150,
     status: 'CLOSED',
@@ -476,7 +478,7 @@ const rawProjects: RawProject[] = [
     name: 'ODC - HCM Career Page DPP Phase 1',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Mba Isti)',
+    picClient: 'Isti',
     description: 'Migrasi ke ODC Cloud',
     mandays: 88,
     status: 'CLOSED',
@@ -495,7 +497,7 @@ const rawProjects: RawProject[] = [
     name: 'ODC Career Page Phase 2',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'Telkomsel HCM (Mas Alvin)',
+    picClient: 'Telkomsel Alvin',
     description: 'Migrasi Aplikasi Career Page ke ODC',
     mandays: 242,
     status: 'CLOSED',
@@ -514,7 +516,7 @@ const rawProjects: RawProject[] = [
     name: 'Migrasi & Upgrade PHP Server (Phase 1)',
     po: 'M100006499',
     so: '2880501843',
-    picClient: 'Telkomsel HCM (Mas Alvin)',
+    picClient: 'Telkomsel Alvin',
     description: 'Migrasi & Upgrade PHP versi 8.5',
     mandays: 185,
     status: 'CLOSED',
@@ -533,7 +535,7 @@ const rawProjects: RawProject[] = [
     name: 'Enhancement Postponed Leave Moana',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'Telkomsel HCM (Mas Alvin)',
+    picClient: 'Telkomsel Alvin',
     description: 'Aplikasi Mobile Moana untuk Proses Postpone Leave di Moana',
     mandays: 36,
     status: 'CLOSED',
@@ -552,7 +554,7 @@ const rawProjects: RawProject[] = [
     name: 'Leader Dashboard Insight',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'Telkomsel HCM (Mas Alvin)',
+    picClient: 'Telkomsel Alvin',
     description: 'Aplikasi Mobile Moana untuk Leader Dashboard Insight di Moana',
     mandays: 5,
     status: 'CLOSED',
@@ -571,7 +573,7 @@ const rawProjects: RawProject[] = [
     name: 'Talent Management OD',
     po: '4200052151',
     so: 'X-SO-XXX',
-    picClient: 'Mas Royan / Mas Azka',
+    picClient: 'Royan',
     description: 'Aplikasi web berfungsi untuk pengajuan organisasi berintegrasi dengan AI',
     mandays: 7,
     status: 'CLOSED',
@@ -619,6 +621,7 @@ async function bootstrap() {
   const roleRepo = dataSource.getRepository(Role);
   const userRepo = dataSource.getRepository(User);
   const userRoleRepo = dataSource.getRepository(UserRole);
+  const masterProjectRepo = dataSource.getRepository(MasterProject);
   const projectRepo = dataSource.getRepository(Project);
   const memberRepo = dataSource.getRepository(ProjectMember);
   const poRepo = dataSource.getRepository(PurchaseOrder);
@@ -715,15 +718,30 @@ async function bootstrap() {
       status = ProjectStatus.CANCELLED;
     }
 
-    // Check if Project exists (by name or projectCode)
-    let project = await projectRepo.findOneBy({ name: raw.name });
-    if (!project) {
-      const projectPayload = {
+    // 1. Create or find MasterProject
+    let masterProject = await masterProjectRepo.findOneBy({ name: raw.name });
+    if (!masterProject) {
+      const masterPayload = {
         projectCode,
         name: raw.name,
         description: raw.description,
-        picClient: raw.picClient,
         platform: raw.platform,
+        isActive: true,
+      };
+      const newMaster = masterProjectRepo.create(masterPayload as any) as unknown as MasterProject;
+      masterProject = await masterProjectRepo.save(newMaster);
+      console.log(`Created MasterProject: ${masterProject.name} (${masterProject.projectCode})`);
+    } else {
+      console.log(`MasterProject already exists: ${masterProject.name}`);
+    }
+
+    // 2. Create or find Project (ex project_header) linked to master
+    let project = await projectRepo.findOneBy({ projectId: masterProject.id });
+    if (!project) {
+      const projectPayload = {
+        projectId: masterProject.id,
+        picClient: raw.picClient,
+        customer: 'Telkomsel',
         status,
         totalMandays: raw.mandays,
         startDate: startDate || undefined,
@@ -733,9 +751,9 @@ async function bootstrap() {
       };
       const newProj = projectRepo.create(projectPayload as any) as unknown as Project;
       project = await projectRepo.save(newProj);
-      console.log(`Created Project: ${project.name} (${project.projectCode})`);
+      console.log(`Created Project: id=${project.id} for master ${masterProject.name}`);
     } else {
-      console.log(`Project already exists: ${project.name}`);
+      console.log(`Project already exists for master: ${masterProject.name}`);
     }
 
     const activeProject: Project = project!;
@@ -760,7 +778,7 @@ async function bootstrap() {
         };
         const newPo = poRepo.create(poPayload as any) as unknown as PurchaseOrder;
         po = await poRepo.save(newPo);
-        console.log(`Created PurchaseOrder: ${po.poNumber} for Project: ${activeProject.name}`);
+        console.log(`Created PurchaseOrder: ${po.poNumber} for Project: ${masterProject.name}`);
       } else {
         console.log(`PurchaseOrder ${po.poNumber} already exists`);
       }
@@ -787,7 +805,7 @@ async function bootstrap() {
         };
         const newSo = soRepo.create(soPayload as any) as unknown as SalesOrder;
         so = await soRepo.save(newSo);
-        console.log(`Created SalesOrder: ${so.soNumber} for Project: ${activeProject.name}`);
+        console.log(`Created SalesOrder: ${so.soNumber} for Project: ${masterProject.name}`);
       } else {
         console.log(`SalesOrder ${so.soNumber} already exists`);
       }
@@ -822,7 +840,7 @@ async function bootstrap() {
           };
           const newMember = memberRepo.create(memberPayload as any) as unknown as ProjectMember;
           member = await memberRepo.save(newMember);
-          console.log(`Assigned User ${user.fullName} to Project ${activeProject.name} as ${roleCode}`);
+          console.log(`Assigned User ${user.fullName} to Project ${masterProject.name} as ${roleCode}`);
         }
 
         const activeMember: ProjectMember = member!;

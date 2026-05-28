@@ -4,9 +4,9 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
-  } from 'typeorm';
-import { Project } from '../../projects/entities/project.entity';
-import { User } from '../../users/entities/user.entity';
+} from 'typeorm';
+import { MasterProject } from '../../master/project/entities/project.entity';
+import { User } from '../../master/users/entities/user.entity';
 import { SupportTicketStatus } from '../../../common/enums';
 
 @Entity('support_tickets')
@@ -19,15 +19,9 @@ export class SupportTicket extends BaseEntity {
     type: 'bigint',
     unsigned: true,
     nullable: true,
-    name: 'project_id',
+    name: 'master_project_id',
   })
-  projectId: number;
-
-  @Column({ type: 'varchar', length: 255, name: 'project_name' })
-  projectName: string;
-
-  @Column({ type: 'varchar', length: 255, nullable: true, name: 'pic_client' })
-  picClient: string;
+  masterProjectId: number;
 
   @Column({ type: 'varchar', length: 500, name: 'issue_title' })
   issueTitle: string;
@@ -59,9 +53,6 @@ export class SupportTicket extends BaseEntity {
     default: SupportTicketStatus.OPEN,
   })
   status: SupportTicketStatus;
-
-  @Column({ type: 'varchar', length: 100, nullable: true })
-  platform: string;
 
   @Column({ type: 'date', nullable: true, name: 'start_date' })
   startDate: Date;
@@ -103,9 +94,9 @@ export class SupportTicket extends BaseEntity {
   @Column({ type: 'boolean', default: true, name: 'is_active' })
   isActive: boolean;
 
-  @ManyToOne(() => Project)
-  @JoinColumn({ name: 'project_id' })
-  project: Project;
+  @ManyToOne(() => MasterProject)
+  @JoinColumn({ name: 'master_project_id' })
+  masterProject: MasterProject;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'business_analyst_id' })

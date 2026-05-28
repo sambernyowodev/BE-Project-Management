@@ -6,7 +6,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { BillingInvoice } from './billing-invoice.entity';
-import { Role } from '../../roles/entities/role.entity';
+import { Role } from '../../master/roles/entities/role.entity';
 
 @Entity('billing_invoice_details')
 export class BillingInvoiceDetail extends BaseEntity {

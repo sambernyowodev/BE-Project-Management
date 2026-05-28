@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { SalesOrdersService } from './sales-orders.service';
-import { SalesOrdersController } from './sales-orders.controller';
+import { SalesOrdersService } from './providers/sales-orders.service';
+import { SalesOrdersController } from './controllers/sales-orders.controller';
 import { SalesOrder } from './entities/sales-order.entity';
 import { PurchaseOrdersModule } from '../purchase-orders/purchase-orders.module';
 
@@ -11,4 +11,4 @@ import { PurchaseOrdersModule } from '../purchase-orders/purchase-orders.module'
   providers: [SalesOrdersService],
   exports: [SalesOrdersService],
 })
-export class SalesOrdersModule {}
+export class SalesOrdersModule { }

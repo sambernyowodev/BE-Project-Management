@@ -5,8 +5,8 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Project } from '../../projects/entities/project.entity';
-import { User } from '../../users/entities/user.entity';
+import { Project } from '../../project/entities/project.entity';
+import { User } from '../../master/users/entities/user.entity';
 import { ProjectPhase } from '../../../common/enums';
 
 @Entity('project_activities')

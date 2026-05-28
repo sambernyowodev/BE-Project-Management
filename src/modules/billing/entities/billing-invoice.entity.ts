@@ -6,8 +6,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { PurchaseOrder } from '../../purchase-orders/entities/purchase-order.entity';
-import { Project } from '../../projects/entities/project.entity';
-import { User } from '../../users/entities/user.entity';
+import { Project } from '../../project/entities/project.entity';
 import { InvoiceStatus } from '../../../common/enums';
 
 @Entity('billing_invoices')

@@ -3,8 +3,8 @@ import { AppModule } from './app.module';
 import { DataSource } from 'typeorm';
 import { SupportTicket } from './modules/support-tickets/entities/support-ticket.entity';
 import { SupportTicketDetail } from './modules/support-tickets/entities/support-ticket-detail.entity';
-import { Project } from './modules/projects/entities/project.entity';
-import { User } from './modules/users/entities/user.entity';
+import { MasterProject } from './modules/master/project/entities/project.entity';
+import { User } from './modules/master/users/entities/user.entity';
 import { SupportTicketStatus, SupportTicketDetailStatus } from './common/enums';
 
 interface RawSupportDetail {
@@ -663,7 +663,7 @@ const rawTickets: RawSupportTicket[] = [
 
 function parseDateString(str: string): Date | null {
   if (!str || str.trim() === '' || str === '#NULL!') return null;
-  
+
   // Replace Indonesian Month Names
   let cleaned = str.toLowerCase()
     .replace(/maret/g, 'mar')
@@ -725,7 +725,7 @@ async function bootstrap() {
 
   const ticketRepo = dataSource.getRepository(SupportTicket);
   const detailRepo = dataSource.getRepository(SupportTicketDetail);
-  const projectRepo = dataSource.getRepository(Project);
+  const masterProjectRepo = dataSource.getRepository(MasterProject);
   const userRepo = dataSource.getRepository(User);
 
   // Cache users to avoid repeated DB calls
@@ -736,11 +736,11 @@ async function bootstrap() {
     return allUsers.find(u => u.fullName.toLowerCase() === clean) || null;
   };
 
-  const allProjects = await projectRepo.find();
-  const matchProject = (name: string): Project | null => {
-    let p = allProjects.find(x => x.name.toLowerCase() === name.toLowerCase());
+  const allMasterProjects = await masterProjectRepo.find();
+  const matchMasterProject = (name: string): MasterProject | null => {
+    let p = allMasterProjects.find(x => x.name.toLowerCase() === name.toLowerCase());
     if (p) return p;
-    p = allProjects.find(x => x.name.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(x.name.toLowerCase()));
+    p = allMasterProjects.find(x => x.name.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(x.name.toLowerCase()));
     return p || null;
   };
 
@@ -754,7 +754,7 @@ async function bootstrap() {
     const year = startDate ? startDate.getFullYear() : 2025;
     const ticketCode = `SUP-${year}-${String(globalIndex++).padStart(4, '0')}`;
 
-    const project = matchProject(raw.projectName);
+    const masterProject = matchMasterProject(raw.projectName);
     const baUser = findUserByName(raw.businessAnalyst);
     const uiuxUser = findUserByName(raw.uiUx);
     const feUser = findUserByName(raw.devFe);
@@ -764,15 +764,12 @@ async function bootstrap() {
     if (!ticket) {
       const ticketPayload = {
         ticketCode,
-        projectId: project ? project.id : null,
-        projectName: raw.projectName,
-        picClient: raw.customer,
+        masterProjectId: masterProject ? masterProject.id : null,
         issueTitle: raw.issue,
         issueDescription: raw.issue,
         hoursSpent: raw.hours,
         mandaysSpent: Number((raw.hours / 8).toFixed(2)),
         status: mapStatus(raw.status),
-        platform: raw.platform,
         startDate: startDate || undefined,
         endDate: endDate || undefined,
         businessAnalystId: baUser ? baUser.id : null,
@@ -787,7 +784,7 @@ async function bootstrap() {
 
       const newTicket = ticketRepo.create(ticketPayload as any) as unknown as SupportTicket;
       ticket = await ticketRepo.save(newTicket);
-      console.log(`Created SupportTicket: ${ticket.ticketCode} - ${ticket.projectName} (${ticket.issueTitle})`);
+      console.log(`Created SupportTicket: ${ticket.ticketCode} - ${raw.projectName} (${ticket.issueTitle})`);
     } else {
       console.log(`SupportTicket already exists: ${ticket.ticketCode}`);
     }
@@ -809,7 +806,7 @@ async function bootstrap() {
             subIssue: rawDetail.subIssue,
             hoursSpent: rawDetail.hoursSpent,
             status: mapDetailStatus(rawDetail.status),
-            platform: rawDetail.platform || ticket.platform,
+            platform: rawDetail.platform || raw.platform,
             startDate: detailStart || undefined,
             endDate: detailEnd || undefined,
             devBeNames: rawDetail.devBeNames || null,
