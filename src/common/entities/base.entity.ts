@@ -2,6 +2,7 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
   Column,
 } from 'typeorm';
 
@@ -14,6 +15,9 @@ export abstract class BaseEntity {
 
   @UpdateDateColumn({ type: 'datetime', name: 'updated_at' })
   updatedAt: Date;
+
+  @DeleteDateColumn({ type: 'datetime', name: 'deleted_at', nullable: true })
+  deletedAt: Date;
 
   @Column({ type: 'bigint', unsigned: true, nullable: true, name: 'created_by' })
   createdBy: number;

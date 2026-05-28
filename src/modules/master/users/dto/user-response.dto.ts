@@ -1,6 +1,6 @@
 import { BaseDto } from '../../../../common/dtos/base.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Exclude } from 'class-transformer';
 
 export class UserResponseDto extends BaseDto {
 
@@ -23,4 +23,7 @@ export class UserResponseDto extends BaseDto {
   @ApiProperty()
   @Expose()
   isActive: boolean;
+
+  @Exclude()
+  passwordHash?: string;
 }

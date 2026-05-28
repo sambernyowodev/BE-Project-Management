@@ -8,11 +8,13 @@ import { ApiBaseResponse } from '../../../common/decorators/api-response.decorat
 import { AuthResponseDto } from '../dto/auth-response.dto';
 import { UserResponseDto } from '../../master/users/dto/user-response.dto';
 import { BaseResponseDto } from '../../../common/dtos/response.dto';
+import type { JwtPayload } from '../interfaces/jwt-payload.interface';
+import { UsersService } from 'src/modules/master/users/providers/users.service';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService, private readonly userService: UsersService) { }
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
@@ -33,7 +35,7 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get current logged in user' })
   @ApiBaseResponse(UserResponseDto)
-  getProfile(@CurrentUser() user: any): BaseResponseDto<UserResponseDto> {
-    return { success: true, data: user };
+  getProfile(@CurrentUser() user: JwtPayload): Promise<BaseResponseDto<UserResponseDto>> {
+    return this.userService.findOne(user.sub);
   }
 }

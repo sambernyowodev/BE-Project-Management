@@ -657,7 +657,7 @@ async function bootstrap() {
   // Helper to get or create User and assign UserRole
   const getOrCreateUser = async (name: string, defaultRoleCode: string): Promise<User> => {
     const cleanedName = name.trim();
-    const email = `${cleanedName.toLowerCase().replace(/[^a-z0-9]/g, '')}@example.com`;
+    const email = `${cleanedName.toLowerCase().replace(/[^a-z0-9]/g, '')}@mii.co.id`;
     let user = await userRepo.findOneBy({ email });
     if (!user) {
       const employeeId = `EMP-${cleanedName.toUpperCase().replace(/[^A-Z0-9]/g, '')}`.slice(0, 50);
