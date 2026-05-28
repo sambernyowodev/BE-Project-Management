@@ -74,8 +74,3 @@ export enum InvoiceStatus {
   CANCELLED = 'CANCELLED',
 }
 
-export enum ProjectType {
-  NEW = 'New',
-  SUPPORT = 'Support',
-}
-

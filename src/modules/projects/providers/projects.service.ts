@@ -6,7 +6,7 @@ import { ProjectMember } from '../entities/project-member.entity';
 import { Role } from '../../master/roles/entities/role.entity';
 import { MasterProject } from '../../master/project/entities/project.entity';
 import { MasterProjectsService } from '../../master/project/providers/projects.service';
-import { ProjectStatus, ProjectType } from '../../../common/enums';
+import { ProjectStatus } from '../../../common/enums';
 
 import { PurchaseOrder } from '../../purchase-orders/entities/purchase-order.entity';
 import { SalesOrder } from '../../sales-orders/entities/sales-order.entity';
@@ -221,7 +221,7 @@ export class ProjectsService {
   async getMembers(projectId: number): Promise<BaseResponseDto<ProjectMemberResponseDto[]>> {
     const data = await this.memberRepo.find({
       where: { projectId },
-      relations: { user: true, role: true, secondaryRole: true },
+      relations: { user: true, role: true },
     });
     return { success: true, data: mapToDtoArray(ProjectMemberResponseDto, data) };
   }
@@ -241,18 +241,16 @@ export class ProjectsService {
       masterProject = await masterRepo.save(masterProject);
     }
 
-    // 2. Find or create the Project (support type) linked to this master
+    // 2. Find or create the Project linked to this master
     let project = await this.projectRepo.findOne({
       where: {
         projectId: masterProject.id,
-        projectType: ProjectType.SUPPORT,
       },
     });
 
     if (!project) {
       project = this.projectRepo.create({
         projectId: masterProject.id,
-        projectType: ProjectType.SUPPORT,
         status: ProjectStatus.PLANNING,
         createdBy: userId,
       });
@@ -263,16 +261,16 @@ export class ProjectsService {
   }
 
   async ensureProjectMember(projectId: number, userId: number, roleCode: string): Promise<void> {
-    const existing = await this.memberRepo.findOne({
-      where: { projectId, userId },
-    });
-    if (existing) return;
-
     // Find the Role
     const role = await this.dataSource.getRepository(Role).findOne({
       where: { code: roleCode },
     });
     if (!role) return;
+
+    const existing = await this.memberRepo.findOne({
+      where: { projectId, userId, roleId: role.id },
+    });
+    if (existing) return;
 
     const member = this.memberRepo.create({
       projectId,
@@ -281,5 +279,21 @@ export class ProjectsService {
       isActive: true,
     });
     await this.memberRepo.save(member);
+  }
+
+  async removeMember(projectId: number, memberId: number): Promise<BaseResponseDto<null>> {
+    const member = await this.memberRepo.findOne({
+      where: { id: memberId, projectId },
+    });
+    if (!member) throw new NotFoundException(`Project member ${memberId} not found in project ${projectId}`);
+
+    await this.dataSource.transaction(async (manager) => {
+      // Delete references in po_so_members
+      await manager.delete(PoSoMember, { projectMemberId: memberId });
+      // Delete the project member
+      await manager.remove(member);
+    });
+
+    return { success: true, data: null, message: 'Member removed successfully' };
   }
 }

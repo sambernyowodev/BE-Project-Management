@@ -5,7 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { ProjectStatus, ProjectType } from '../../../common/enums';
+import { ProjectStatus } from '../../../common/enums';
 import { MasterProject } from '../../master/project/entities/project.entity';
 
 @Entity('projects')
@@ -22,14 +22,6 @@ export class Project extends BaseEntity {
 
   @Column({ type: 'varchar', length: 255, nullable: true, name: 'pic_internal' })
   picInternal: string;
-
-  @Column({
-    type: 'enum',
-    enum: ProjectType,
-    default: ProjectType.NEW,
-    name: 'project_type',
-  })
-  projectType: ProjectType;
 
   @Column({
     type: 'bigint',

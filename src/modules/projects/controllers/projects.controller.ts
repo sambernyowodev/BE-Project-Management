@@ -74,4 +74,13 @@ export class ProjectsController {
   addMember(@Param('id') id: string, @Body() dto: AddProjectMemberDto): Promise<BaseResponseDto<ProjectMemberResponseDto>> {
     return this.projectsService.addMember(+id, dto);
   }
+
+  @Delete(':id/members/:memberId')
+  @ApiOperation({ summary: 'Remove member from project' })
+  removeMember(
+    @Param('id') id: string,
+    @Param('memberId') memberId: string,
+  ): Promise<BaseResponseDto<null>> {
+    return this.projectsService.removeMember(+id, +memberId);
+  }
 }

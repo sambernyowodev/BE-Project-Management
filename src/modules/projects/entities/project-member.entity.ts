@@ -5,12 +5,14 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  Unique,
 } from 'typeorm';
 import { Project } from './project.entity';
 import { User } from '../../master/users/entities/user.entity';
 import { Role } from '../../master/roles/entities/role.entity';
 
 @Entity('project_members')
+@Unique(['projectId', 'userId', 'roleId'])
 export class ProjectMember extends BaseEntity {
 
   @Column({ type: 'bigint', unsigned: true, name: 'project_id' })
@@ -21,14 +23,6 @@ export class ProjectMember extends BaseEntity {
 
   @Column({ type: 'bigint', unsigned: true, name: 'role_id' })
   roleId: number;
-
-  @Column({
-    type: 'bigint',
-    unsigned: true,
-    nullable: true,
-    name: 'secondary_role_id',
-  })
-  secondaryRoleId: number;
 
   @Column({
     type: 'decimal',
@@ -65,8 +59,4 @@ export class ProjectMember extends BaseEntity {
   @ManyToOne(() => Role)
   @JoinColumn({ name: 'role_id' })
   role: Role;
-
-  @ManyToOne(() => Role)
-  @JoinColumn({ name: 'secondary_role_id' })
-  secondaryRole: Role;
 }

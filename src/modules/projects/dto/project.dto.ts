@@ -7,7 +7,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { ProjectStatus, ProjectType } from '../../../common/enums';
+import { ProjectStatus } from '../../../common/enums';
 
 export class CreateProjectDto {
   @ApiProperty({ description: 'Master project ID (FK to master_projects)' })
@@ -30,10 +30,7 @@ export class CreateProjectDto {
   @IsString()
   picInternal?: string;
 
-  @ApiProperty({ required: false, enum: ProjectType })
-  @IsOptional()
-  @IsEnum(ProjectType)
-  projectType?: ProjectType;
+
 
   @ApiProperty({ required: false, description: 'Parent project ID (self-ref for support projects)' })
   @IsOptional()
@@ -98,11 +95,6 @@ export class AddProjectMemberDto {
   @IsNotEmpty()
   @IsNumber()
   roleId: number;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  secondaryRoleId?: number;
 
   @ApiProperty({ required: false })
   @IsOptional()

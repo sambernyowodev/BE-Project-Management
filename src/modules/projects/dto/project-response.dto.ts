@@ -4,7 +4,7 @@ import { Expose, Type } from 'class-transformer';
 import { UserResponseDto } from '../../master/users/dto/user-response.dto';
 import { RoleResponseDto } from '../../master/roles/dto/role-response.dto';
 import { MasterProjectResponseDto } from '../../master/project/dto/project-response.dto';
-import { ProjectStatus, ProjectType } from '../../../common/enums';
+import { ProjectStatus } from '../../../common/enums';
 
 export class ProjectMemberResponseDto extends BaseDto {
 
@@ -19,10 +19,6 @@ export class ProjectMemberResponseDto extends BaseDto {
   @ApiProperty()
   @Expose()
   roleId: number;
-
-  @ApiPropertyOptional()
-  @Expose()
-  secondaryRoleId?: number;
 
   @ApiProperty()
   @Expose()
@@ -45,11 +41,6 @@ export class ProjectMemberResponseDto extends BaseDto {
   @Expose()
   @Type(() => RoleResponseDto)
   role?: RoleResponseDto;
-
-  @ApiPropertyOptional({ type: () => RoleResponseDto })
-  @Expose()
-  @Type(() => RoleResponseDto)
-  secondaryRole?: RoleResponseDto;
 }
 
 export class ProjectResponseDto {
@@ -74,9 +65,7 @@ export class ProjectResponseDto {
   @Expose()
   customer?: string;
 
-  @ApiProperty({ enum: ProjectType })
-  @Expose()
-  projectType: ProjectType;
+
 
   @ApiPropertyOptional()
   @Expose()
