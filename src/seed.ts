@@ -8,9 +8,9 @@ import { MasterProject } from './modules/master/project/entities/project.entity'
 import { Project } from './modules/projects/entities/project.entity';
 import { ProjectMember } from './modules/projects/entities/project-member.entity';
 import { PurchaseOrder } from './modules/purchase-orders/entities/purchase-order.entity';
-import { SalesOrder } from './modules/sales-orders/entities/sales-order.entity';
-import { PoSoMember } from './modules/po-so-members/entities/po-so-member.entity';
-import { ProjectStatus, PurchaseOrderStatus, SalesOrderStatus } from './common/enums';
+import { PoProject } from './modules/purchase-orders/entities/po-project.entity';
+import { PoMember } from './modules/po-members/entities/po-member.entity';
+import { ProjectStatus, PurchaseOrderStatus } from './common/enums';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { Like } from 'typeorm';
@@ -1216,10 +1216,10 @@ async function bootstrap() {
   const tables = [
     'support_ticket_details',
     'support_tickets',
-    'po_so_members',
+    'po_members',
+    'po_projects',
     'project_members',
     'purchase_orders',
-    'sales_orders',
     'project_activities',
     'user_roles',
     'users',
@@ -1248,8 +1248,8 @@ async function bootstrap() {
   const projectRepo = dataSource.getRepository(Project);
   const memberRepo = dataSource.getRepository(ProjectMember);
   const poRepo = dataSource.getRepository(PurchaseOrder);
-  const soRepo = dataSource.getRepository(SalesOrder);
-  const poSoMemberRepo = dataSource.getRepository(PoSoMember);
+  const poProjectRepo = dataSource.getRepository(PoProject);
+  const poMemberRepo = dataSource.getRepository(PoMember);
 
   // 1. Seed Roles
   const roles = [
@@ -1401,7 +1401,6 @@ async function bootstrap() {
         const poPayload = {
           poNumber: raw.po,
           poName: `PO - ${raw.name}`,
-          projectId: activeProject.id,
           customer: 'Telkomsel HCM',
           description: raw.description,
           totalMandays: raw.mandays,
@@ -1412,7 +1411,7 @@ async function bootstrap() {
         };
         const newPo = poRepo.create(poPayload as any) as unknown as PurchaseOrder;
         po = await poRepo.save(newPo);
-        console.log(`Created PurchaseOrder: ${po.poNumber} for Project: ${masterProject.name}`);
+        console.log(`Created PurchaseOrder: ${po.poNumber}`);
       } else {
         console.log(`PurchaseOrder ${po.poNumber} already exists`);
       }
@@ -1420,32 +1419,24 @@ async function bootstrap() {
 
     const activePo: PurchaseOrder | null = po;
 
-    // Create SalesOrder (only if it has a real SO number and a real PO number was successfully saved)
-    let so: SalesOrder | null = null;
-    const hasRealSO = raw.so && raw.so !== 'X-SO-XXX' && raw.so.trim() !== '';
-    if (hasRealSO && activePo) {
-      so = await soRepo.findOneBy({ soNumber: raw.so });
-      if (!so) {
-        const soPayload = {
-          soNumber: raw.so,
-          soName: `SO - ${raw.name}`,
+    // Create PoProject mapping if PO exists
+    if (activePo) {
+      let poProject = await poProjectRepo.findOneBy({
+        poId: activePo.id,
+        projectId: activeProject.id,
+      });
+      if (!poProject) {
+        poProject = poProjectRepo.create({
           poId: activePo.id,
           projectId: activeProject.id,
-          totalMandays: raw.mandays,
-          status: SalesOrderStatus.CLOSED,
-          startDate: startDate || undefined,
-          endDate: endDate || undefined,
-          isActive: true,
-        };
-        const newSo = soRepo.create(soPayload as any) as unknown as SalesOrder;
-        so = await soRepo.save(newSo);
-        console.log(`Created SalesOrder: ${so.soNumber} for Project: ${masterProject.name}`);
-      } else {
-        console.log(`SalesOrder ${so.soNumber} already exists`);
+          allocatedMandays: raw.mandays,
+          remarks: 'Seeded assignment',
+          createdAt: new Date(),
+        });
+        await poProjectRepo.save(poProject);
+        console.log(`Linked Project ${masterProject.name} to PO ${activePo.poNumber}`);
       }
     }
-
-    const activeSo: SalesOrder | null = so;
 
     // Helper to process members for a specific role
     const processMembers = async (names: string[], roleCode: string) => {
@@ -1479,18 +1470,17 @@ async function bootstrap() {
 
         const activeMember: ProjectMember = member!;
 
-        // If PO exists, assign this ProjectMember to PO and SO in PoSoMember
+        // If PO exists, assign this ProjectMember to PO in PoMember
         if (activePo) {
-          let poSoMember = await poSoMemberRepo.findOneBy({
+          let poMember = await poMemberRepo.findOneBy({
             poId: activePo.id,
             projectMemberId: activeMember.id,
             roleId: role.id,
           });
 
-          if (!poSoMember) {
-            const poSoMemberPayload = {
+          if (!poMember) {
+            const poMemberPayload = {
               poId: activePo.id,
-              soId: activeSo ? activeSo.id : undefined,
               projectMemberId: activeMember.id,
               roleId: role.id,
               actualMandays: 0,
@@ -1501,8 +1491,8 @@ async function bootstrap() {
               endDate: endDate || undefined,
               isBillable: true,
             };
-            const newPoSoMember = poSoMemberRepo.create(poSoMemberPayload as any) as unknown as PoSoMember;
-            await poSoMemberRepo.save(newPoSoMember);
+            const newPoMember = poMemberRepo.create(poMemberPayload as any) as unknown as PoMember;
+            await poMemberRepo.save(newPoMember);
             console.log(`Linked member ${user.fullName} to PO ${activePo.poNumber} in role ${roleCode}`);
           }
         }

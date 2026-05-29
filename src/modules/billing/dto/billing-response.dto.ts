@@ -3,7 +3,6 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { ProjectResponseDto } from '../../projects/dto/project-response.dto';
 import { PurchaseOrderResponseDto } from '../../purchase-orders/dto/purchase-order-response.dto';
-import { SalesOrderResponseDto } from '../../sales-orders/dto/sales-order-response.dto';
 import { UserResponseDto } from '../../master/users/dto/user-response.dto';
 import { RoleResponseDto } from '../../master/roles/dto/role-response.dto';
 import { InvoiceStatus } from '../../../common/enums';
@@ -54,10 +53,6 @@ export class BillingInvoiceResponseDto {
   @Expose()
   poId?: number;
 
-  @ApiPropertyOptional()
-  @Expose()
-  soId?: number;
-
   @ApiProperty()
   @Expose()
   periodStart: Date;
@@ -95,11 +90,6 @@ export class BillingInvoiceResponseDto {
   @Expose()
   @Type(() => PurchaseOrderResponseDto)
   po?: PurchaseOrderResponseDto;
-
-  @ApiPropertyOptional({ type: () => SalesOrderResponseDto })
-  @Expose()
-  @Type(() => SalesOrderResponseDto)
-  so?: SalesOrderResponseDto;
 
   @ApiPropertyOptional({ type: () => UserResponseDto })
   @Expose()

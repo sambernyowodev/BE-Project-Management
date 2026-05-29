@@ -6,18 +6,14 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { PurchaseOrder } from '../../purchase-orders/entities/purchase-order.entity';
-import { SalesOrder } from '../../sales-orders/entities/sales-order.entity';
 import { ProjectMember } from '../../projects/entities/project-member.entity';
 import { Role } from '../../master/roles/entities/role.entity';
 
-@Entity('po_so_members')
-export class PoSoMember extends BaseEntity {
+@Entity('po_members')
+export class PoMember extends BaseEntity {
 
   @Column({ type: 'bigint', unsigned: true, name: 'po_id' })
   poId: number;
-
-  @Column({ type: 'bigint', unsigned: true, nullable: true, name: 'so_id' })
-  soId: number;
 
   @Column({ type: 'bigint', unsigned: true, name: 'project_member_id' })
   projectMemberId: number;
@@ -70,13 +66,9 @@ export class PoSoMember extends BaseEntity {
   @Column({ type: 'boolean', default: true, name: 'is_billable' })
   isBillable: boolean;
 
-  @ManyToOne(() => PurchaseOrder)
+  @ManyToOne(() => PurchaseOrder, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'po_id' })
   po: PurchaseOrder;
-
-  @ManyToOne(() => SalesOrder)
-  @JoinColumn({ name: 'so_id' })
-  so: SalesOrder;
 
   @ManyToOne(() => ProjectMember)
   @JoinColumn({ name: 'project_member_id' })

@@ -9,11 +9,6 @@ export class CreatePurchaseOrderDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
-  projectId: number;
-
-  @ApiProperty()
-  @IsNotEmpty()
   @IsString()
   customer: string;
 

@@ -9,14 +9,14 @@ import { MasterProjectsService } from '../../master/project/providers/projects.s
 import { ProjectStatus } from '../../../common/enums';
 
 import { PurchaseOrder } from '../../purchase-orders/entities/purchase-order.entity';
-import { SalesOrder } from '../../sales-orders/entities/sales-order.entity';
+import { PoProject } from '../../purchase-orders/entities/po-project.entity';
 import { BillingInvoice } from '../../billing/entities/billing-invoice.entity';
 import { BillingInvoiceDetail } from '../../billing/entities/billing-invoice-detail.entity';
 import { SupportTicket } from '../../support-tickets/entities/support-ticket.entity';
 import { SupportTicketAssignee } from '../../support-tickets/entities/support-ticket-assignee.entity';
 import { ProjectActivity } from '../../project-activities/entities/project-activity.entity';
 import { RoleRate } from '../../master/role-rates/entities/role-rate.entity';
-import { PoSoMember } from '../../po-so-members/entities/po-so-member.entity';
+import { PoMember } from '../../po-members/entities/po-member.entity';
 import { CreateProjectDto, UpdateProjectDto, AddProjectMemberDto } from '../dto/project.dto';
 import { BaseResponseDto, PaginatedResponseDto } from '../../../common/dtos/response.dto';
 import { PaginationDto } from '../../../common/dtos/pagination.dto';
@@ -135,35 +135,28 @@ export class ProjectsService {
     if (!project) throw new NotFoundException(`Project ${id} not found`);
 
     await this.dataSource.transaction(async (manager) => {
-      // 1. Get project member IDs to delete their po_so_members
+      // 1. Get project member IDs to delete their po_members
       const members = await manager.find(ProjectMember, {
         where: { projectId: id },
         select: { id: true },
       }) as any[];
       const memberIds = members.map((m) => m.id);
 
-      // 2. Get purchase order IDs and sales order IDs to delete their po_so_members
-      const purchaseOrders = await manager.find(PurchaseOrder, {
-        where: { projectId: id },
-        select: { id: true },
-      }) as any[];
-      const poIds = purchaseOrders.map((po) => po.id);
-
-      const salesOrders = await manager.find(SalesOrder, {
-        where: { projectId: id },
-        select: { id: true },
-      }) as any[];
-      const soIds = salesOrders.map((so) => so.id);
-
-      // 3. Delete po_so_members
+      // Find affected POs before deleting members
+      let poIds: number[] = [];
       if (memberIds.length > 0) {
-        await manager.delete(PoSoMember, { projectMemberId: In(memberIds) });
+        const poMembers = await manager.find(PoMember, {
+          where: { projectMemberId: In(memberIds) },
+        });
+        poIds = Array.from(new Set(poMembers.map((pm) => pm.poId)));
       }
-      if (poIds.length > 0) {
-        await manager.delete(PoSoMember, { poId: In(poIds) });
-      }
-      if (soIds.length > 0) {
-        await manager.delete(PoSoMember, { soId: In(soIds) });
+
+      // 2. Delete po_projects association
+      await manager.delete(PoProject, { projectId: id });
+
+      // 3. Delete po_members
+      if (memberIds.length > 0) {
+        await manager.delete(PoMember, { projectMemberId: In(memberIds) });
       }
 
       // 4. Delete billing_invoice_details and billing_invoices
@@ -177,17 +170,7 @@ export class ProjectsService {
         await manager.delete(BillingInvoice, { id: In(invoiceIds) });
       }
 
-      // 5. Delete sales_orders
-      if (soIds.length > 0) {
-        await manager.delete(SalesOrder, { id: In(soIds) });
-      }
-
-      // 6. Delete purchase_orders
-      if (poIds.length > 0) {
-        await manager.delete(PurchaseOrder, { id: In(poIds) });
-      }
-
-      // 7. Delete support_tickets and their details (those linked to this project's master_project)
+      // 5. Delete support_tickets and their details (those linked to this project's master_project)
       const masterProjectId = project.projectId;
       const tickets = await manager.find(SupportTicket, {
         where: { masterProjectId },
@@ -199,13 +182,13 @@ export class ProjectsService {
         await manager.delete(SupportTicket, { id: In(ticketIds) });
       }
 
-      // 8. Delete project_activities
+      // 6. Delete project_activities
       await manager.delete(ProjectActivity, { projectId: id });
 
-      // 9. Delete role_rates
+      // 7. Delete role_rates
       await manager.delete(RoleRate, { projectId: id });
 
-      // 10. Delete child projects (support projects referencing this as parent)
+      // 8. Delete child projects (support projects referencing this as parent)
       const childProjects = await manager.find(Project, {
         where: { parentProjectId: id },
         select: { id: true },
@@ -215,10 +198,10 @@ export class ProjectsService {
         await manager.update(Project, child.id, { parentProjectId: null as any });
       }
 
-      // 11. Delete project_members
+      // 9. Delete project_members
       await manager.delete(ProjectMember, { projectId: id });
 
-      // 12. Delete the project itself
+      // 10. Delete the project itself
       await manager.delete(Project, { id });
     });
 
@@ -231,12 +214,42 @@ export class ProjectsService {
   ): Promise<BaseResponseDto<ProjectMemberResponseDto>> {
     await this.findOne(projectId); // verify exists
 
-    const member = this.memberRepo.create({
-      projectId,
-      ...dto,
+    const savedMember = await this.dataSource.transaction(async (manager) => {
+      const member = manager.getRepository(ProjectMember).create({
+        projectId,
+        ...dto,
+      });
+      const saved = await manager.getRepository(ProjectMember).save(member);
+
+      // Find if this project is assigned to any PO
+      const poProjects = await manager.getRepository(PoProject).find({
+        where: { projectId },
+      });
+
+      for (const pp of poProjects) {
+        // Create PoMember for this PO if it doesn't exist
+        let poMember = await manager.getRepository(PoMember).findOne({
+          where: { poId: pp.poId, projectMemberId: saved.id, roleId: dto.roleId },
+        });
+        if (!poMember) {
+          poMember = manager.getRepository(PoMember).create({
+            poId: pp.poId,
+            projectMemberId: saved.id,
+            roleId: dto.roleId,
+            actualMandays: 0,
+            actualHours: 0,
+            ratePerManday: 0,
+            totalCost: 0,
+            isBillable: true,
+          });
+          await manager.getRepository(PoMember).save(poMember);
+        }
+      }
+
+      return saved;
     });
-    const saved = await this.memberRepo.save(member);
-    return { success: true, data: mapToDto(ProjectMemberResponseDto, saved) };
+
+    return { success: true, data: mapToDto(ProjectMemberResponseDto, savedMember) };
   }
 
   async getMembers(projectId: number): Promise<BaseResponseDto<ProjectMemberResponseDto[]>> {
@@ -309,8 +322,12 @@ export class ProjectsService {
     if (!member) throw new NotFoundException(`Project member ${memberId} not found in project ${projectId}`);
 
     await this.dataSource.transaction(async (manager) => {
-      // Delete references in po_so_members
-      await manager.delete(PoSoMember, { projectMemberId: memberId });
+      // Find the POs associated with this project member
+      const poMembers = await manager.find(PoMember, { where: { projectMemberId: memberId } });
+      const poIds = Array.from(new Set(poMembers.map(pm => pm.poId)));
+
+      // Delete references in po_members
+      await manager.delete(PoMember, { projectMemberId: memberId });
       // Delete the project member
       await manager.remove(member);
     });

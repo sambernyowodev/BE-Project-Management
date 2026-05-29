@@ -5,8 +5,9 @@ import { BillingController } from './controllers/billing.controller';
 import { BillingInvoice } from './entities/billing-invoice.entity';
 import { BillingInvoiceDetail } from './entities/billing-invoice-detail.entity';
 import { PurchaseOrder } from '../purchase-orders/entities/purchase-order.entity';
-import { PoSoMember } from '../po-so-members/entities/po-so-member.entity';
+import { PoMember } from '../po-members/entities/po-member.entity';
 import { RoleRate } from '../master/role-rates/entities/role-rate.entity';
+import { Project } from '../projects/entities/project.entity';
 
 @Module({
   imports: [
@@ -14,8 +15,9 @@ import { RoleRate } from '../master/role-rates/entities/role-rate.entity';
       BillingInvoice,
       BillingInvoiceDetail,
       PurchaseOrder,
-      PoSoMember,
+      PoMember,
       RoleRate,
+      Project,
     ]),
   ],
   controllers: [BillingController],

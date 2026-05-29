@@ -4,7 +4,8 @@ import { Repository } from 'typeorm';
 import { BillingInvoice } from '../entities/billing-invoice.entity';
 import { BillingInvoiceDetail } from '../entities/billing-invoice-detail.entity';
 import { PurchaseOrder } from '../../purchase-orders/entities/purchase-order.entity';
-import { PoSoMember } from '../../po-so-members/entities/po-so-member.entity';
+import { PoMember } from '../../po-members/entities/po-member.entity';
+import { Project } from '../../projects/entities/project.entity';
 import { RoleRate } from '../../master/role-rates/entities/role-rate.entity';
 import { GenerateInvoiceDto } from '../dto/billing.dto';
 import { BaseResponseDto } from '../../../common/dtos/response.dto';
@@ -20,21 +21,29 @@ export class BillingService {
     private readonly detailRepo: Repository<BillingInvoiceDetail>,
     @InjectRepository(PurchaseOrder)
     private readonly poRepo: Repository<PurchaseOrder>,
-    @InjectRepository(PoSoMember)
-    private readonly poSoMemberRepo: Repository<PoSoMember>,
+    @InjectRepository(PoMember)
+    private readonly poMemberRepo: Repository<PoMember>,
     @InjectRepository(RoleRate)
     private readonly roleRateRepo: Repository<RoleRate>,
+    @InjectRepository(Project)
+    private readonly projectRepo: Repository<Project>,
   ) { }
 
   async generatePreview(dto: GenerateInvoiceDto): Promise<BaseResponseDto<any>> {
     const po = await this.poRepo.findOne({
       where: { id: dto.poId },
-      relations: { project: true },
     });
 
     if (!po) throw new NotFoundException('PO not found');
 
-    const members = await this.poSoMemberRepo.find({
+    const project = await this.projectRepo.findOne({
+      where: { id: dto.projectId },
+      relations: { project: true },
+    });
+
+    if (!project) throw new NotFoundException('Project not found');
+
+    const members = await this.poMemberRepo.find({
       where: { poId: dto.poId, isBillable: true },
       relations: { role: true, projectMember: { user: true } },
     });
@@ -106,7 +115,7 @@ export class BillingService {
       success: true,
       data: {
         po,
-        project: po.project,
+        project,
         period: { start: dto.startDate, end: dto.endDate },
         roleBreakdown,
         totalMandays,

@@ -33,19 +33,30 @@ export function applyPagination<T extends ObjectLiteral>(
 
   // 2. Apply Filters
   if (filter) {
+    const validDbColumns: string[] = (((queryBuilder as any).expressionMap?.mainAlias?.metadata?.columns || []) as any[]).map(c => c.propertyName);
     Object.entries(filter).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         const mappedKey = keyMap[key] || key;
+        if (!validDbColumns.includes(mappedKey) && !mappedKey.includes('.')) {
+          // Skip computed/non-existent columns
+          return;
+        }
         const fullKey = mappedKey.includes('.') ? mappedKey : `${queryBuilder.alias}.${mappedKey}`;
         const paramName = key.replace(/\./g, '_');
 
         const isIdField = key.toLowerCase().endsWith('id') || key === 'id';
-        const isStatusOrType = key.toLowerCase().endsWith('status') || 
-                               key.toLowerCase().endsWith('type') || 
-                               ['status', 'type', 'isactive'].includes(key.toLowerCase());
+        const isStatusOrType = key.toLowerCase().endsWith('status') ||
+          key.toLowerCase().endsWith('type') ||
+          ['status', 'type', 'isactive'].includes(key.toLowerCase());
+        const isNumeric = ['totalamount', 'totalmandays', 'remainingmandays', 'allocatedmandays'].includes(key.toLowerCase());
 
         if (Array.isArray(value)) {
           queryBuilder.andWhere(`${fullKey} IN (:...${paramName})`, { [paramName]: value });
+        } else if (isNumeric) {
+          const numVal = Number(value);
+          if (!isNaN(numVal)) {
+            queryBuilder.andWhere(`${fullKey} = :${paramName}`, { [paramName]: numVal });
+          }
         } else if (typeof value === 'string' && !isIdField && !isStatusOrType) {
           queryBuilder.andWhere(`${fullKey} LIKE :${paramName}`, { [paramName]: `%${value}%` });
         } else {
@@ -53,7 +64,7 @@ export function applyPagination<T extends ObjectLiteral>(
           let finalValue = value;
           if (value === '1' || value === 'true') finalValue = true;
           if (value === '0' || value === 'false') finalValue = false;
-          
+
           queryBuilder.andWhere(`${fullKey} = :${paramName}`, { [paramName]: finalValue });
         }
       }

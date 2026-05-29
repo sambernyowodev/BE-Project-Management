@@ -1,8 +1,8 @@
 import { BaseDto } from '../../../common/dtos/base.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { ProjectResponseDto } from '../../projects/dto/project-response.dto';
 import { PurchaseOrderStatus } from '../../../common/enums';
+import { PoProjectResponseDto } from './po-project.dto';
 
 export class PurchaseOrderResponseDto extends BaseDto {
 
@@ -13,10 +13,6 @@ export class PurchaseOrderResponseDto extends BaseDto {
   @ApiProperty()
   @Expose()
   poName: string;
-
-  @ApiProperty()
-  @Expose()
-  projectId: number;
 
   @ApiProperty()
   @Expose()
@@ -46,18 +42,6 @@ export class PurchaseOrderResponseDto extends BaseDto {
   @Expose()
   endDate?: Date;
 
-  @ApiPropertyOptional()
-  @Expose()
-  signedDate?: Date;
-
-  @ApiPropertyOptional()
-  @Expose()
-  documentUrl?: string;
-
-  @ApiPropertyOptional()
-  @Expose()
-  remarks?: string;
-
   @ApiProperty()
   @Expose()
   isActive: boolean;
@@ -66,8 +50,20 @@ export class PurchaseOrderResponseDto extends BaseDto {
   @Expose()
   createdById: number;
 
-  @ApiPropertyOptional({ type: () => ProjectResponseDto })
+  @ApiPropertyOptional({ type: () => [PoProjectResponseDto] })
   @Expose()
-  @Type(() => ProjectResponseDto)
-  project?: ProjectResponseDto;
+  @Type(() => PoProjectResponseDto)
+  poProjects?: PoProjectResponseDto[];
+
+  @ApiProperty()
+  @Expose()
+  allocatedMandays: number;
+
+  @ApiProperty()
+  @Expose()
+  remainingMandays: number;
+
+  @ApiProperty()
+  @Expose()
+  projectCount: number;
 }

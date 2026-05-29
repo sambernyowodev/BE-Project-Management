@@ -2,19 +2,14 @@ import { BaseDto } from '../../../common/dtos/base.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { PurchaseOrderResponseDto } from '../../purchase-orders/dto/purchase-order-response.dto';
-import { SalesOrderResponseDto } from '../../sales-orders/dto/sales-order-response.dto';
 import { ProjectMemberResponseDto } from '../../projects/dto/project-response.dto';
 import { RoleResponseDto } from '../../master/roles/dto/role-response.dto';
 
-export class PoSoMemberResponseDto extends BaseDto {
+export class PoMemberResponseDto extends BaseDto {
 
   @ApiProperty()
   @Expose()
   poId: number;
-
-  @ApiPropertyOptional()
-  @Expose()
-  soId?: number;
 
   @ApiProperty()
   @Expose()
@@ -56,11 +51,6 @@ export class PoSoMemberResponseDto extends BaseDto {
   @Expose()
   @Type(() => PurchaseOrderResponseDto)
   po?: PurchaseOrderResponseDto;
-
-  @ApiPropertyOptional({ type: () => SalesOrderResponseDto })
-  @Expose()
-  @Type(() => SalesOrderResponseDto)
-  so?: SalesOrderResponseDto;
 
   @ApiPropertyOptional({ type: () => ProjectMemberResponseDto })
   @Expose()
