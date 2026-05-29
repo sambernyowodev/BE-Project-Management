@@ -3,10 +3,11 @@ import {
   Entity,
   Column,
   ManyToOne,
+  OneToMany,
   JoinColumn,
 } from 'typeorm';
 import { MasterProject } from '../../master/project/entities/project.entity';
-import { User } from '../../master/users/entities/user.entity';
+import { SupportTicketAssignee } from './support-ticket-assignee.entity';
 import { SupportTicketStatus } from '../../../common/enums';
 
 @Entity('support_tickets')
@@ -67,23 +68,6 @@ export class SupportTicket extends BaseEntity {
   endDate: Date;
 
   @Column({
-    type: 'bigint',
-    unsigned: true,
-    nullable: true,
-    name: 'business_analyst_id',
-  })
-  businessAnalystId: number;
-
-  @Column({ type: 'bigint', unsigned: true, nullable: true, name: 'ui_ux_id' })
-  uiUxId: number;
-
-  @Column({ type: 'bigint', unsigned: true, nullable: true, name: 'dev_fe_id' })
-  devFeId: number;
-
-  @Column({ type: 'bigint', unsigned: true, nullable: true, name: 'dev_be_id' })
-  devBeId: number;
-
-  @Column({
     type: 'varchar',
     length: 500,
     nullable: true,
@@ -104,19 +88,6 @@ export class SupportTicket extends BaseEntity {
   @JoinColumn({ name: 'master_project_id' })
   masterProject: MasterProject;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'business_analyst_id' })
-  businessAnalyst: User;
-
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'ui_ux_id' })
-  uiUx: User;
-
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'dev_fe_id' })
-  devFe: User;
-
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'dev_be_id' })
-  devBe: User;
+  @OneToMany(() => SupportTicketAssignee, (assignee) => assignee.supportTicket)
+  assignees: SupportTicketAssignee[];
 }

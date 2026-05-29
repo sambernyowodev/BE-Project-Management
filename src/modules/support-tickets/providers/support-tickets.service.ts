@@ -2,20 +2,21 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { SupportTicket } from '../entities/support-ticket.entity';
-import { SupportTicketDetail } from '../entities/support-ticket-detail.entity';
+import { SupportTicketAssignee } from '../entities/support-ticket-assignee.entity';
 import { MasterProject } from '../../master/project/entities/project.entity';
 import { MasterProjectsService } from '../../master/project/providers/projects.service';
 import { ProjectsService } from '../../projects/providers/projects.service';
 import {
   CreateSupportTicketDto,
-  CreateSupportTicketDetailDto,
+  CreateSupportTicketAssigneeDto,
+  UpdateSupportTicketAssigneeDto,
   UpdateSupportTicketDto,
 } from '../dto/support-ticket.dto';
 import { BaseResponseDto, PaginatedResponseDto, SuccessResponseDto } from '../../../common/dtos/response.dto';
 import { PaginationDto } from '../../../common/dtos/pagination.dto';
 import { applyPagination } from '../../../common/utils/query.util';
 import { SupportTicketResponseDto } from '../dto/support-ticket-response.dto';
-import { SupportTicketDetailResponseDto } from '../dto/support-ticket-detail-response.dto';
+import { SupportTicketAssigneeResponseDto } from '../dto/support-ticket-assignee-response.dto';
 import { mapToDto, mapToDtoArray } from '../../../common/utils/mapper.util';
 
 @Injectable()
@@ -23,8 +24,8 @@ export class SupportTicketsService {
   constructor(
     @InjectRepository(SupportTicket)
     private readonly ticketRepo: Repository<SupportTicket>,
-    @InjectRepository(SupportTicketDetail)
-    private readonly detailRepo: Repository<SupportTicketDetail>,
+    @InjectRepository(SupportTicketAssignee)
+    private readonly assigneeRepo: Repository<SupportTicketAssignee>,
     private readonly dataSource: DataSource,
     private readonly masterProjectsService: MasterProjectsService,
     private readonly projectsService: ProjectsService,
@@ -50,13 +51,12 @@ export class SupportTicketsService {
       masterProjectId = masterProject.id;
     }
 
-    // Process ticket assignments: find/create support project and add members
     if (masterProjectId) {
-      const supportProject = await this.projectsService.findOrCreateSupportProject(
+      // Find or create the support project (for tracking, keeping backend consistency)
+      await this.projectsService.findOrCreateSupportProject(
         (await this.masterProjectsService.findEntity(masterProjectId)).name,
         userId,
       );
-      await this.processTicketAssignments(supportProject.id, dto);
     }
 
     const ticketCode = `TKT-${Date.now()}`;
@@ -74,10 +74,10 @@ export class SupportTicketsService {
       where: { id: saved.id },
       relations: {
         masterProject: true,
-        businessAnalyst: true,
-        uiUx: true,
-        devFe: true,
-        devBe: true,
+        assignees: {
+          user: true,
+          role: true,
+        },
       },
     });
 
@@ -87,10 +87,9 @@ export class SupportTicketsService {
   async findAll(query: PaginationDto): Promise<PaginatedResponseDto<SupportTicketResponseDto>> {
     const qb = this.ticketRepo.createQueryBuilder('ticket')
       .leftJoinAndSelect('ticket.masterProject', 'masterProject')
-      .leftJoinAndSelect('ticket.businessAnalyst', 'businessAnalyst')
-      .leftJoinAndSelect('ticket.uiUx', 'uiUx')
-      .leftJoinAndSelect('ticket.devFe', 'devFe')
-      .leftJoinAndSelect('ticket.devBe', 'devBe');
+      .leftJoinAndSelect('ticket.assignees', 'assignees')
+      .leftJoinAndSelect('assignees.user', 'assigneeUser')
+      .leftJoinAndSelect('assignees.role', 'assigneeRole');
 
     applyPagination(qb, query, ['ticketCode', 'issueTitle', 'status', 'masterProject.name'], {
       projectName: 'masterProject.name',
@@ -117,36 +116,99 @@ export class SupportTicketsService {
       where: { id },
       relations: {
         masterProject: true,
-        businessAnalyst: true,
-        uiUx: true,
-        devFe: true,
-        devBe: true,
+        assignees: {
+          user: true,
+          role: true,
+        },
       },
     });
     if (!ticket) throw new NotFoundException(`Ticket ${id} not found`);
     return { success: true, data: mapToDto(SupportTicketResponseDto, ticket) };
   }
 
-  async addDetail(
+  async addAssignee(
     ticketId: number,
-    dto: CreateSupportTicketDetailDto,
+    dto: CreateSupportTicketAssigneeDto,
     userId?: number,
-  ): Promise<BaseResponseDto<SupportTicketDetailResponseDto>> {
+  ): Promise<BaseResponseDto<SupportTicketAssigneeResponseDto>> {
     const ticketRes = await this.findOne(ticketId);
 
-    const detail = this.detailRepo.create({
+    // Check if user is already assigned
+    const existing = await this.assigneeRepo.findOne({
+      where: { supportTicketId: ticketId, userId: dto.userId },
+    });
+    if (existing) {
+      throw new Error(`User sudah diassign ke ticket ini`);
+    }
+
+    const assignee = this.assigneeRepo.create({
       ...dto,
+      startDate: dto.startDate ? new Date(dto.startDate) : undefined,
+      endDate: dto.endDate ? new Date(dto.endDate) : undefined,
       createdAt: new Date(),
       createdBy: userId,
       supportTicketId: ticketRes.data.id,
     });
-    const saved = await this.detailRepo.save(detail);
-    return { success: true, data: mapToDto(SupportTicketDetailResponseDto, saved) };
+    const saved = await this.assigneeRepo.save(assignee);
+
+    const fullAssignee = await this.assigneeRepo.findOne({
+      where: { id: saved.id },
+      relations: { user: true, role: true },
+    });
+
+    return { success: true, data: mapToDto(SupportTicketAssigneeResponseDto, fullAssignee) };
   }
 
-  async getDetails(ticketId: number): Promise<BaseResponseDto<SupportTicketDetailResponseDto[]>> {
-    const data = await this.detailRepo.find({ where: { supportTicketId: ticketId } });
-    return { success: true, data: mapToDtoArray(SupportTicketDetailResponseDto, data) };
+  async getAssignees(ticketId: number): Promise<BaseResponseDto<SupportTicketAssigneeResponseDto[]>> {
+    const data = await this.assigneeRepo.find({
+      where: { supportTicketId: ticketId },
+      relations: { user: true, role: true },
+    });
+    return { success: true, data: mapToDtoArray(SupportTicketAssigneeResponseDto, data) };
+  }
+
+  async updateAssignee(
+    ticketId: number,
+    assigneeId: number,
+    dto: UpdateSupportTicketAssigneeDto,
+    userId?: number,
+  ): Promise<BaseResponseDto<SupportTicketAssigneeResponseDto>> {
+    const assignee = await this.assigneeRepo.findOne({
+      where: { id: assigneeId, supportTicketId: ticketId },
+    });
+    if (!assignee) throw new NotFoundException(`Assignee ${assigneeId} not found for ticket ${ticketId}`);
+
+    const updateData: any = { ...dto };
+    if (dto.startDate !== undefined) {
+      updateData.startDate = dto.startDate ? new Date(dto.startDate) : null;
+    }
+    if (dto.endDate !== undefined) {
+      updateData.endDate = dto.endDate ? new Date(dto.endDate) : null;
+    }
+
+    this.assigneeRepo.merge(assignee, {
+      ...updateData,
+      updatedAt: new Date(),
+      updatedBy: userId,
+    });
+
+    const saved = await this.assigneeRepo.save(assignee);
+    const fullAssignee = await this.assigneeRepo.findOne({
+      where: { id: saved.id },
+      relations: { user: true, role: true },
+    });
+
+    return { success: true, data: mapToDto(SupportTicketAssigneeResponseDto, fullAssignee) };
+  }
+
+  async removeAssignee(ticketId: number, assigneeId: number): Promise<BaseResponseDto<SuccessResponseDto>> {
+    const assignee = await this.assigneeRepo.findOne({
+      where: { id: assigneeId, supportTicketId: ticketId },
+    });
+    if (!assignee) throw new NotFoundException(`Assignee ${assigneeId} not found for ticket ${ticketId}`);
+
+    await this.assigneeRepo.remove(assignee);
+    return { success: true, data: { success: true }, message: 'Assignee removed successfully' };
   }
 
   async update(id: number, dto: UpdateSupportTicketDto, userId?: number): Promise<BaseResponseDto<SupportTicketResponseDto>> {
@@ -176,14 +238,7 @@ export class SupportTicketsService {
 
     if (mergedMasterProjectId) {
       const masterProject = await this.masterProjectsService.findEntity(mergedMasterProjectId);
-      const supportProject = await this.projectsService.findOrCreateSupportProject(masterProject.name, userId);
-
-      await this.processTicketAssignments(supportProject.id, {
-        businessAnalystId: dto.businessAnalystId !== undefined ? dto.businessAnalystId : ticket.businessAnalystId,
-        uiUxId: dto.uiUxId !== undefined ? dto.uiUxId : ticket.uiUxId,
-        devFeId: dto.devFeId !== undefined ? dto.devFeId : ticket.devFeId,
-        devBeId: dto.devBeId !== undefined ? dto.devBeId : ticket.devBeId,
-      });
+      await this.projectsService.findOrCreateSupportProject(masterProject.name, userId);
     }
 
     this.ticketRepo.merge(ticket, {
@@ -199,10 +254,10 @@ export class SupportTicketsService {
       where: { id: updated.id },
       relations: {
         masterProject: true,
-        businessAnalyst: true,
-        uiUx: true,
-        devFe: true,
-        devBe: true,
+        assignees: {
+          user: true,
+          role: true,
+        },
       },
     });
 
@@ -215,37 +270,12 @@ export class SupportTicketsService {
 
     await this.dataSource.transaction(async (manager) => {
       // 1. Delete details first
-      await manager.delete(SupportTicketDetail, { supportTicketId: id });
+      await manager.delete(SupportTicketAssignee, { supportTicketId: id });
 
       // 2. Delete the ticket itself
       await manager.delete(SupportTicket, { id });
     });
 
     return { success: true, data: { success: true }, message: 'Ticket deleted successfully' };
-  }
-
-  private async processTicketAssignments(
-    projectId: number,
-    dto: {
-      businessAnalystId?: number;
-      uiUxId?: number;
-      devFeId?: number;
-      devBeId?: number;
-    },
-  ) {
-    if (!projectId) return;
-
-    if (dto.businessAnalystId) {
-      await this.projectsService.ensureProjectMember(projectId, dto.businessAnalystId, 'BA');
-    }
-    if (dto.uiUxId) {
-      await this.projectsService.ensureProjectMember(projectId, dto.uiUxId, 'UIUX');
-    }
-    if (dto.devFeId) {
-      await this.projectsService.ensureProjectMember(projectId, dto.devFeId, 'DEV_FE');
-    }
-    if (dto.devBeId) {
-      await this.projectsService.ensureProjectMember(projectId, dto.devBeId, 'DEV_BE');
-    }
   }
 }

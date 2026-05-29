@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsEnum, IsDateString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { SupportTicketDetailStatus } from '../../../common/enums';
 
 export class CreateSupportTicketDto {
   @ApiProperty({ description: 'Master project ID (FK to master_projects)', required: false })
@@ -31,38 +32,75 @@ export class CreateSupportTicketDto {
   @IsOptional()
   @IsString()
   issueDescription?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  businessAnalystId?: number;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  uiUxId?: number;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  devFeId?: number;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  devBeId?: number;
 }
 
-export class CreateSupportTicketDetailDto {
-  @ApiProperty()
+export class CreateSupportTicketAssigneeDto {
+  @ApiProperty({ description: 'User ID of the assigned member' })
   @IsNotEmpty()
-  @IsString()
-  subIssue: string;
+  @IsNumber()
+  userId: number;
+
+  @ApiProperty({ description: 'Role ID of the assigned member', required: false })
+  @IsOptional()
+  @IsNumber()
+  roleId?: number;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
   hoursSpent?: number;
+
+  @ApiProperty({ enum: SupportTicketDetailStatus, required: false })
+  @IsOptional()
+  @IsEnum(SupportTicketDetailStatus)
+  status?: SupportTicketDetailStatus;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDateString()
+  startDate?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDateString()
+  endDate?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  notes?: string;
+}
+
+export class UpdateSupportTicketAssigneeDto {
+  @ApiProperty({ description: 'Role ID of the assigned member', required: false })
+  @IsOptional()
+  @IsNumber()
+  roleId?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  hoursSpent?: number;
+
+  @ApiProperty({ enum: SupportTicketDetailStatus, required: false })
+  @IsOptional()
+  @IsEnum(SupportTicketDetailStatus)
+  status?: SupportTicketDetailStatus;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDateString()
+  startDate?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDateString()
+  endDate?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  notes?: string;
 }
 
 export class UpdateSupportTicketDto {
@@ -115,24 +153,4 @@ export class UpdateSupportTicketDto {
   @IsOptional()
   @IsString()
   notes?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  businessAnalystId?: number;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  uiUxId?: number;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  devFeId?: number;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  devBeId?: number;
 }

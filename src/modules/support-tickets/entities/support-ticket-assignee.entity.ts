@@ -6,16 +6,21 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { SupportTicket } from './support-ticket.entity';
+import { User } from '../../master/users/entities/user.entity';
+import { Role } from '../../master/roles/entities/role.entity';
 import { SupportTicketDetailStatus } from '../../../common/enums';
 
-@Entity('support_ticket_details')
-export class SupportTicketDetail extends BaseEntity {
+@Entity('support_ticket_assignees')
+export class SupportTicketAssignee extends BaseEntity {
 
   @Column({ type: 'bigint', unsigned: true, name: 'support_ticket_id' })
   supportTicketId: number;
 
-  @Column({ type: 'varchar', length: 500, name: 'sub_issue' })
-  subIssue: string;
+  @Column({ type: 'bigint', unsigned: true, name: 'user_id' })
+  userId: number;
+
+  @Column({ type: 'bigint', unsigned: true, name: 'role_id', nullable: true })
+  roleId: number;
 
   @Column({
     type: 'decimal',
@@ -33,24 +38,24 @@ export class SupportTicketDetail extends BaseEntity {
   })
   status: SupportTicketDetailStatus;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
-  platform: string;
-
   @Column({ type: 'date', nullable: true, name: 'start_date' })
   startDate: Date;
 
   @Column({ type: 'date', nullable: true, name: 'end_date' })
   endDate: Date;
 
-  @Column({
-    type: 'varchar',
-    length: 500,
-    nullable: true,
-    name: 'dev_be_names',
-  })
-  devBeNames: string;
+  @Column({ type: 'text', nullable: true })
+  notes: string;
 
-  @ManyToOne(() => SupportTicket, { onDelete: 'CASCADE' })
+  @ManyToOne(() => SupportTicket, (ticket) => ticket.assignees, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'support_ticket_id' })
   supportTicket: SupportTicket;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @ManyToOne(() => Role)
+  @JoinColumn({ name: 'role_id' })
+  role: Role;
 }

@@ -13,7 +13,7 @@ import { SalesOrder } from '../../sales-orders/entities/sales-order.entity';
 import { BillingInvoice } from '../../billing/entities/billing-invoice.entity';
 import { BillingInvoiceDetail } from '../../billing/entities/billing-invoice-detail.entity';
 import { SupportTicket } from '../../support-tickets/entities/support-ticket.entity';
-import { SupportTicketDetail } from '../../support-tickets/entities/support-ticket-detail.entity';
+import { SupportTicketAssignee } from '../../support-tickets/entities/support-ticket-assignee.entity';
 import { ProjectActivity } from '../../project-activities/entities/project-activity.entity';
 import { RoleRate } from '../../master/role-rates/entities/role-rate.entity';
 import { PoSoMember } from '../../po-so-members/entities/po-so-member.entity';
@@ -195,7 +195,7 @@ export class ProjectsService {
       }) as any[];
       const ticketIds = tickets.map((t) => t.id);
       if (ticketIds.length > 0) {
-        await manager.delete(SupportTicketDetail, { supportTicketId: In(ticketIds) });
+        await manager.delete(SupportTicketAssignee, { supportTicketId: In(ticketIds) });
         await manager.delete(SupportTicket, { id: In(ticketIds) });
       }
 

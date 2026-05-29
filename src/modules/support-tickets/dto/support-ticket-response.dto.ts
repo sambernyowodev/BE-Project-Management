@@ -2,8 +2,8 @@ import { BaseDto } from '../../../common/dtos/base.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { MasterProjectResponseDto } from '../../master/project/dto/project-response.dto';
-import { UserResponseDto } from '../../master/users/dto/user-response.dto';
 import { SupportTicketStatus } from '../../../common/enums';
+import { SupportTicketAssigneeResponseDto } from './support-ticket-assignee-response.dto';
 
 export class SupportTicketResponseDto extends BaseDto {
 
@@ -53,22 +53,6 @@ export class SupportTicketResponseDto extends BaseDto {
 
   @ApiPropertyOptional()
   @Expose()
-  businessAnalystId?: number;
-
-  @ApiPropertyOptional()
-  @Expose()
-  uiUxId?: number;
-
-  @ApiPropertyOptional()
-  @Expose()
-  devFeId?: number;
-
-  @ApiPropertyOptional()
-  @Expose()
-  devBeId?: number;
-
-  @ApiPropertyOptional()
-  @Expose()
   folderAttachment?: string;
 
   @ApiPropertyOptional()
@@ -88,23 +72,8 @@ export class SupportTicketResponseDto extends BaseDto {
   @Type(() => MasterProjectResponseDto)
   masterProject?: MasterProjectResponseDto;
 
-  @ApiPropertyOptional({ type: () => UserResponseDto })
+  @ApiPropertyOptional({ type: () => [SupportTicketAssigneeResponseDto] })
   @Expose()
-  @Type(() => UserResponseDto)
-  businessAnalyst?: UserResponseDto;
-
-  @ApiPropertyOptional({ type: () => UserResponseDto })
-  @Expose()
-  @Type(() => UserResponseDto)
-  uiUx?: UserResponseDto;
-
-  @ApiPropertyOptional({ type: () => UserResponseDto })
-  @Expose()
-  @Type(() => UserResponseDto)
-  devFe?: UserResponseDto;
-
-  @ApiPropertyOptional({ type: () => UserResponseDto })
-  @Expose()
-  @Type(() => UserResponseDto)
-  devBe?: UserResponseDto;
+  @Type(() => SupportTicketAssigneeResponseDto)
+  assignees?: SupportTicketAssigneeResponseDto[];
 }

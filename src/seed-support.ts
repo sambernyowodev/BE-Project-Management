@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DataSource } from 'typeorm';
 import { SupportTicket } from './modules/support-tickets/entities/support-ticket.entity';
-import { SupportTicketDetail } from './modules/support-tickets/entities/support-ticket-detail.entity';
+import { SupportTicketAssignee } from './modules/support-tickets/entities/support-ticket-assignee.entity';
 import { MasterProject } from './modules/master/project/entities/project.entity';
 import { Project } from './modules/projects/entities/project.entity';
 import { User } from './modules/master/users/entities/user.entity';
@@ -725,7 +725,7 @@ async function bootstrap() {
   console.log('--- Starting Support Tickets Seeder ---');
 
   const ticketRepo = dataSource.getRepository(SupportTicket);
-  const detailRepo = dataSource.getRepository(SupportTicketDetail);
+  const assigneeRepo = dataSource.getRepository(SupportTicketAssignee);
   const masterProjectRepo = dataSource.getRepository(MasterProject);
   const projectRepo = dataSource.getRepository(Project);
   const userRepo = dataSource.getRepository(User);
@@ -825,10 +825,6 @@ async function bootstrap() {
         status: mapStatus(raw.status),
         startDate: startDate || undefined,
         endDate: endDate || undefined,
-        businessAnalystId: baUser ? baUser.id : null,
-        uiUxId: uiuxUser ? uiuxUser.id : null,
-        devFeId: feUser ? feUser.id : null,
-        devBeId: beUser ? beUser.id : null,
         folderAttachment: raw.attachments || null,
         notes: raw.notes || null,
         updateDate: updateDate || undefined,
@@ -842,35 +838,44 @@ async function bootstrap() {
       console.log(`SupportTicket already exists: ${ticket.ticketCode}`);
     }
 
-    // Insert Details if any
+    // Insert Assignees
+    const assigneesToInsert: { user: User; hoursSpent: number }[] = [];
+    if (baUser) assigneesToInsert.push({ user: baUser, hoursSpent: 0 });
+    if (uiuxUser) assigneesToInsert.push({ user: uiuxUser, hoursSpent: 0 });
+    if (feUser) assigneesToInsert.push({ user: feUser, hoursSpent: 0 });
+    if (beUser) assigneesToInsert.push({ user: beUser, hoursSpent: 0 });
+
     if (raw.details && raw.details.length > 0) {
       for (const rawDetail of raw.details) {
-        const detailStart = parseDateString(rawDetail.startDate);
-        const detailEnd = parseDateString(rawDetail.endDate);
-
-        let detail = await detailRepo.findOneBy({
-          supportTicketId: ticket.id,
-          subIssue: rawDetail.subIssue,
-        });
-
-        if (!detail) {
-          const detailPayload = {
-            supportTicketId: ticket.id,
-            subIssue: rawDetail.subIssue,
-            hoursSpent: rawDetail.hoursSpent,
-            status: mapDetailStatus(rawDetail.status),
-            platform: rawDetail.platform || raw.platform,
-            startDate: detailStart || undefined,
-            endDate: detailEnd || undefined,
-            devBeNames: rawDetail.devBeNames || null,
-          };
-
-          const newDetail = detailRepo.create(detailPayload as any) as unknown as SupportTicketDetail;
-          await detailRepo.save(newDetail);
-          console.log(`  -> Created SupportTicketDetail: "${rawDetail.subIssue}"`);
-        } else {
-          console.log(`  -> SupportTicketDetail already exists: "${rawDetail.subIssue}"`);
+        if (rawDetail.devBeNames) {
+          const names = rawDetail.devBeNames.split(',').map(n => n.trim());
+          for (const name of names) {
+            const u = findUserByName(name);
+            if (u && !assigneesToInsert.some(a => a.user.id === u.id)) {
+              assigneesToInsert.push({ user: u, hoursSpent: rawDetail.hoursSpent });
+            }
+          }
         }
+      }
+    }
+
+    for (const item of assigneesToInsert) {
+      const existingAssignee = await assigneeRepo.findOneBy({
+        supportTicketId: ticket.id,
+        userId: item.user.id,
+      });
+      if (!existingAssignee) {
+        const assigneePayload = {
+          supportTicketId: ticket.id,
+          userId: item.user.id,
+          hoursSpent: item.hoursSpent || Number((raw.hours / (assigneesToInsert.length || 1)).toFixed(2)),
+          status: mapDetailStatus(raw.status),
+          startDate: startDate || undefined,
+          endDate: endDate || undefined,
+        };
+        const newAssignee = assigneeRepo.create(assigneePayload as any) as unknown as SupportTicketAssignee;
+        await assigneeRepo.save(newAssignee);
+        console.log(`  -> Assigned Member: ${item.user.fullName}`);
       }
     }
   }
