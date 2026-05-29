@@ -41,6 +41,10 @@ export class ProjectsService {
 
     const project = this.projectRepo.create({
       ...dto,
+      startDate: dto.startDate ? new Date(dto.startDate) : undefined,
+      endDate: dto.endDate ? new Date(dto.endDate) : undefined,
+      actualStart: dto.actualStart ? new Date(dto.actualStart) : undefined,
+      actualEnd: dto.actualEnd ? new Date(dto.actualEnd) : undefined,
       createdBy: userId,
     });
 
@@ -60,7 +64,10 @@ export class ProjectsService {
       .leftJoinAndSelect('project.project', 'masterProject')
       .leftJoinAndSelect('project.parentProject', 'parentProject');
 
-    applyPagination(qb, query, ['masterProject.name', 'picClient', 'status', 'customer']);
+    applyPagination(qb, query, ['masterProject.name', 'picClient', 'status', 'customer'], {
+      projectCode: 'masterProject.projectCode',
+      name: 'masterProject.name',
+    });
 
     const [projects, total] = await qb.getManyAndCount();
     const perPage = query.perPage || 10;
@@ -96,8 +103,22 @@ export class ProjectsService {
       await this.masterProjectsService.findEntity(dto.projectId);
     }
 
+    const updateData: any = { ...dto };
+    if (dto.startDate !== undefined) {
+      updateData.startDate = dto.startDate ? new Date(dto.startDate) : null;
+    }
+    if (dto.endDate !== undefined) {
+      updateData.endDate = dto.endDate ? new Date(dto.endDate) : null;
+    }
+    if (dto.actualStart !== undefined) {
+      updateData.actualStart = dto.actualStart ? new Date(dto.actualStart) : null;
+    }
+    if (dto.actualEnd !== undefined) {
+      updateData.actualEnd = dto.actualEnd ? new Date(dto.actualEnd) : null;
+    }
+
     // Merge updates
-    this.projectRepo.merge(project, dto);
+    this.projectRepo.merge(project, updateData);
     const updated = await this.projectRepo.save(project);
 
     // Reload with relations

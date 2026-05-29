@@ -37,9 +37,12 @@ export class SalesOrdersService {
   async findAll(query: PaginationDto): Promise<PaginatedResponseDto<SalesOrderResponseDto>> {
     const qb = this.soRepo.createQueryBuilder('so')
       .leftJoinAndSelect('so.po', 'po')
-      .leftJoinAndSelect('so.project', 'project');
+      .leftJoinAndSelect('so.project', 'project')
+      .leftJoinAndSelect('project.project', 'masterProject');
 
-    applyPagination(qb, query, ['soNumber', 'soName', 'status']);
+    applyPagination(qb, query, ['soNumber', 'soName', 'status'], {
+      'project.project.name': 'masterProject.name',
+    });
 
     const [sos, total] = await qb.getManyAndCount();
     const perPage = query.perPage || 10;
@@ -60,7 +63,7 @@ export class SalesOrdersService {
   async findOne(id: number): Promise<BaseResponseDto<SalesOrderResponseDto>> {
     const so = await this.soRepo.findOne({
       where: { id },
-      relations: { po: true, project: true },
+      relations: { po: true, project: { project: true } },
     });
     if (!so) throw new NotFoundException(`SO ${id} not found`);
     return { success: true, data: mapToDto(SalesOrderResponseDto, so) };

@@ -8,6 +8,7 @@ export function applyPagination<T extends ObjectLiteral>(
   queryBuilder: SelectQueryBuilder<T>,
   paginationDto: PaginationDto,
   searchFields: string[] = [],
+  keyMap: Record<string, string> = {},
 ) {
   const { page, perPage, search, filter } = paginationDto;
 
@@ -17,7 +18,8 @@ export function applyPagination<T extends ObjectLiteral>(
       '(' +
       searchFields
         .map((field, idx) => {
-          const fullField = field.includes('.') ? field : `${queryBuilder.alias}.${field}`;
+          const mappedField = keyMap[field] || field;
+          const fullField = mappedField.includes('.') ? mappedField : `${queryBuilder.alias}.${mappedField}`;
           return `${fullField} LIKE :search_${idx}`;
         })
         .join(' OR ') +
@@ -33,7 +35,8 @@ export function applyPagination<T extends ObjectLiteral>(
   if (filter) {
     Object.entries(filter).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
-        const fullKey = key.includes('.') ? key : `${queryBuilder.alias}.${key}`;
+        const mappedKey = keyMap[key] || key;
+        const fullKey = mappedKey.includes('.') ? mappedKey : `${queryBuilder.alias}.${mappedKey}`;
         const paramName = key.replace(/\./g, '_');
 
         const isIdField = key.toLowerCase().endsWith('id') || key === 'id';
@@ -72,7 +75,8 @@ export function applyPagination<T extends ObjectLiteral>(
     }
   }
 
-  const fullSortField = finalSortBy.includes('.') ? finalSortBy : `${queryBuilder.alias}.${finalSortBy}`;
+  const mappedSortBy = keyMap[finalSortBy] || finalSortBy;
+  const fullSortField = mappedSortBy.includes('.') ? mappedSortBy : `${queryBuilder.alias}.${mappedSortBy}`;
   queryBuilder.orderBy(fullSortField, finalSortOrder);
 
   // 4. Apply Skip and Take

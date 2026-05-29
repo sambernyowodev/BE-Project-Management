@@ -31,9 +31,12 @@ export class RoleRatesService {
   async findAll(query: PaginationDto): Promise<PaginatedResponseDto<RoleRateResponseDto>> {
     const qb = this.roleRateRepo.createQueryBuilder('roleRate')
       .leftJoinAndSelect('roleRate.role', 'role')
-      .leftJoinAndSelect('roleRate.project', 'project');
+      .leftJoinAndSelect('roleRate.project', 'project')
+      .leftJoinAndSelect('project.project', 'masterProject');
 
-    applyPagination(qb, query, ['role.name', 'project.name']);
+    applyPagination(qb, query, ['role.name', 'project.name'], {
+      'project.project.name': 'masterProject.name',
+    });
 
     const [rates, total] = await qb.getManyAndCount();
     const perPage = query.perPage || 10;
@@ -88,7 +91,7 @@ export class RoleRatesService {
   async findOne(id: number): Promise<BaseResponseDto<RoleRateResponseDto>> {
     const rate = await this.roleRateRepo.findOne({
       where: { id },
-      relations: { role: true, project: true }
+      relations: { role: true, project: { project: true } }
     });
     if (!rate) {
       throw new NotFoundException(`Role rate with id ${id} not found`);

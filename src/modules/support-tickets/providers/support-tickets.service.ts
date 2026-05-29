@@ -92,7 +92,9 @@ export class SupportTicketsService {
       .leftJoinAndSelect('ticket.devFe', 'devFe')
       .leftJoinAndSelect('ticket.devBe', 'devBe');
 
-    applyPagination(qb, query, ['ticketCode', 'issueTitle', 'status', 'masterProject.name']);
+    applyPagination(qb, query, ['ticketCode', 'issueTitle', 'status', 'masterProject.name'], {
+      projectName: 'masterProject.name',
+    });
 
     const [tickets, total] = await qb.getManyAndCount();
     const perPage = query.perPage || 10;

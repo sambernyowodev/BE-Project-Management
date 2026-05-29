@@ -17,6 +17,8 @@ export class ProjectActivitiesService {
   async create(dto: CreateProjectActivityDto, userId: number): Promise<BaseResponseDto<ProjectActivityResponseDto>> {
     const activity = this.activityRepo.create({
       ...dto,
+      startDate: dto.startDate ? new Date(dto.startDate) : undefined,
+      endDate: dto.endDate ? new Date(dto.endDate) : undefined,
       createdAt: new Date(),
       createdBy: userId,
     });
@@ -54,7 +56,15 @@ export class ProjectActivitiesService {
     });
     if (!activity) throw new NotFoundException(`Activity ${id} not found`);
 
-    this.activityRepo.merge(activity, dto, {
+    const updateData: any = { ...dto };
+    if (dto.startDate !== undefined) {
+      updateData.startDate = dto.startDate ? new Date(dto.startDate) : null;
+    }
+    if (dto.endDate !== undefined) {
+      updateData.endDate = dto.endDate ? new Date(dto.endDate) : null;
+    }
+
+    this.activityRepo.merge(activity, updateData, {
       updatedAt: new Date(),
       updatedBy: userId
     });

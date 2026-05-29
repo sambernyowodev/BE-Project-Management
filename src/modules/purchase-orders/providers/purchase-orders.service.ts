@@ -33,9 +33,12 @@ export class PurchaseOrdersService {
 
   async findAll(query: PaginationDto): Promise<PaginatedResponseDto<PurchaseOrderResponseDto>> {
     const qb = this.poRepo.createQueryBuilder('po')
-      .leftJoinAndSelect('po.project', 'project');
+      .leftJoinAndSelect('po.project', 'project')
+      .leftJoinAndSelect('project.project', 'masterProject');
 
-    applyPagination(qb, query, ['poNumber', 'poName', 'customer', 'status']);
+    applyPagination(qb, query, ['poNumber', 'poName', 'customer', 'status'], {
+      'project.project.name': 'masterProject.name',
+    });
 
     const [pos, total] = await qb.getManyAndCount();
     const perPage = query.perPage || 10;
@@ -56,7 +59,7 @@ export class PurchaseOrdersService {
   async findOne(id: number): Promise<BaseResponseDto<PurchaseOrderResponseDto>> {
     const po = await this.poRepo.findOne({
       where: { id },
-      relations: { project: true },
+      relations: { project: { project: true } },
     });
     if (!po) throw new NotFoundException(`PO ${id} not found`);
     return { success: true, data: mapToDto(PurchaseOrderResponseDto, po) };
