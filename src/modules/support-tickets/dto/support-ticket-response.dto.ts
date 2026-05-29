@@ -15,6 +15,14 @@ export class SupportTicketResponseDto extends BaseDto {
   @Expose()
   masterProjectId?: number;
 
+  @ApiPropertyOptional()
+  @Expose()
+  customer?: string;
+
+  @ApiPropertyOptional()
+  @Expose()
+  picClient?: string;
+
   @ApiProperty()
   @Expose()
   issueTitle: string;

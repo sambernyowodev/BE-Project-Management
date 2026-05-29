@@ -4,8 +4,9 @@ import { DataSource } from 'typeorm';
 import { SupportTicket } from './modules/support-tickets/entities/support-ticket.entity';
 import { SupportTicketDetail } from './modules/support-tickets/entities/support-ticket-detail.entity';
 import { MasterProject } from './modules/master/project/entities/project.entity';
+import { Project } from './modules/projects/entities/project.entity';
 import { User } from './modules/master/users/entities/user.entity';
-import { SupportTicketStatus, SupportTicketDetailStatus } from './common/enums';
+import { SupportTicketStatus, SupportTicketDetailStatus, ProjectStatus } from './common/enums';
 
 interface RawSupportDetail {
   subIssue: string;
@@ -726,6 +727,7 @@ async function bootstrap() {
   const ticketRepo = dataSource.getRepository(SupportTicket);
   const detailRepo = dataSource.getRepository(SupportTicketDetail);
   const masterProjectRepo = dataSource.getRepository(MasterProject);
+  const projectRepo = dataSource.getRepository(Project);
   const userRepo = dataSource.getRepository(User);
 
   // Cache users to avoid repeated DB calls
@@ -744,6 +746,19 @@ async function bootstrap() {
     return p || null;
   };
 
+  // Build a map of counts per year from existing project codes
+  const countsByYear: Record<number, number> = {};
+  for (const mp of allMasterProjects) {
+    const match = mp.projectCode.match(/^HCM-(\d{4})-(\d{3})$/);
+    if (match) {
+      const yr = parseInt(match[1], 10);
+      const seq = parseInt(match[2], 10);
+      if (!countsByYear[yr] || seq > countsByYear[yr]) {
+        countsByYear[yr] = seq;
+      }
+    }
+  }
+
   let globalIndex = 1;
 
   for (const raw of rawTickets) {
@@ -754,7 +769,43 @@ async function bootstrap() {
     const year = startDate ? startDate.getFullYear() : 2025;
     const ticketCode = `SUP-${year}-${String(globalIndex++).padStart(4, '0')}`;
 
-    const masterProject = matchMasterProject(raw.projectName);
+    let masterProject = matchMasterProject(raw.projectName);
+    if (!masterProject) {
+      const year = startDate ? startDate.getFullYear() : 2025;
+      countsByYear[year] = (countsByYear[year] || 0) + 1;
+      const projectCode = `HCM-${year}-${String(countsByYear[year]).padStart(3, '0')}`;
+
+      const masterPayload = {
+        projectCode,
+        name: raw.projectName,
+        description: `Created automatically during support ticket seeding for ${raw.projectName}`,
+        platform: raw.platform || 'OS',
+        isActive: true,
+      };
+      const newMaster = masterProjectRepo.create(masterPayload as any) as unknown as MasterProject;
+      masterProject = await masterProjectRepo.save(newMaster);
+      console.log(`Created MasterProject: ${masterProject.name} (${masterProject.projectCode})`);
+
+      // Add to cached list so we match it next time
+      allMasterProjects.push(masterProject);
+
+      // Create corresponding Project (header)
+      const projectPayload = {
+        projectId: masterProject.id,
+        picClient: raw.customer || 'Unknown Client',
+        customer: 'Telkomsel HCM',
+        status: ProjectStatus.IN_PROGRESS,
+        totalMandays: Number((raw.hours / 8).toFixed(2)),
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
+        remarks: raw.notes || `Created for Support Ticket Seeding`,
+        isActive: true,
+      };
+      const newProj = projectRepo.create(projectPayload as any) as unknown as Project;
+      await projectRepo.save(newProj);
+      console.log(`Created Project: id=${masterProject.id} for master ${masterProject.name}`);
+    }
+
     const baUser = findUserByName(raw.businessAnalyst);
     const uiuxUser = findUserByName(raw.uiUx);
     const feUser = findUserByName(raw.devFe);
@@ -765,6 +816,8 @@ async function bootstrap() {
       const ticketPayload = {
         ticketCode,
         masterProjectId: masterProject ? masterProject.id : null,
+        customer: 'Telkomsel HCM',
+        picClient: raw.customer || null,
         issueTitle: raw.issue,
         issueDescription: raw.issue,
         hoursSpent: raw.hours,

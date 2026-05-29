@@ -12,6 +12,16 @@ export class CreateSupportTicketDto {
   @IsString()
   masterProjectName?: string;
 
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  customer?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  picClient?: string;
+
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
@@ -65,6 +75,16 @@ export class UpdateSupportTicketDto {
   @IsOptional()
   @IsString()
   masterProjectName?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  customer?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  picClient?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

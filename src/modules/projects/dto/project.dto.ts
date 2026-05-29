@@ -30,8 +30,6 @@ export class CreateProjectDto {
   @IsString()
   picInternal?: string;
 
-
-
   @ApiProperty({ required: false, description: 'Parent project ID (self-ref for support projects)' })
   @IsOptional()
   @IsNumber()
@@ -49,11 +47,19 @@ export class CreateProjectDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsDateString()
+  actualStart?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDateString()
+  actualEnd?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsNumber()
   totalMandays?: number;
-}
 
-export class UpdateProjectDto extends PartialType(CreateProjectDto) {
   @ApiProperty({ required: false, enum: ProjectStatus })
   @IsOptional()
   @IsEnum(ProjectStatus)
@@ -84,6 +90,8 @@ export class UpdateProjectDto extends PartialType(CreateProjectDto) {
   @IsString()
   remarks?: string;
 }
+
+export class UpdateProjectDto extends PartialType(CreateProjectDto) {}
 
 export class AddProjectMemberDto {
   @ApiProperty()

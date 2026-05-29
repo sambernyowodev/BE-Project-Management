@@ -23,6 +23,12 @@ export class SupportTicket extends BaseEntity {
   })
   masterProjectId: number;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  customer: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true, name: 'pic_client' })
+  picClient: string;
+
   @Column({ type: 'varchar', length: 500, name: 'issue_title' })
   issueTitle: string;
 
