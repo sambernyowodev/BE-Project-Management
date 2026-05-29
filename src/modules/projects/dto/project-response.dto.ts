@@ -22,6 +22,10 @@ export class ProjectMemberResponseDto extends BaseDto {
 
   @ApiProperty()
   @Expose()
+  assignedMandays: number;
+
+  @ApiProperty()
+  @Expose()
   startDate: Date;
 
   @ApiPropertyOptional()
