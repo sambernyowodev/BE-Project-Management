@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Query, Put, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Query, Put, Delete, ParseIntPipe } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { RoleRatesService } from '../providers/role-rates.service';
 import { CreateRoleRateDto } from '../dto/create-role-rate.dto';
@@ -25,17 +25,10 @@ export class RoleRatesController {
   }
 
   @Get('global')
-  @ApiOperation({ summary: 'Get global role rates (no project tied)' })
+  @ApiOperation({ summary: 'Get global role rates' })
   @ApiBaseListResponse(RoleRateResponseDto)
   getGlobalRates(): Promise<BaseResponseDto<RoleRateResponseDto[]>> {
     return this.roleRatesService.getGlobalRates();
-  }
-
-  @Get('project/:projectId')
-  @ApiOperation({ summary: 'Get role rates specific to a project' })
-  @ApiBaseListResponse(RoleRateResponseDto)
-  getProjectRates(@Param('projectId') projectId: string): Promise<BaseResponseDto<RoleRateResponseDto[]>> {
-    return this.roleRatesService.getProjectRates(+projectId);
   }
 
   @Post()
@@ -43,8 +36,8 @@ export class RoleRatesController {
   @ApiBaseResponse(RoleRateResponseDto)
   create(
     @Body() dto: CreateRoleRateDto,
-    @CurrentUser() user: JwtPayload)
-    : Promise<BaseResponseDto<RoleRateResponseDto>> {
+    @CurrentUser() user: JwtPayload
+  ): Promise<BaseResponseDto<RoleRateResponseDto>> {
     return this.roleRatesService.create(dto, user.sub);
   }
 
@@ -65,4 +58,15 @@ export class RoleRatesController {
   findOne(@Param('id', ParseIntPipe) id: number): Promise<BaseResponseDto<RoleRateResponseDto>> {
     return this.roleRatesService.findOne(id);
   }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete role rate' })
+  @ApiBaseResponse(RoleRateResponseDto)
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: JwtPayload
+  ): Promise<BaseResponseDto<any>> {
+    return this.roleRatesService.remove(id, user.sub);
+  }
 }
+

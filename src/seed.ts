@@ -1208,38 +1208,10 @@ async function bootstrap() {
 
   console.log('--- Starting Database Seeder ---');
 
-  // Truncate tables first to ensure clean state
-  console.log('Truncating database tables...');
-  const queryRunner = dataSource.createQueryRunner();
-  await queryRunner.connect();
-  await queryRunner.query('SET FOREIGN_KEY_CHECKS = 0;');
-  const tables = [
-    'support_ticket_details',
-    'support_tickets',
-    'po_members',
-    'po_projects',
-    'project_members',
-    'purchase_orders',
-    'project_activities',
-    'user_roles',
-    'users',
-    'roles',
-    'master_projects',
-    'role_rates',
-    'billing_invoice_details',
-    'billing_invoices',
-    'projects',
-  ];
-  for (const table of tables) {
-    try {
-      await queryRunner.query(`TRUNCATE TABLE \`${table}\`;`);
-      console.log(`Truncated table: ${table}`);
-    } catch (e) {
-      console.warn(`Could not truncate table ${table}: ${e.message}`);
-    }
-  }
-  await queryRunner.query('SET FOREIGN_KEY_CHECKS = 1;');
-  await queryRunner.release();
+  console.log('Dropping and synchronizing database schema...');
+  await dataSource.dropDatabase();
+  await dataSource.synchronize();
+  console.log('Database reset successfully.');
 
   const roleRepo = dataSource.getRepository(Role);
   const userRepo = dataSource.getRepository(User);

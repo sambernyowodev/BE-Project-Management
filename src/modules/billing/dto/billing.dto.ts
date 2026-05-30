@@ -1,21 +1,31 @@
 import {
   IsNotEmpty,
+  IsArray,
   IsNumber,
   IsOptional,
   IsDateString,
+  IsString,
+  IsEnum,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class GenerateInvoiceDto {
-  @ApiProperty()
+export class GenerateBillingDto {
+  @ApiProperty({ example: 'PROJECT', enum: ['PROJECT', 'SUPPORT'] })
   @IsNotEmpty()
-  @IsNumber()
-  poId: number;
+  @IsEnum(['PROJECT', 'SUPPORT'])
+  billingType: 'PROJECT' | 'SUPPORT';
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  projectId: number;
+  @ApiProperty({ type: [Number], required: false })
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  projectIds?: number[];
+
+  @ApiProperty({ type: [Number], required: false })
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  supportTicketIds?: number[];
 
   @ApiProperty()
   @IsNotEmpty()
@@ -29,6 +39,6 @@ export class GenerateInvoiceDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  @IsNumber()
-  taxRate?: number;
+  @IsString()
+  remarks?: string;
 }

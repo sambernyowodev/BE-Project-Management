@@ -4,52 +4,35 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
-  Unique,
 } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity';
-import { Project } from '../../../projects/entities/project.entity';
 
 @Entity('role_rates')
-@Unique('uk_role_project_effective', ['roleId', 'projectId', 'effectiveFrom'])
 export class RoleRate extends BaseEntity {
 
   @Column({ type: 'bigint', unsigned: true, name: 'role_id' })
   roleId: number;
 
   @Column({
-    type: 'bigint',
-    unsigned: true,
-    nullable: true,
-    name: 'project_id',
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    default: 0,
+    name: 'rate_per_manday_project',
   })
-  projectId: number;
+  ratePerMandayProject: number;
 
   @Column({
     type: 'decimal',
     precision: 12,
     scale: 2,
     default: 0,
-    name: 'rate_per_manday',
+    name: 'rate_per_manday_support',
   })
-  ratePerManday: number;
-
-  @Column({
-    type: 'decimal',
-    precision: 12,
-    scale: 2,
-    default: 0,
-    name: 'rate_per_hour',
-  })
-  ratePerHour: number;
+  ratePerMandaySupport: number;
 
   @Column({ type: 'varchar', length: 3, default: 'IDR' })
   currency: string;
-
-  @Column({ type: 'date', name: 'effective_from' })
-  effectiveFrom: Date;
-
-  @Column({ type: 'date', nullable: true, name: 'effective_until' })
-  effectiveUntil: Date;
 
   @Column({ type: 'boolean', default: true, name: 'is_active' })
   isActive: boolean;
@@ -57,8 +40,5 @@ export class RoleRate extends BaseEntity {
   @ManyToOne(() => Role)
   @JoinColumn({ name: 'role_id' })
   role: Role;
-
-  @ManyToOne(() => Project, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'project_id' })
-  project: Project;
 }
+

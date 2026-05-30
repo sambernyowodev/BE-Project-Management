@@ -5,23 +5,21 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { BillingInvoice } from './billing-invoice.entity';
+import { Billing } from './billing.entity';
+import { Project } from '../../projects/entities/project.entity';
 import { Role } from '../../master/roles/entities/role.entity';
 
-@Entity('billing_invoice_details')
-export class BillingInvoiceDetail extends BaseEntity {
+@Entity('billing_details')
+export class BillingDetail extends BaseEntity {
 
-  @Column({ type: 'bigint', unsigned: true, name: 'invoice_id' })
-  invoiceId: number;
+  @Column({ type: 'bigint', unsigned: true, name: 'billing_id' })
+  billingId: number;
+
+  @Column({ type: 'bigint', unsigned: true, nullable: true, name: 'project_id' })
+  projectId: number;
 
   @Column({ type: 'bigint', unsigned: true, name: 'role_id' })
   roleId: number;
-
-  @Column({ type: 'varchar', length: 255, name: 'member_name' })
-  memberName: string;
-
-  @Column({ type: 'varchar', length: 100, name: 'role_name' })
-  roleName: string;
 
   @Column({ type: 'decimal', precision: 8, scale: 2, default: 0 })
   mandays: number;
@@ -38,9 +36,13 @@ export class BillingInvoiceDetail extends BaseEntity {
   @Column({ type: 'decimal', precision: 15, scale: 2, default: 0 })
   subtotal: number;
 
-  @ManyToOne(() => BillingInvoice, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'invoice_id' })
-  invoice: BillingInvoice;
+  @ManyToOne(() => Billing, (billing) => billing.details, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'billing_id' })
+  billing: Billing;
+
+  @ManyToOne(() => Project, { onDelete: 'SET NULL', nullable: true })
+  @JoinColumn({ name: 'project_id' })
+  project: Project;
 
   @ManyToOne(() => Role)
   @JoinColumn({ name: 'role_id' })

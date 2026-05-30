@@ -2,22 +2,28 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BillingService } from './providers/billing.service';
 import { BillingController } from './controllers/billing.controller';
-import { BillingInvoice } from './entities/billing-invoice.entity';
-import { BillingInvoiceDetail } from './entities/billing-invoice-detail.entity';
+import { Billing } from './entities/billing.entity';
+import { BillingDetail } from './entities/billing-detail.entity';
 import { PurchaseOrder } from '../purchase-orders/entities/purchase-order.entity';
 import { PoMember } from '../po-members/entities/po-member.entity';
 import { RoleRate } from '../master/role-rates/entities/role-rate.entity';
 import { Project } from '../projects/entities/project.entity';
+import { ProjectMember } from '../projects/entities/project-member.entity';
+import { SupportTicket } from '../support-tickets/entities/support-ticket.entity';
+import { ProjectActivity } from '../project-activities/entities/project-activity.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      BillingInvoice,
-      BillingInvoiceDetail,
+      Billing,
+      BillingDetail,
       PurchaseOrder,
       PoMember,
       RoleRate,
       Project,
+      ProjectMember,
+      SupportTicket,
+      ProjectActivity,
     ]),
   ],
   controllers: [BillingController],
@@ -25,3 +31,5 @@ import { Project } from '../projects/entities/project.entity';
   exports: [BillingService],
 })
 export class BillingModule { }
+
+

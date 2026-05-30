@@ -63,3 +63,10 @@ export enum InvoiceStatus {
   CANCELLED = 'CANCELLED',
 }
 
+export enum BillingStatus {
+  DRAFT = 'DRAFT',
+  FINALIZED = 'FINALIZED',
+  CANCELLED = 'CANCELLED',
+}
+
+

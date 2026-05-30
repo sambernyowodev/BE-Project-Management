@@ -7,15 +7,11 @@ import { Role } from '../../master/roles/entities/role.entity';
 import { MasterProject } from '../../master/project/entities/project.entity';
 import { MasterProjectsService } from '../../master/project/providers/projects.service';
 import { ProjectStatus } from '../../../common/enums';
-
-import { PurchaseOrder } from '../../purchase-orders/entities/purchase-order.entity';
 import { PoProject } from '../../purchase-orders/entities/po-project.entity';
-import { BillingInvoice } from '../../billing/entities/billing-invoice.entity';
-import { BillingInvoiceDetail } from '../../billing/entities/billing-invoice-detail.entity';
+import { BillingDetail } from '../../billing/entities/billing-detail.entity';
 import { SupportTicket } from '../../support-tickets/entities/support-ticket.entity';
 import { SupportTicketAssignee } from '../../support-tickets/entities/support-ticket-assignee.entity';
 import { ProjectActivity } from '../../project-activities/entities/project-activity.entity';
-import { RoleRate } from '../../master/role-rates/entities/role-rate.entity';
 import { PoMember } from '../../po-members/entities/po-member.entity';
 import { CreateProjectDto, UpdateProjectDto, AddProjectMemberDto } from '../dto/project.dto';
 import { BaseResponseDto, PaginatedResponseDto } from '../../../common/dtos/response.dto';
@@ -159,16 +155,9 @@ export class ProjectsService {
         await manager.delete(PoMember, { projectMemberId: In(memberIds) });
       }
 
-      // 4. Delete billing_invoice_details and billing_invoices
-      const invoices = await manager.find(BillingInvoice, {
-        where: { projectId: id },
-        select: { id: true },
-      }) as any[];
-      const invoiceIds = invoices.map((inv) => inv.id);
-      if (invoiceIds.length > 0) {
-        await manager.delete(BillingInvoiceDetail, { invoiceId: In(invoiceIds) });
-        await manager.delete(BillingInvoice, { id: In(invoiceIds) });
-      }
+      // 4. Clean up billing relations and details
+      await manager.query('DELETE FROM `billing_projects` WHERE `project_id` = ?', [id]);
+      await manager.delete(BillingDetail, { projectId: id });
 
       // 5. Delete support_tickets and their details (those linked to this project's master_project)
       const masterProjectId = project.projectId;
@@ -185,8 +174,7 @@ export class ProjectsService {
       // 6. Delete project_activities
       await manager.delete(ProjectActivity, { projectId: id });
 
-      // 7. Delete role_rates
-      await manager.delete(RoleRate, { projectId: id });
+      // 7. (Role Rates are general and not tied to projects, so no delete needed)
 
       // 8. Delete child projects (support projects referencing this as parent)
       const childProjects = await manager.find(Project, {

@@ -2,28 +2,25 @@ import { BaseDto } from '../../../common/dtos/base.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { ProjectResponseDto } from '../../projects/dto/project-response.dto';
-import { PurchaseOrderResponseDto } from '../../purchase-orders/dto/purchase-order-response.dto';
-import { UserResponseDto } from '../../master/users/dto/user-response.dto';
 import { RoleResponseDto } from '../../master/roles/dto/role-response.dto';
-import { InvoiceStatus } from '../../../common/enums';
+import { BillingStatus } from '../../../common/enums';
 
-export class BillingInvoiceDetailResponseDto extends BaseDto {
-
+export class BillingDetailResponseDto extends BaseDto {
   @ApiProperty()
   @Expose()
-  billingInvoiceId: number;
+  billingId: number;
 
   @ApiPropertyOptional()
   @Expose()
-  roleId?: number;
+  projectId?: number;
 
   @ApiProperty()
   @Expose()
-  description: string;
+  roleId: number;
 
   @ApiProperty()
   @Expose()
-  totalMandays: number;
+  mandays: number;
 
   @ApiProperty()
   @Expose()
@@ -31,7 +28,12 @@ export class BillingInvoiceDetailResponseDto extends BaseDto {
 
   @ApiProperty()
   @Expose()
-  amount: number;
+  subtotal: number;
+
+  @ApiPropertyOptional({ type: () => ProjectResponseDto })
+  @Expose()
+  @Type(() => ProjectResponseDto)
+  project?: ProjectResponseDto;
 
   @ApiPropertyOptional({ type: () => RoleResponseDto })
   @Expose()
@@ -39,65 +41,46 @@ export class BillingInvoiceDetailResponseDto extends BaseDto {
   role?: RoleResponseDto;
 }
 
-export class BillingInvoiceResponseDto {
+export class BillingResponseDto extends BaseDto {
+  @ApiProperty()
+  @Expose()
+  billingNumber: string;
 
   @ApiProperty()
   @Expose()
-  invoiceNumber: string;
+  billingType: string;
 
   @ApiProperty()
   @Expose()
-  projectId: number;
-
-  @ApiPropertyOptional()
-  @Expose()
-  poId?: number;
+  billingPeriodStart: Date;
 
   @ApiProperty()
   @Expose()
-  periodStart: Date;
+  billingPeriodEnd: Date;
 
   @ApiProperty()
   @Expose()
-  periodEnd: Date;
+  totalMandays: number;
 
   @ApiProperty()
   @Expose()
   totalAmount: number;
 
-  @ApiProperty({ enum: InvoiceStatus })
+  @ApiProperty({ enum: BillingStatus })
   @Expose()
-  status: InvoiceStatus;
+  status: BillingStatus;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @Expose()
-  isActive: boolean;
+  remarks?: string;
 
-  @ApiProperty()
-  @Expose()
-  createdById: number;
-
-  @ApiProperty()
-  @Expose()
-  createdAt: Date;
-
-  @ApiPropertyOptional({ type: () => ProjectResponseDto })
+  @ApiPropertyOptional({ type: () => [ProjectResponseDto] })
   @Expose()
   @Type(() => ProjectResponseDto)
-  project?: ProjectResponseDto;
+  projects?: ProjectResponseDto[];
 
-  @ApiPropertyOptional({ type: () => PurchaseOrderResponseDto })
+  @ApiPropertyOptional({ type: () => [BillingDetailResponseDto] })
   @Expose()
-  @Type(() => PurchaseOrderResponseDto)
-  po?: PurchaseOrderResponseDto;
-
-  @ApiPropertyOptional({ type: () => UserResponseDto })
-  @Expose()
-  @Type(() => UserResponseDto)
-  createdBy?: UserResponseDto;
-
-  @ApiPropertyOptional({ type: () => [BillingInvoiceDetailResponseDto] })
-  @Expose()
-  @Type(() => BillingInvoiceDetailResponseDto)
-  details?: BillingInvoiceDetailResponseDto[];
+  @Type(() => BillingDetailResponseDto)
+  details?: BillingDetailResponseDto[];
 }
