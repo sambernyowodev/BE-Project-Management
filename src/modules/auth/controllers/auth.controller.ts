@@ -1,13 +1,13 @@
 import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from '../providers/auth.service';
-import { LoginDto, RegisterDto } from '../dto/auth.dto';
+import { LoginDto, RegisterDto, ChangePasswordDto } from '../dto/auth.dto';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { ApiBaseResponse } from '../../../common/decorators/api-response.decorator';
 import { AuthResponseDto } from '../dto/auth-response.dto';
 import { UserResponseDto } from '../../master/users/dto/user-response.dto';
-import { BaseResponseDto } from '../../../common/dtos/response.dto';
+import { BaseResponseDto, SuccessResponseDto } from '../../../common/dtos/response.dto';
 import type { JwtPayload } from '../interfaces/jwt-payload.interface';
 import { UsersService } from 'src/modules/master/users/providers/users.service';
 
@@ -37,5 +37,17 @@ export class AuthController {
   @ApiBaseResponse(UserResponseDto)
   getProfile(@CurrentUser() user: JwtPayload): Promise<BaseResponseDto<UserResponseDto>> {
     return this.userService.findOne(user.sub);
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Change user password' })
+  @ApiBaseResponse(BaseResponseDto<SuccessResponseDto>)
+  async changePassword(
+    @CurrentUser() user: JwtPayload,
+    @Body() dto: ChangePasswordDto
+  ): Promise<BaseResponseDto<SuccessResponseDto>> {
+    return this.authService.changePassword(user.sub, dto);
   }
 }

@@ -105,4 +105,12 @@ export class UsersService {
 
     return { success: true, data: null, message: 'User deactivated successfully' };
   }
+
+  async updatePassword(id: number, passwordHash: string, updatedBy: number): Promise<void> {
+    await this.userRepository.update(id, {
+      passwordHash,
+      updatedAt: new Date(),
+      updatedBy,
+    });
+  }
 }

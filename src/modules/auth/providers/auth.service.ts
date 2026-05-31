@@ -2,12 +2,13 @@ import {
   Injectable,
   BadRequestException,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../../master/users/providers/users.service';
-import { LoginDto, RegisterDto } from '../dto/auth.dto';
-import { BaseResponseDto } from '../../../common/dtos/response.dto';
+import { LoginDto, RegisterDto, ChangePasswordDto } from '../dto/auth.dto';
+import { BaseResponseDto, SuccessResponseDto } from '../../../common/dtos/response.dto';
 import { AuthResponseDto } from '../dto/auth-response.dto';
 import { UserResponseDto } from '../../master/users/dto/user-response.dto';
 import { mapToDto } from '../../../common/utils/mapper.util';
@@ -75,5 +76,33 @@ export class AuthService {
         avatarUrl: user.avatarUrl,
       }),
     };
+  }
+
+  async changePassword(userId: number, dto: ChangePasswordDto): Promise<BaseResponseDto<SuccessResponseDto>> {
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new NotFoundException('Pengguna tidak ditemukan');
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      dto.oldPassword,
+      user.passwordHash,
+    );
+    if (!isPasswordValid) {
+      throw new BadRequestException('Password lama salah');
+    }
+
+    if (dto.newPassword === dto.oldPassword) {
+      throw new BadRequestException(
+        'Password baru tidak boleh sama dengan password lama',
+      );
+    }
+
+    const salt = await bcrypt.genSalt();
+    const newPasswordHash = await bcrypt.hash(dto.newPassword, salt);
+
+    await this.usersService.updatePassword(userId, newPasswordHash, userId);
+
+    return { success: true, data: { success: true }, message: 'Password berhasil diubah' };
   }
 }

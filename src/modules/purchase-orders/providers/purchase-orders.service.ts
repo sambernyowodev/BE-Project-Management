@@ -279,7 +279,11 @@ export class PurchaseOrdersService {
     const po = await this.poRepo.findOne({ where: { id } });
     if (!po) throw new NotFoundException(`PO ${id} not found`);
 
-    await this.poRepo.remove(po);
+    await this.poRepo.manager.transaction(async (manager) => {
+      await manager.delete(PoProject, { poId: id });
+      await manager.delete(PoMember, { poId: id });
+      await manager.delete(PurchaseOrder, id);
+    });
     return { success: true, data: undefined };
   }
 }

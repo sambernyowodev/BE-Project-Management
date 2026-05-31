@@ -30,3 +30,18 @@ export class RegisterDto {
   @IsNotEmpty({ message: 'Password tidak boleh kosong' })
   password: string;
 }
+
+export class ChangePasswordDto {
+  @ApiProperty({ example: 'OldPassword123' })
+  @IsNotEmpty({ message: 'Password lama tidak boleh kosong' })
+  oldPassword: string;
+
+  @ApiProperty({ example: 'NewPassword123' })
+  @MinLength(8, { message: 'Password baru minimal 8 karakter' })
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/, {
+    message: 'Password baru harus mengandung huruf besar, huruf kecil, dan angka',
+  })
+  @IsNotEmpty({ message: 'Password baru tidak boleh kosong' })
+  newPassword: string;
+}
+

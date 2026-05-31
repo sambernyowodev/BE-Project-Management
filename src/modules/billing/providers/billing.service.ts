@@ -267,5 +267,20 @@ export class BillingService {
     const fullBilling = { ...bill, details };
     return { success: true, data: mapToDto(BillingResponseDto, fullBilling) };
   }
+
+  async remove(id: number): Promise<BaseResponseDto<void>> {
+    const bill = await this.billingRepo.findOne({ where: { id } });
+    if (!bill) throw new NotFoundException('Billing record not found');
+
+    await this.billingRepo.manager.transaction(async (manager) => {
+      await manager.delete(BillingDetail, { billingId: id });
+      
+      // Remove relationships from junction table
+      await manager.query(`DELETE FROM billing_projects WHERE billing_id = ?`, [id]);
+      
+      await manager.delete(Billing, id);
+    });
+    return { success: true, data: undefined };
+  }
 }
 

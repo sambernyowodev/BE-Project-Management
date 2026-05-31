@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Delete } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { BillingService } from '../providers/billing.service';
 import { GenerateBillingDto } from '../dto/billing.dto';
@@ -40,6 +40,13 @@ export class BillingController {
   @ApiBaseResponse(BillingResponseDto)
   findOne(@Param('id') id: string): Promise<BaseResponseDto<BillingResponseDto>> {
     return this.billingService.findOne(+id);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete a billing record' })
+  @ApiBaseResponse(BaseResponseDto)
+  remove(@Param('id') id: string): Promise<BaseResponseDto<void>> {
+    return this.billingService.remove(+id);
   }
 }
 
