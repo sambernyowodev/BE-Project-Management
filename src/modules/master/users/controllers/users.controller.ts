@@ -14,9 +14,15 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { UsersService } from '../providers/users.service';
 import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../../../common/decorators/current-user.decorator';
-import { ApiBaseResponse, ApiBaseListResponse } from '../../../../common/decorators/api-response.decorator';
+import {
+  ApiBaseResponse,
+  ApiBaseListResponse,
+} from '../../../../common/decorators/api-response.decorator';
 import { UserResponseDto } from '../dto/user-response.dto';
-import { BaseResponseDto, PaginatedResponseDto } from '../../../../common/dtos/response.dto';
+import {
+  BaseResponseDto,
+  PaginatedResponseDto,
+} from '../../../../common/dtos/response.dto';
 import { PaginationDto } from '../../../../common/dtos/pagination.dto';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
@@ -27,12 +33,14 @@ import type { JwtPayload } from 'src/modules/auth/interfaces/jwt-payload.interfa
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get all users' })
   @ApiBaseListResponse(UserResponseDto)
-  findAll(@Query() query: PaginationDto): Promise<PaginatedResponseDto<UserResponseDto>> {
+  findAll(
+    @Query() query: PaginationDto,
+  ): Promise<PaginatedResponseDto<UserResponseDto>> {
     return this.usersService.findAll(query);
   }
 
@@ -48,8 +56,8 @@ export class UsersController {
   @ApiBaseResponse(UserResponseDto)
   create(
     @Body() dto: CreateUserDto,
-    @CurrentUser() user: JwtPayload)
-    : Promise<BaseResponseDto<UserResponseDto>> {
+    @CurrentUser() user: JwtPayload,
+  ): Promise<BaseResponseDto<UserResponseDto>> {
     return this.usersService.createUser(dto, user.sub);
   }
 
@@ -59,8 +67,8 @@ export class UsersController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateUserDto,
-    @CurrentUser() user: JwtPayload)
-    : Promise<BaseResponseDto<UserResponseDto>> {
+    @CurrentUser() user: JwtPayload,
+  ): Promise<BaseResponseDto<UserResponseDto>> {
     return this.usersService.update(id, dto, user.sub);
   }
 
@@ -68,7 +76,8 @@ export class UsersController {
   @ApiOperation({ summary: 'Deactivate user (soft delete)' })
   remove(
     @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: JwtPayload): Promise<BaseResponseDto<null>> {
+    @CurrentUser() user: JwtPayload,
+  ): Promise<BaseResponseDto<null>> {
     return this.usersService.remove(id, user.sub);
   }
 }

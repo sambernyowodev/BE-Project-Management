@@ -10,4 +10,4 @@ import { MasterProject } from './entities/project.entity';
   providers: [MasterProjectsService],
   exports: [MasterProjectsService],
 })
-export class MasterProjectsModule { }
+export class MasterProjectsModule {}

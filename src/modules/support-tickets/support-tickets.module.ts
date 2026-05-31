@@ -17,4 +17,4 @@ import { MasterProjectsModule } from '../master/project/projects.module';
   providers: [SupportTicketsService],
   exports: [SupportTicketsService],
 })
-export class SupportTicketsModule { }
+export class SupportTicketsModule {}

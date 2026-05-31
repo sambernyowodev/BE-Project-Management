@@ -1,11 +1,27 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Put, Delete, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Put,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { RolesService } from '../providers/roles.service';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
-import { ApiBaseResponse, ApiBaseListResponse } from '../../../../common/decorators/api-response.decorator';
+import {
+  ApiBaseResponse,
+  ApiBaseListResponse,
+} from '../../../../common/decorators/api-response.decorator';
 import { RoleResponseDto } from '../dto/role-response.dto';
-import { BaseResponseDto, SuccessResponseDto } from '../../../../common/dtos/response.dto';
+import {
+  BaseResponseDto,
+  SuccessResponseDto,
+} from '../../../../common/dtos/response.dto';
 import type { JwtPayload } from 'src/modules/auth/interfaces/jwt-payload.interface';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
@@ -14,14 +30,14 @@ import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 @UseGuards(JwtAuthGuard)
 @Controller('roles')
 export class RolesController {
-  constructor(private readonly rolesService: RolesService) { }
+  constructor(private readonly rolesService: RolesService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new role' })
   @ApiBaseResponse(RoleResponseDto)
   create(
     @Body() createRoleDto: CreateRoleDto,
-    @CurrentUser() user: JwtPayload
+    @CurrentUser() user: JwtPayload,
   ): Promise<BaseResponseDto<RoleResponseDto>> {
     return this.rolesService.create(createRoleDto, user.sub);
   }
@@ -46,7 +62,7 @@ export class RolesController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: Partial<CreateRoleDto>,
-    @CurrentUser() user: JwtPayload
+    @CurrentUser() user: JwtPayload,
   ): Promise<BaseResponseDto<RoleResponseDto>> {
     return this.rolesService.update(id, dto, user.sub);
   }
@@ -56,9 +72,7 @@ export class RolesController {
   @ApiBaseResponse(SuccessResponseDto)
   remove(
     @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: JwtPayload
   ): Promise<BaseResponseDto<SuccessResponseDto>> {
-    return this.rolesService.remove(id, user.sub);
+    return this.rolesService.remove(id);
   }
-
 }

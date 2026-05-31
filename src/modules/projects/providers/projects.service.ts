@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like, DataSource, In } from 'typeorm';
+import { Repository, DataSource, In } from 'typeorm';
 import { Project } from '../entities/project.entity';
 import { ProjectMember } from '../entities/project-member.entity';
 import { Role } from '../../master/roles/entities/role.entity';
@@ -13,11 +13,21 @@ import { SupportTicket } from '../../support-tickets/entities/support-ticket.ent
 import { SupportTicketAssignee } from '../../support-tickets/entities/support-ticket-assignee.entity';
 import { ProjectActivity } from '../../project-activities/entities/project-activity.entity';
 import { PoMember } from '../../po-members/entities/po-member.entity';
-import { CreateProjectDto, UpdateProjectDto, AddProjectMemberDto } from '../dto/project.dto';
-import { BaseResponseDto, PaginatedResponseDto } from '../../../common/dtos/response.dto';
+import {
+  CreateProjectDto,
+  UpdateProjectDto,
+  AddProjectMemberDto,
+} from '../dto/project.dto';
+import {
+  BaseResponseDto,
+  PaginatedResponseDto,
+} from '../../../common/dtos/response.dto';
 import { PaginationDto } from '../../../common/dtos/pagination.dto';
 import { applyPagination } from '../../../common/utils/query.util';
-import { ProjectResponseDto, ProjectMemberResponseDto } from '../dto/project-response.dto';
+import {
+  ProjectResponseDto,
+  ProjectMemberResponseDto,
+} from '../dto/project-response.dto';
 import { mapToDto, mapToDtoArray } from '../../../common/utils/mapper.util';
 
 @Injectable()
@@ -29,9 +39,12 @@ export class ProjectsService {
     private readonly memberRepo: Repository<ProjectMember>,
     private readonly dataSource: DataSource,
     private readonly masterProjectsService: MasterProjectsService,
-  ) { }
+  ) {}
 
-  async create(dto: CreateProjectDto, userId: number): Promise<BaseResponseDto<ProjectResponseDto>> {
+  async create(
+    dto: CreateProjectDto,
+    userId: number,
+  ): Promise<BaseResponseDto<ProjectResponseDto>> {
     // Validate master project exists
     await this.masterProjectsService.findEntity(dto.projectId);
 
@@ -55,15 +68,23 @@ export class ProjectsService {
     return { success: true, data: mapToDto(ProjectResponseDto, full) };
   }
 
-  async findAll(query: PaginationDto): Promise<PaginatedResponseDto<ProjectResponseDto>> {
-    const qb = this.projectRepo.createQueryBuilder('project')
+  async findAll(
+    query: PaginationDto,
+  ): Promise<PaginatedResponseDto<ProjectResponseDto>> {
+    const qb = this.projectRepo
+      .createQueryBuilder('project')
       .leftJoinAndSelect('project.project', 'masterProject')
       .leftJoinAndSelect('project.parentProject', 'parentProject');
 
-    applyPagination(qb, query, ['masterProject.name', 'picClient', 'status', 'customer'], {
-      projectCode: 'masterProject.projectCode',
-      name: 'masterProject.name',
-    });
+    applyPagination(
+      qb,
+      query,
+      ['masterProject.name', 'picClient', 'status', 'customer'],
+      {
+        projectCode: 'masterProject.projectCode',
+        name: 'masterProject.name',
+      },
+    );
 
     const [projects, total] = await qb.getManyAndCount();
     const perPage = query.perPage || 10;
@@ -90,7 +111,10 @@ export class ProjectsService {
     return { success: true, data: mapToDto(ProjectResponseDto, project) };
   }
 
-  async update(id: number, dto: UpdateProjectDto): Promise<BaseResponseDto<ProjectResponseDto>> {
+  async update(
+    id: number,
+    dto: UpdateProjectDto,
+  ): Promise<BaseResponseDto<ProjectResponseDto>> {
     const project = await this.projectRepo.findOne({ where: { id } });
     if (!project) throw new NotFoundException(`Project ${id} not found`);
 
@@ -107,7 +131,9 @@ export class ProjectsService {
       updateData.endDate = dto.endDate ? new Date(dto.endDate) : null;
     }
     if (dto.actualStart !== undefined) {
-      updateData.actualStart = dto.actualStart ? new Date(dto.actualStart) : null;
+      updateData.actualStart = dto.actualStart
+        ? new Date(dto.actualStart)
+        : null;
     }
     if (dto.actualEnd !== undefined) {
       updateData.actualEnd = dto.actualEnd ? new Date(dto.actualEnd) : null;
@@ -132,20 +158,11 @@ export class ProjectsService {
 
     await this.dataSource.transaction(async (manager) => {
       // 1. Get project member IDs to delete their po_members
-      const members = await manager.find(ProjectMember, {
+      const members = (await manager.find(ProjectMember, {
         where: { projectId: id },
         select: { id: true },
-      }) as any[];
+      })) as any[];
       const memberIds = members.map((m) => m.id);
-
-      // Find affected POs before deleting members
-      let poIds: number[] = [];
-      if (memberIds.length > 0) {
-        const poMembers = await manager.find(PoMember, {
-          where: { projectMemberId: In(memberIds) },
-        });
-        poIds = Array.from(new Set(poMembers.map((pm) => pm.poId)));
-      }
 
       // 2. Delete po_projects association
       await manager.delete(PoProject, { projectId: id });
@@ -156,18 +173,23 @@ export class ProjectsService {
       }
 
       // 4. Clean up billing relations and details
-      await manager.query('DELETE FROM `billing_projects` WHERE `project_id` = ?', [id]);
+      await manager.query(
+        'DELETE FROM `billing_projects` WHERE `project_id` = ?',
+        [id],
+      );
       await manager.delete(BillingDetail, { projectId: id });
 
       // 5. Delete support_tickets and their details (those linked to this project's master_project)
       const masterProjectId = project.projectId;
-      const tickets = await manager.find(SupportTicket, {
+      const tickets = (await manager.find(SupportTicket, {
         where: { masterProjectId },
         select: { id: true },
-      }) as any[];
+      })) as any[];
       const ticketIds = tickets.map((t) => t.id);
       if (ticketIds.length > 0) {
-        await manager.delete(SupportTicketAssignee, { supportTicketId: In(ticketIds) });
+        await manager.delete(SupportTicketAssignee, {
+          supportTicketId: In(ticketIds),
+        });
         await manager.delete(SupportTicket, { id: In(ticketIds) });
       }
 
@@ -177,13 +199,15 @@ export class ProjectsService {
       // 7. (Role Rates are general and not tied to projects, so no delete needed)
 
       // 8. Delete child projects (support projects referencing this as parent)
-      const childProjects = await manager.find(Project, {
+      const childProjects = (await manager.find(Project, {
         where: { parentProjectId: id },
         select: { id: true },
-      }) as any[];
+      })) as any[];
       for (const child of childProjects) {
         // Nullify parent reference
-        await manager.update(Project, child.id, { parentProjectId: null as any });
+        await manager.update(Project, child.id, {
+          parentProjectId: null as any,
+        });
       }
 
       // 9. Delete project_members
@@ -193,7 +217,11 @@ export class ProjectsService {
       await manager.delete(Project, { id });
     });
 
-    return { success: true, data: null, message: 'Project deleted successfully' };
+    return {
+      success: true,
+      data: null,
+      message: 'Project deleted successfully',
+    };
   }
 
   async addMember(
@@ -217,7 +245,11 @@ export class ProjectsService {
       for (const pp of poProjects) {
         // Create PoMember for this PO if it doesn't exist
         let poMember = await manager.getRepository(PoMember).findOne({
-          where: { poId: pp.poId, projectMemberId: saved.id, roleId: dto.roleId },
+          where: {
+            poId: pp.poId,
+            projectMemberId: saved.id,
+            roleId: dto.roleId,
+          },
         });
         if (!poMember) {
           poMember = manager.getRepository(PoMember).create({
@@ -237,22 +269,35 @@ export class ProjectsService {
       return saved;
     });
 
-    return { success: true, data: mapToDto(ProjectMemberResponseDto, savedMember) };
+    return {
+      success: true,
+      data: mapToDto(ProjectMemberResponseDto, savedMember),
+    };
   }
 
-  async getMembers(projectId: number): Promise<BaseResponseDto<ProjectMemberResponseDto[]>> {
+  async getMembers(
+    projectId: number,
+  ): Promise<BaseResponseDto<ProjectMemberResponseDto[]>> {
     const data = await this.memberRepo.find({
       where: { projectId },
       relations: { user: true, role: true },
     });
-    return { success: true, data: mapToDtoArray(ProjectMemberResponseDto, data) };
+    return {
+      success: true,
+      data: mapToDtoArray(ProjectMemberResponseDto, data),
+    };
   }
 
-  async findOrCreateSupportProject(masterProjectName: string, userId?: number): Promise<Project> {
+  async findOrCreateSupportProject(
+    masterProjectName: string,
+    userId?: number,
+  ): Promise<Project> {
     // 1. Find or create the MasterProject
-    let masterProject = await this.masterProjectsService.findByName(masterProjectName);
+    let masterProject =
+      await this.masterProjectsService.findByName(masterProjectName);
     if (!masterProject) {
-      const projectCode = await this.masterProjectsService.generateProjectCode();
+      const projectCode =
+        await this.masterProjectsService.generateProjectCode();
       const masterRepo = this.dataSource.getRepository(MasterProject);
       masterProject = masterRepo.create({
         name: masterProjectName,
@@ -282,7 +327,11 @@ export class ProjectsService {
     return project;
   }
 
-  async ensureProjectMember(projectId: number, userId: number, roleCode: string): Promise<void> {
+  async ensureProjectMember(
+    projectId: number,
+    userId: number,
+    roleCode: string,
+  ): Promise<void> {
     // Find the Role
     const role = await this.dataSource.getRepository(Role).findOne({
       where: { code: roleCode },
@@ -303,23 +352,28 @@ export class ProjectsService {
     await this.memberRepo.save(member);
   }
 
-  async removeMember(projectId: number, memberId: number): Promise<BaseResponseDto<null>> {
+  async removeMember(
+    projectId: number,
+    memberId: number,
+  ): Promise<BaseResponseDto<null>> {
     const member = await this.memberRepo.findOne({
       where: { id: memberId, projectId },
     });
-    if (!member) throw new NotFoundException(`Project member ${memberId} not found in project ${projectId}`);
-
+    if (!member)
+      throw new NotFoundException(
+        `Project member ${memberId} not found in project ${projectId}`,
+      );
     await this.dataSource.transaction(async (manager) => {
-      // Find the POs associated with this project member
-      const poMembers = await manager.find(PoMember, { where: { projectMemberId: memberId } });
-      const poIds = Array.from(new Set(poMembers.map(pm => pm.poId)));
-
       // Delete references in po_members
       await manager.delete(PoMember, { projectMemberId: memberId });
       // Delete the project member
       await manager.remove(member);
     });
 
-    return { success: true, data: null, message: 'Member removed successfully' };
+    return {
+      success: true,
+      data: null,
+      message: 'Member removed successfully',
+    };
   }
 }

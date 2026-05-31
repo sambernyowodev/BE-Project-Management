@@ -1,17 +1,11 @@
 import { BaseEntity } from '../../../common/entities/base.entity';
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { PurchaseOrder } from '../../purchase-orders/entities/purchase-order.entity';
 import { ProjectMember } from '../../projects/entities/project-member.entity';
 import { Role } from '../../master/roles/entities/role.entity';
 
 @Entity('po_members')
 export class PoMember extends BaseEntity {
-
   @Column({ type: 'bigint', unsigned: true, name: 'po_id' })
   poId: number;
 

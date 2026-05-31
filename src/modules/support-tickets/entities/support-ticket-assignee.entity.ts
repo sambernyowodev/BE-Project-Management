@@ -1,10 +1,5 @@
 import { BaseEntity } from '../../../common/entities/base.entity';
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { SupportTicket } from './support-ticket.entity';
 import { User } from '../../master/users/entities/user.entity';
 import { Role } from '../../master/roles/entities/role.entity';
@@ -12,7 +7,6 @@ import { SupportTicketDetailStatus } from '../../../common/enums';
 
 @Entity('support_ticket_assignees')
 export class SupportTicketAssignee extends BaseEntity {
-
   @Column({ type: 'bigint', unsigned: true, name: 'support_ticket_id' })
   supportTicketId: number;
 
@@ -47,7 +41,9 @@ export class SupportTicketAssignee extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   notes: string;
 
-  @ManyToOne(() => SupportTicket, (ticket) => ticket.assignees, { onDelete: 'CASCADE' })
+  @ManyToOne(() => SupportTicket, (ticket) => ticket.assignees, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'support_ticket_id' })
   supportTicket: SupportTicket;
 

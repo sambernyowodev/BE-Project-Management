@@ -10,7 +10,9 @@ export class AddPoProjectDto {
   @IsNumber()
   projectId: number;
 
-  @ApiProperty({ description: 'Allocated mandays for the project under this PO' })
+  @ApiProperty({
+    description: 'Allocated mandays for the project under this PO',
+  })
   @IsNotEmpty()
   @IsNumber()
   allocatedMandays: number;

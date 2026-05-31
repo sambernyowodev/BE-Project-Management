@@ -1,4 +1,14 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsBoolean, IsDateString, IsEnum, Min, Max } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsBoolean,
+  IsDateString,
+  IsEnum,
+  Min,
+  Max,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { PartialType } from '@nestjs/swagger';
 import { ProjectPhase } from '../../../common/enums';
@@ -87,7 +97,9 @@ export class CreateProjectActivityDto {
   isMilestone?: boolean;
 }
 
-export class UpdateProjectActivityDto extends PartialType(CreateProjectActivityDto) {}
+export class UpdateProjectActivityDto extends PartialType(
+  CreateProjectActivityDto,
+) {}
 
 export class UpdateProgressDto {
   @ApiProperty({ description: 'Progress percentage (0-100)' })

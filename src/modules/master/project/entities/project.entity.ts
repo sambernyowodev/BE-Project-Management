@@ -1,12 +1,8 @@
 import { BaseEntity } from '../../../../common/entities/base.entity';
-import {
-  Entity,
-  Column,
-} from 'typeorm';
+import { Entity, Column } from 'typeorm';
 
 @Entity('master_projects')
 export class MasterProject extends BaseEntity {
-
   @Column({ type: 'varchar', length: 50, unique: true, name: 'project_code' })
   projectCode: string;
 
@@ -21,5 +17,4 @@ export class MasterProject extends BaseEntity {
 
   @Column({ type: 'boolean', default: true, name: 'is_active' })
   isActive: boolean;
-
 }

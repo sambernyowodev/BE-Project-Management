@@ -19,9 +19,19 @@ export abstract class BaseEntity {
   @DeleteDateColumn({ type: 'datetime', name: 'deleted_at', nullable: true })
   deletedAt: Date;
 
-  @Column({ type: 'bigint', unsigned: true, nullable: true, name: 'created_by' })
+  @Column({
+    type: 'bigint',
+    unsigned: true,
+    nullable: true,
+    name: 'created_by',
+  })
   createdBy: number;
 
-  @Column({ type: 'bigint', unsigned: true, nullable: true, name: 'updated_by' })
+  @Column({
+    type: 'bigint',
+    unsigned: true,
+    nullable: true,
+    name: 'updated_by',
+  })
   updatedBy: number;
 }

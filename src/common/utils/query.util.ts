@@ -16,24 +16,32 @@ export function applyPagination<T extends ObjectLiteral>(
   if (search && searchFields.length > 0) {
     queryBuilder.andWhere(
       '(' +
-      searchFields
-        .map((field, idx) => {
-          const mappedField = keyMap[field] || field;
-          const fullField = mappedField.includes('.') ? mappedField : `${queryBuilder.alias}.${mappedField}`;
-          return `${fullField} LIKE :search_${idx}`;
-        })
-        .join(' OR ') +
-      ')',
-      searchFields.reduce((acc, _, idx) => {
-        acc[`search_${idx}`] = `%${search}%`;
-        return acc;
-      }, {} as Record<string, string>),
+        searchFields
+          .map((field, idx) => {
+            const mappedField = keyMap[field] || field;
+            const fullField = mappedField.includes('.')
+              ? mappedField
+              : `${queryBuilder.alias}.${mappedField}`;
+            return `${fullField} LIKE :search_${idx}`;
+          })
+          .join(' OR ') +
+        ')',
+      searchFields.reduce(
+        (acc, _, idx) => {
+          acc[`search_${idx}`] = `%${search}%`;
+          return acc;
+        },
+        {} as Record<string, string>,
+      ),
     );
   }
 
   // 2. Apply Filters
   if (filter) {
-    const validDbColumns: string[] = (((queryBuilder as any).expressionMap?.mainAlias?.metadata?.columns || []) as any[]).map(c => c.propertyName);
+    const validDbColumns: string[] = (
+      ((queryBuilder as any).expressionMap?.mainAlias?.metadata?.columns ||
+        []) as any[]
+    ).map((c) => c.propertyName);
     Object.entries(filter).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         const mappedKey = keyMap[key] || key;
@@ -41,31 +49,47 @@ export function applyPagination<T extends ObjectLiteral>(
           // Skip computed/non-existent columns
           return;
         }
-        const fullKey = mappedKey.includes('.') ? mappedKey : `${queryBuilder.alias}.${mappedKey}`;
+        const fullKey = mappedKey.includes('.')
+          ? mappedKey
+          : `${queryBuilder.alias}.${mappedKey}`;
         const paramName = key.replace(/\./g, '_');
 
         const isIdField = key.toLowerCase().endsWith('id') || key === 'id';
-        const isStatusOrType = key.toLowerCase().endsWith('status') ||
+        const isStatusOrType =
+          key.toLowerCase().endsWith('status') ||
           key.toLowerCase().endsWith('type') ||
           ['status', 'type', 'isactive'].includes(key.toLowerCase());
-        const isNumeric = ['totalamount', 'totalmandays', 'remainingmandays', 'allocatedmandays'].includes(key.toLowerCase());
+        const isNumeric = [
+          'totalamount',
+          'totalmandays',
+          'remainingmandays',
+          'allocatedmandays',
+        ].includes(key.toLowerCase());
 
         if (Array.isArray(value)) {
-          queryBuilder.andWhere(`${fullKey} IN (:...${paramName})`, { [paramName]: value });
+          queryBuilder.andWhere(`${fullKey} IN (:...${paramName})`, {
+            [paramName]: value,
+          });
         } else if (isNumeric) {
           const numVal = Number(value);
           if (!isNaN(numVal)) {
-            queryBuilder.andWhere(`${fullKey} = :${paramName}`, { [paramName]: numVal });
+            queryBuilder.andWhere(`${fullKey} = :${paramName}`, {
+              [paramName]: numVal,
+            });
           }
         } else if (typeof value === 'string' && !isIdField && !isStatusOrType) {
-          queryBuilder.andWhere(`${fullKey} LIKE :${paramName}`, { [paramName]: `%${value}%` });
+          queryBuilder.andWhere(`${fullKey} LIKE :${paramName}`, {
+            [paramName]: `%${value}%`,
+          });
         } else {
           // Handle boolean strings '1'/'0' or 'true'/'false'
           let finalValue = value;
           if (value === '1' || value === 'true') finalValue = true;
           if (value === '0' || value === 'false') finalValue = false;
 
-          queryBuilder.andWhere(`${fullKey} = :${paramName}`, { [paramName]: finalValue });
+          queryBuilder.andWhere(`${fullKey} = :${paramName}`, {
+            [paramName]: finalValue,
+          });
         }
       }
     });
@@ -87,7 +111,9 @@ export function applyPagination<T extends ObjectLiteral>(
   }
 
   const mappedSortBy = keyMap[finalSortBy] || finalSortBy;
-  const fullSortField = mappedSortBy.includes('.') ? mappedSortBy : `${queryBuilder.alias}.${mappedSortBy}`;
+  const fullSortField = mappedSortBy.includes('.')
+    ? mappedSortBy
+    : `${queryBuilder.alias}.${mappedSortBy}`;
   queryBuilder.orderBy(fullSortField, finalSortOrder);
 
   // 4. Apply Skip and Take

@@ -39,9 +39,9 @@ export class ChangePasswordDto {
   @ApiProperty({ example: 'NewPassword123' })
   @MinLength(8, { message: 'Password baru minimal 8 karakter' })
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/, {
-    message: 'Password baru harus mengandung huruf besar, huruf kecil, dan angka',
+    message:
+      'Password baru harus mengandung huruf besar, huruf kecil, dan angka',
   })
   @IsNotEmpty({ message: 'Password baru tidak boleh kosong' })
   newPassword: string;
 }
-

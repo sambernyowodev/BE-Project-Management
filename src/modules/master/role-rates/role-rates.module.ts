@@ -10,4 +10,4 @@ import { RoleRate } from './entities/role-rate.entity';
   providers: [RoleRatesService],
   exports: [RoleRatesService],
 })
-export class RoleRatesModule { }
+export class RoleRatesModule {}

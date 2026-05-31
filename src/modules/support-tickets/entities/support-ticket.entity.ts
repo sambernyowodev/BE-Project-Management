@@ -1,18 +1,11 @@
 import { BaseEntity } from '../../../common/entities/base.entity';
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  OneToMany,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { MasterProject } from '../../master/project/entities/project.entity';
 import { SupportTicketAssignee } from './support-ticket-assignee.entity';
 import { SupportTicketStatus } from '../../../common/enums';
 
 @Entity('support_tickets')
 export class SupportTicket extends BaseEntity {
-
   @Column({ type: 'varchar', length: 50, unique: true, name: 'ticket_code' })
   ticketCode: string;
 

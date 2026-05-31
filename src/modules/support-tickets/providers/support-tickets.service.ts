@@ -12,7 +12,11 @@ import {
   UpdateSupportTicketAssigneeDto,
   UpdateSupportTicketDto,
 } from '../dto/support-ticket.dto';
-import { BaseResponseDto, PaginatedResponseDto, SuccessResponseDto } from '../../../common/dtos/response.dto';
+import {
+  BaseResponseDto,
+  PaginatedResponseDto,
+  SuccessResponseDto,
+} from '../../../common/dtos/response.dto';
 import { PaginationDto } from '../../../common/dtos/pagination.dto';
 import { applyPagination } from '../../../common/utils/query.util';
 import { SupportTicketResponseDto } from '../dto/support-ticket-response.dto';
@@ -29,16 +33,22 @@ export class SupportTicketsService {
     private readonly dataSource: DataSource,
     private readonly masterProjectsService: MasterProjectsService,
     private readonly projectsService: ProjectsService,
-  ) { }
+  ) {}
 
-  async create(dto: CreateSupportTicketDto, userId?: number): Promise<BaseResponseDto<SupportTicketResponseDto>> {
+  async create(
+    dto: CreateSupportTicketDto,
+    userId?: number,
+  ): Promise<BaseResponseDto<SupportTicketResponseDto>> {
     let masterProjectId = dto.masterProjectId;
 
     // If no masterProjectId provided but masterProjectName given, find or create
     if (!masterProjectId && dto.masterProjectName) {
-      let masterProject = await this.masterProjectsService.findByName(dto.masterProjectName);
+      let masterProject = await this.masterProjectsService.findByName(
+        dto.masterProjectName,
+      );
       if (!masterProject) {
-        const projectCode = await this.masterProjectsService.generateProjectCode();
+        const projectCode =
+          await this.masterProjectsService.generateProjectCode();
         const masterRepo = this.dataSource.getRepository(MasterProject);
         const newMaster = masterRepo.create({
           name: dto.masterProjectName,
@@ -81,19 +91,30 @@ export class SupportTicketsService {
       },
     });
 
-    return { success: true, data: mapToDto(SupportTicketResponseDto, fullTicket) };
+    return {
+      success: true,
+      data: mapToDto(SupportTicketResponseDto, fullTicket),
+    };
   }
 
-  async findAll(query: PaginationDto): Promise<PaginatedResponseDto<SupportTicketResponseDto>> {
-    const qb = this.ticketRepo.createQueryBuilder('ticket')
+  async findAll(
+    query: PaginationDto,
+  ): Promise<PaginatedResponseDto<SupportTicketResponseDto>> {
+    const qb = this.ticketRepo
+      .createQueryBuilder('ticket')
       .leftJoinAndSelect('ticket.masterProject', 'masterProject')
       .leftJoinAndSelect('ticket.assignees', 'assignees')
       .leftJoinAndSelect('assignees.user', 'assigneeUser')
       .leftJoinAndSelect('assignees.role', 'assigneeRole');
 
-    applyPagination(qb, query, ['ticketCode', 'issueTitle', 'status', 'masterProject.name'], {
-      projectName: 'masterProject.name',
-    });
+    applyPagination(
+      qb,
+      query,
+      ['ticketCode', 'issueTitle', 'status', 'masterProject.name'],
+      {
+        projectName: 'masterProject.name',
+      },
+    );
 
     const [tickets, total] = await qb.getManyAndCount();
     const perPage = query.perPage || 10;
@@ -111,7 +132,9 @@ export class SupportTicketsService {
     };
   }
 
-  async findOne(id: number): Promise<BaseResponseDto<SupportTicketResponseDto>> {
+  async findOne(
+    id: number,
+  ): Promise<BaseResponseDto<SupportTicketResponseDto>> {
     const ticket = await this.ticketRepo.findOne({
       where: { id },
       relations: {
@@ -156,15 +179,23 @@ export class SupportTicketsService {
       relations: { user: true, role: true },
     });
 
-    return { success: true, data: mapToDto(SupportTicketAssigneeResponseDto, fullAssignee) };
+    return {
+      success: true,
+      data: mapToDto(SupportTicketAssigneeResponseDto, fullAssignee),
+    };
   }
 
-  async getAssignees(ticketId: number): Promise<BaseResponseDto<SupportTicketAssigneeResponseDto[]>> {
+  async getAssignees(
+    ticketId: number,
+  ): Promise<BaseResponseDto<SupportTicketAssigneeResponseDto[]>> {
     const data = await this.assigneeRepo.find({
       where: { supportTicketId: ticketId },
       relations: { user: true, role: true },
     });
-    return { success: true, data: mapToDtoArray(SupportTicketAssigneeResponseDto, data) };
+    return {
+      success: true,
+      data: mapToDtoArray(SupportTicketAssigneeResponseDto, data),
+    };
   }
 
   async updateAssignee(
@@ -176,7 +207,10 @@ export class SupportTicketsService {
     const assignee = await this.assigneeRepo.findOne({
       where: { id: assigneeId, supportTicketId: ticketId },
     });
-    if (!assignee) throw new NotFoundException(`Assignee ${assigneeId} not found for ticket ${ticketId}`);
+    if (!assignee)
+      throw new NotFoundException(
+        `Assignee ${assigneeId} not found for ticket ${ticketId}`,
+      );
 
     const updateData: any = { ...dto };
     if (dto.startDate !== undefined) {
@@ -198,20 +232,37 @@ export class SupportTicketsService {
       relations: { user: true, role: true },
     });
 
-    return { success: true, data: mapToDto(SupportTicketAssigneeResponseDto, fullAssignee) };
+    return {
+      success: true,
+      data: mapToDto(SupportTicketAssigneeResponseDto, fullAssignee),
+    };
   }
 
-  async removeAssignee(ticketId: number, assigneeId: number): Promise<BaseResponseDto<SuccessResponseDto>> {
+  async removeAssignee(
+    ticketId: number,
+    assigneeId: number,
+  ): Promise<BaseResponseDto<SuccessResponseDto>> {
     const assignee = await this.assigneeRepo.findOne({
       where: { id: assigneeId, supportTicketId: ticketId },
     });
-    if (!assignee) throw new NotFoundException(`Assignee ${assigneeId} not found for ticket ${ticketId}`);
+    if (!assignee)
+      throw new NotFoundException(
+        `Assignee ${assigneeId} not found for ticket ${ticketId}`,
+      );
 
     await this.assigneeRepo.remove(assignee);
-    return { success: true, data: { success: true }, message: 'Assignee removed successfully' };
+    return {
+      success: true,
+      data: { success: true },
+      message: 'Assignee removed successfully',
+    };
   }
 
-  async update(id: number, dto: UpdateSupportTicketDto, userId?: number): Promise<BaseResponseDto<SupportTicketResponseDto>> {
+  async update(
+    id: number,
+    dto: UpdateSupportTicketDto,
+    userId?: number,
+  ): Promise<BaseResponseDto<SupportTicketResponseDto>> {
     const ticket = await this.ticketRepo.findOne({ where: { id } });
     if (!ticket) throw new NotFoundException(`Ticket ${id} not found`);
 
@@ -219,9 +270,12 @@ export class SupportTicketsService {
 
     // If masterProjectName provided but no masterProjectId, find or create
     if (masterProjectId === undefined && dto.masterProjectName) {
-      let masterProject = await this.masterProjectsService.findByName(dto.masterProjectName);
+      let masterProject = await this.masterProjectsService.findByName(
+        dto.masterProjectName,
+      );
       if (!masterProject) {
-        const projectCode = await this.masterProjectsService.generateProjectCode();
+        const projectCode =
+          await this.masterProjectsService.generateProjectCode();
         const masterRepo = this.dataSource.getRepository(MasterProject);
         const newMaster = masterRepo.create({
           name: dto.masterProjectName,
@@ -234,11 +288,17 @@ export class SupportTicketsService {
       masterProjectId = masterProject.id;
     }
 
-    const mergedMasterProjectId = masterProjectId !== undefined ? masterProjectId : ticket.masterProjectId;
+    const mergedMasterProjectId =
+      masterProjectId !== undefined ? masterProjectId : ticket.masterProjectId;
 
     if (mergedMasterProjectId) {
-      const masterProject = await this.masterProjectsService.findEntity(mergedMasterProjectId);
-      await this.projectsService.findOrCreateSupportProject(masterProject.name, userId);
+      const masterProject = await this.masterProjectsService.findEntity(
+        mergedMasterProjectId,
+      );
+      await this.projectsService.findOrCreateSupportProject(
+        masterProject.name,
+        userId,
+      );
     }
 
     this.ticketRepo.merge(ticket, {
@@ -261,7 +321,10 @@ export class SupportTicketsService {
       },
     });
 
-    return { success: true, data: mapToDto(SupportTicketResponseDto, fullTicket) };
+    return {
+      success: true,
+      data: mapToDto(SupportTicketResponseDto, fullTicket),
+    };
   }
 
   async remove(id: number): Promise<BaseResponseDto<SuccessResponseDto>> {
@@ -276,6 +339,10 @@ export class SupportTicketsService {
       await manager.delete(SupportTicket, { id });
     });
 
-    return { success: true, data: { success: true }, message: 'Ticket deleted successfully' };
+    return {
+      success: true,
+      data: { success: true },
+      message: 'Ticket deleted successfully',
+    };
   }
 }

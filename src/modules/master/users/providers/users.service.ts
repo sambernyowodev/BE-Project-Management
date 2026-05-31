@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -6,7 +10,10 @@ import { User } from '../entities/user.entity';
 import { UserRole } from '../entities/user-role.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
-import { BaseResponseDto, PaginatedResponseDto } from '../../../../common/dtos/response.dto';
+import {
+  BaseResponseDto,
+  PaginatedResponseDto,
+} from '../../../../common/dtos/response.dto';
 import { PaginationDto } from '../../../../common/dtos/pagination.dto';
 import { applyPagination } from '../../../../common/utils/query.util';
 import { UserResponseDto } from '../dto/user-response.dto';
@@ -19,7 +26,7 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(UserRole)
     private readonly userRoleRepository: Repository<UserRole>,
-  ) { }
+  ) {}
 
   async findByEmail(email: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { email } });
@@ -34,7 +41,9 @@ export class UsersService {
     return this.userRepository.findOne({ where: { id } });
   }
 
-  async findAll(query: PaginationDto): Promise<PaginatedResponseDto<UserResponseDto>> {
+  async findAll(
+    query: PaginationDto,
+  ): Promise<PaginatedResponseDto<UserResponseDto>> {
     const qb = this.userRepository.createQueryBuilder('user');
 
     applyPagination(qb, query, ['fullName', 'email', 'employeeId']);
@@ -61,7 +70,10 @@ export class UsersService {
     return { success: true, data: mapToDto(UserResponseDto, user) };
   }
 
-  async createUser(dto: CreateUserDto, creatorId?: number): Promise<BaseResponseDto<UserResponseDto>> {
+  async createUser(
+    dto: CreateUserDto,
+    creatorId?: number,
+  ): Promise<BaseResponseDto<UserResponseDto>> {
     const existing = await this.findByEmail(dto.email);
     if (existing) {
       throw new BadRequestException('Email sudah terdaftar');
@@ -84,11 +96,18 @@ export class UsersService {
     return { success: true, data: mapToDto(UserResponseDto, saved) };
   }
 
-  async update(id: number, dto: UpdateUserDto, userId: number): Promise<BaseResponseDto<UserResponseDto>> {
+  async update(
+    id: number,
+    dto: UpdateUserDto,
+    userId: number,
+  ): Promise<BaseResponseDto<UserResponseDto>> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException(`User ${id} not found`);
 
-    this.userRepository.merge(user, dto, { updatedAt: new Date(), updatedBy: userId });
+    this.userRepository.merge(user, dto, {
+      updatedAt: new Date(),
+      updatedBy: userId,
+    });
     const updated = await this.userRepository.save(user);
 
     return { success: true, data: mapToDto(UserResponseDto, updated) };
@@ -103,10 +122,18 @@ export class UsersService {
     user.updatedBy = userId;
     await this.userRepository.save(user);
 
-    return { success: true, data: null, message: 'User deactivated successfully' };
+    return {
+      success: true,
+      data: null,
+      message: 'User deactivated successfully',
+    };
   }
 
-  async updatePassword(id: number, passwordHash: string, updatedBy: number): Promise<void> {
+  async updatePassword(
+    id: number,
+    passwordHash: string,
+    updatedBy: number,
+  ): Promise<void> {
     await this.userRepository.update(id, {
       passwordHash,
       updatedAt: new Date(),

@@ -1,14 +1,28 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsEnum, IsDateString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsEnum,
+  IsDateString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { SupportTicketDetailStatus } from '../../../common/enums';
 
 export class CreateSupportTicketDto {
-  @ApiProperty({ description: 'Master project ID (FK to master_projects)', required: false })
+  @ApiProperty({
+    description: 'Master project ID (FK to master_projects)',
+    required: false,
+  })
   @IsOptional()
   @IsNumber()
   masterProjectId?: number;
 
-  @ApiProperty({ description: 'Master project name (used to find/create master project if masterProjectId is not provided)', required: false })
+  @ApiProperty({
+    description:
+      'Master project name (used to find/create master project if masterProjectId is not provided)',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   masterProjectName?: string;
@@ -40,7 +54,10 @@ export class CreateSupportTicketAssigneeDto {
   @IsNumber()
   userId: number;
 
-  @ApiProperty({ description: 'Role ID of the assigned member', required: false })
+  @ApiProperty({
+    description: 'Role ID of the assigned member',
+    required: false,
+  })
   @IsOptional()
   @IsNumber()
   roleId?: number;
@@ -72,7 +89,10 @@ export class CreateSupportTicketAssigneeDto {
 }
 
 export class UpdateSupportTicketAssigneeDto {
-  @ApiProperty({ description: 'Role ID of the assigned member', required: false })
+  @ApiProperty({
+    description: 'Role ID of the assigned member',
+    required: false,
+  })
   @IsOptional()
   @IsNumber()
   roleId?: number;

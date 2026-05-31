@@ -1,17 +1,11 @@
 import { BaseEntity } from '../../../common/entities/base.entity';
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Project } from '../../projects/entities/project.entity';
 import { User } from '../../master/users/entities/user.entity';
 import { ProjectPhase } from '../../../common/enums';
 
 @Entity('project_activities')
 export class ProjectActivity extends BaseEntity {
-
   @Column({ type: 'bigint', unsigned: true, name: 'project_id' })
   projectId: number;
 

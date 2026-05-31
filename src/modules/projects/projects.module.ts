@@ -15,4 +15,4 @@ import { MasterProjectsModule } from '../master/project/projects.module';
   providers: [ProjectsService],
   exports: [ProjectsService],
 })
-export class ProjectsModule { }
+export class ProjectsModule {}

@@ -5,7 +5,6 @@ import { PurchaseOrderStatus } from '../../../common/enums';
 import { PoProjectResponseDto } from './po-project.dto';
 
 export class PurchaseOrderResponseDto extends BaseDto {
-
   @ApiProperty()
   @Expose()
   poNumber: string;

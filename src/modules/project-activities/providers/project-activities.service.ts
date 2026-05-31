@@ -2,8 +2,15 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProjectActivity } from '../entities/project-activity.entity';
-import { CreateProjectActivityDto, UpdateProjectActivityDto, UpdateProgressDto } from '../dto/project-activity.dto';
-import { BaseResponseDto, SuccessResponseDto } from '../../../common/dtos/response.dto';
+import {
+  CreateProjectActivityDto,
+  UpdateProjectActivityDto,
+  UpdateProgressDto,
+} from '../dto/project-activity.dto';
+import {
+  BaseResponseDto,
+  SuccessResponseDto,
+} from '../../../common/dtos/response.dto';
 import { ProjectActivityResponseDto } from '../dto/project-activity-response.dto';
 import { mapToDto, mapToDtoArray } from '../../../common/utils/mapper.util';
 
@@ -12,9 +19,12 @@ export class ProjectActivitiesService {
   constructor(
     @InjectRepository(ProjectActivity)
     private readonly activityRepo: Repository<ProjectActivity>,
-  ) { }
+  ) {}
 
-  async create(dto: CreateProjectActivityDto, userId: number): Promise<BaseResponseDto<ProjectActivityResponseDto>> {
+  async create(
+    dto: CreateProjectActivityDto,
+    userId: number,
+  ): Promise<BaseResponseDto<ProjectActivityResponseDto>> {
     const activity = this.activityRepo.create({
       ...dto,
       startDate: dto.startDate ? new Date(dto.startDate) : undefined,
@@ -31,25 +41,39 @@ export class ProjectActivitiesService {
     return { success: true, data: mapToDto(ProjectActivityResponseDto, full) };
   }
 
-  async findByProject(projectId: number): Promise<BaseResponseDto<ProjectActivityResponseDto[]>> {
+  async findByProject(
+    projectId: number,
+  ): Promise<BaseResponseDto<ProjectActivityResponseDto[]>> {
     const data = await this.activityRepo.find({
       where: { projectId },
       relations: { assignedTo: true },
       order: { sortOrder: 'ASC', createdAt: 'ASC' },
     });
-    return { success: true, data: mapToDtoArray(ProjectActivityResponseDto, data) };
+    return {
+      success: true,
+      data: mapToDtoArray(ProjectActivityResponseDto, data),
+    };
   }
 
-  async findOne(id: number): Promise<BaseResponseDto<ProjectActivityResponseDto>> {
+  async findOne(
+    id: number,
+  ): Promise<BaseResponseDto<ProjectActivityResponseDto>> {
     const activity = await this.activityRepo.findOne({
       where: { id },
       relations: { assignedTo: true },
     });
     if (!activity) throw new NotFoundException(`Activity ${id} not found`);
-    return { success: true, data: mapToDto(ProjectActivityResponseDto, activity) };
+    return {
+      success: true,
+      data: mapToDto(ProjectActivityResponseDto, activity),
+    };
   }
 
-  async update(id: number, dto: UpdateProjectActivityDto, userId: number): Promise<BaseResponseDto<ProjectActivityResponseDto>> {
+  async update(
+    id: number,
+    dto: UpdateProjectActivityDto,
+    userId: number,
+  ): Promise<BaseResponseDto<ProjectActivityResponseDto>> {
     const activity = await this.activityRepo.findOne({
       where: { id },
       relations: { assignedTo: true },
@@ -66,7 +90,7 @@ export class ProjectActivitiesService {
 
     this.activityRepo.merge(activity, updateData, {
       updatedAt: new Date(),
-      updatedBy: userId
+      updatedBy: userId,
     });
     const updated = await this.activityRepo.save(activity);
 
@@ -78,7 +102,11 @@ export class ProjectActivitiesService {
     return { success: true, data: mapToDto(ProjectActivityResponseDto, full) };
   }
 
-  async updateProgress(id: number, dto: UpdateProgressDto, userId: number): Promise<BaseResponseDto<ProjectActivityResponseDto>> {
+  async updateProgress(
+    id: number,
+    dto: UpdateProgressDto,
+    userId: number,
+  ): Promise<BaseResponseDto<ProjectActivityResponseDto>> {
     const activity = await this.activityRepo.findOne({
       where: { id },
       relations: { assignedTo: true },
@@ -89,7 +117,10 @@ export class ProjectActivitiesService {
     activity.updatedAt = new Date();
     activity.updatedBy = userId;
     const updated = await this.activityRepo.save(activity);
-    return { success: true, data: mapToDto(ProjectActivityResponseDto, updated) };
+    return {
+      success: true,
+      data: mapToDto(ProjectActivityResponseDto, updated),
+    };
   }
 
   async remove(id: number): Promise<BaseResponseDto<SuccessResponseDto>> {
@@ -97,6 +128,9 @@ export class ProjectActivitiesService {
     if (!activity) throw new NotFoundException(`Activity ${id} not found`);
 
     await this.activityRepo.remove(activity);
-    return { success: true, data: { success: true, message: 'Activity deleted successfully' } };
+    return {
+      success: true,
+      data: { success: true, message: 'Activity deleted successfully' },
+    };
   }
 }

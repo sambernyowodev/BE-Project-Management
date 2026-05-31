@@ -31,13 +31,15 @@ export class PaginationDto {
   @IsString()
   search?: string;
 
-  @ApiPropertyOptional({ description: 'Column filters (key-value object or JSON string)' })
+  @ApiPropertyOptional({
+    description: 'Column filters (key-value object or JSON string)',
+  })
   @IsOptional()
   @Transform(({ value }) => {
     if (typeof value === 'string') {
       try {
         return JSON.parse(value);
-      } catch (e) {
+      } catch {
         return value;
       }
     }

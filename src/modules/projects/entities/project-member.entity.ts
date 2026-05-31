@@ -14,7 +14,6 @@ import { Role } from '../../master/roles/entities/role.entity';
 @Entity('project_members')
 @Unique(['projectId', 'userId', 'roleId'])
 export class ProjectMember extends BaseEntity {
-
   @Column({ type: 'bigint', unsigned: true, name: 'project_id' })
   projectId: number;
 

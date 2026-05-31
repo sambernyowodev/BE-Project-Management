@@ -11,4 +11,4 @@ import { PurchaseOrder } from '../purchase-orders/entities/purchase-order.entity
   providers: [PoMembersService],
   exports: [PoMembersService],
 })
-export class PoMembersModule { }
+export class PoMembersModule {}

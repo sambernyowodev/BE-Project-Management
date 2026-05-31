@@ -3,7 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RoleRate } from '../entities/role-rate.entity';
 import { CreateRoleRateDto } from '../dto/create-role-rate.dto';
-import { BaseResponseDto, PaginatedResponseDto } from '../../../../common/dtos/response.dto';
+import {
+  BaseResponseDto,
+  PaginatedResponseDto,
+} from '../../../../common/dtos/response.dto';
 import { PaginationDto } from '../../../../common/dtos/pagination.dto';
 import { applyPagination } from '../../../../common/utils/query.util';
 import { RoleRateResponseDto } from '../dto/role-rate-response.dto';
@@ -14,20 +17,26 @@ export class RoleRatesService {
   constructor(
     @InjectRepository(RoleRate)
     private readonly roleRateRepo: Repository<RoleRate>,
-  ) { }
+  ) {}
 
-  async create(dto: CreateRoleRateDto, userId: number): Promise<BaseResponseDto<RoleRateResponseDto>> {
+  async create(
+    dto: CreateRoleRateDto,
+    userId: number,
+  ): Promise<BaseResponseDto<RoleRateResponseDto>> {
     const rate = this.roleRateRepo.create({
       ...dto,
       createdAt: new Date(),
-      createdBy: userId
+      createdBy: userId,
     });
     const saved = await this.roleRateRepo.save(rate);
     return { success: true, data: mapToDto(RoleRateResponseDto, saved) };
   }
 
-  async findAll(query: PaginationDto): Promise<PaginatedResponseDto<RoleRateResponseDto>> {
-    const qb = this.roleRateRepo.createQueryBuilder('roleRate')
+  async findAll(
+    query: PaginationDto,
+  ): Promise<PaginatedResponseDto<RoleRateResponseDto>> {
+    const qb = this.roleRateRepo
+      .createQueryBuilder('roleRate')
       .leftJoinAndSelect('roleRate.role', 'role');
 
     applyPagination(qb, query, ['role.name'], {});
@@ -56,14 +65,20 @@ export class RoleRatesService {
     return { success: true, data: mapToDtoArray(RoleRateResponseDto, data) };
   }
 
-  async update(id: number, dto: Partial<CreateRoleRateDto>, userId: number): Promise<BaseResponseDto<RoleRateResponseDto>> {
+  async update(
+    id: number,
+    dto: Partial<CreateRoleRateDto>,
+    userId: number,
+  ): Promise<BaseResponseDto<RoleRateResponseDto>> {
     const rate = await this.roleRateRepo.findOne({ where: { id } });
     if (!rate) {
       throw new NotFoundException(`Role rate with id ${id} not found`);
     }
     rate.roleId = dto.roleId ?? rate.roleId;
-    rate.ratePerMandayProject = dto.ratePerMandayProject ?? rate.ratePerMandayProject;
-    rate.ratePerMandaySupport = dto.ratePerMandaySupport ?? rate.ratePerMandaySupport;
+    rate.ratePerMandayProject =
+      dto.ratePerMandayProject ?? rate.ratePerMandayProject;
+    rate.ratePerMandaySupport =
+      dto.ratePerMandaySupport ?? rate.ratePerMandaySupport;
     rate.currency = dto.currency ?? rate.currency;
     rate.updatedAt = new Date();
     rate.updatedBy = userId;
@@ -74,7 +89,7 @@ export class RoleRatesService {
   async findOne(id: number): Promise<BaseResponseDto<RoleRateResponseDto>> {
     const rate = await this.roleRateRepo.findOne({
       where: { id },
-      relations: { role: true }
+      relations: { role: true },
     });
     if (!rate) {
       throw new NotFoundException(`Role rate with id ${id} not found`);
@@ -90,7 +105,10 @@ export class RoleRatesService {
     rate.updatedBy = userId;
     await this.roleRateRepo.save(rate);
     await this.roleRateRepo.softDelete(id);
-    return { success: true, data: null, message: 'Role rate soft deleted successfully' };
+    return {
+      success: true,
+      data: null,
+      message: 'Role rate soft deleted successfully',
+    };
   }
 }
-

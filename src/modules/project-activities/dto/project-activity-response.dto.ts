@@ -4,7 +4,6 @@ import { Expose, Type } from 'class-transformer';
 import { UserResponseDto } from '../../master/users/dto/user-response.dto';
 
 export class ProjectActivityResponseDto extends BaseDto {
-
   @ApiProperty()
   @Expose()
   projectId: number;

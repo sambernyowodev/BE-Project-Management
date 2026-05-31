@@ -6,7 +6,6 @@ import { ProjectMemberResponseDto } from '../../projects/dto/project-response.dt
 import { RoleResponseDto } from '../../master/roles/dto/role-response.dto';
 
 export class PoMemberResponseDto extends BaseDto {
-
   @ApiProperty()
   @Expose()
   poId: number;

@@ -1,21 +1,20 @@
 import { BaseEntity } from '../../../common/entities/base.entity';
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Billing } from './billing.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { Role } from '../../master/roles/entities/role.entity';
 
 @Entity('billing_details')
 export class BillingDetail extends BaseEntity {
-
   @Column({ type: 'bigint', unsigned: true, name: 'billing_id' })
   billingId: number;
 
-  @Column({ type: 'bigint', unsigned: true, nullable: true, name: 'project_id' })
+  @Column({
+    type: 'bigint',
+    unsigned: true,
+    nullable: true,
+    name: 'project_id',
+  })
   projectId: number;
 
   @Column({ type: 'bigint', unsigned: true, name: 'role_id' })
@@ -36,7 +35,9 @@ export class BillingDetail extends BaseEntity {
   @Column({ type: 'decimal', precision: 15, scale: 2, default: 0 })
   subtotal: number;
 
-  @ManyToOne(() => Billing, (billing) => billing.details, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Billing, (billing) => billing.details, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'billing_id' })
   billing: Billing;
 

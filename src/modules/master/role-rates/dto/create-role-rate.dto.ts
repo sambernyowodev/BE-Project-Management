@@ -1,9 +1,4 @@
-import {
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateRoleRateDto {
@@ -27,4 +22,3 @@ export class CreateRoleRateDto {
   @IsString()
   currency?: string;
 }
-

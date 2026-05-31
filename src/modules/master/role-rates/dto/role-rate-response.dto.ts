@@ -4,7 +4,6 @@ import { Expose, Type } from 'class-transformer';
 import { RoleResponseDto } from '../../roles/dto/role-response.dto';
 
 export class RoleRateResponseDto extends BaseDto {
-
   @ApiProperty()
   @Expose()
   roleId: number;
@@ -30,4 +29,3 @@ export class RoleRateResponseDto extends BaseDto {
   @Type(() => RoleResponseDto)
   role?: RoleResponseDto;
 }
-

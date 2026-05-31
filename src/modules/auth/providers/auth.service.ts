@@ -8,7 +8,10 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../../master/users/providers/users.service';
 import { LoginDto, RegisterDto, ChangePasswordDto } from '../dto/auth.dto';
-import { BaseResponseDto, SuccessResponseDto } from '../../../common/dtos/response.dto';
+import {
+  BaseResponseDto,
+  SuccessResponseDto,
+} from '../../../common/dtos/response.dto';
 import { AuthResponseDto } from '../dto/auth-response.dto';
 import { UserResponseDto } from '../../master/users/dto/user-response.dto';
 import { mapToDto } from '../../../common/utils/mapper.util';
@@ -18,7 +21,7 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   async register(dto: RegisterDto): Promise<BaseResponseDto<AuthResponseDto>> {
     const existingUser = await this.usersService.findByEmail(dto.email);
@@ -78,7 +81,10 @@ export class AuthService {
     };
   }
 
-  async changePassword(userId: number, dto: ChangePasswordDto): Promise<BaseResponseDto<SuccessResponseDto>> {
+  async changePassword(
+    userId: number,
+    dto: ChangePasswordDto,
+  ): Promise<BaseResponseDto<SuccessResponseDto>> {
     const user = await this.usersService.findById(userId);
     if (!user) {
       throw new NotFoundException('Pengguna tidak ditemukan');
@@ -103,6 +109,10 @@ export class AuthService {
 
     await this.usersService.updatePassword(userId, newPasswordHash, userId);
 
-    return { success: true, data: { success: true }, message: 'Password berhasil diubah' };
+    return {
+      success: true,
+      data: { success: true },
+      message: 'Password berhasil diubah',
+    };
   }
 }

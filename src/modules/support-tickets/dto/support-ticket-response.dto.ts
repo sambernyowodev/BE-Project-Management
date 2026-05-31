@@ -6,7 +6,6 @@ import { SupportTicketStatus } from '../../../common/enums';
 import { SupportTicketAssigneeResponseDto } from './support-ticket-assignee-response.dto';
 
 export class SupportTicketResponseDto extends BaseDto {
-
   @ApiProperty()
   @Expose()
   ticketCode: string;

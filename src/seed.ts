@@ -13,7 +13,6 @@ import { PoMember } from './modules/po-members/entities/po-member.entity';
 import { ProjectStatus, PurchaseOrderStatus } from './common/enums';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import { Like } from 'typeorm';
 
 interface RawProject {
   no: number;
@@ -56,8 +55,10 @@ const rawProjects: RawProject[] = [
     be: ['Nur Amalia', 'Internship (Adrian)', 'Internship (Syahandika)'],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FPOLARIS&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
-    timelineLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7B49253914-4342-4412-BDC7-9786D0E0C1E2%7D&file=Usage%20Mandays%20POLARIS.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FPOLARIS&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
+    timelineLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7B49253914-4342-4412-BDC7-9786D0E0C1E2%7D&file=Usage%20Mandays%20POLARIS.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 2,
@@ -77,8 +78,10 @@ const rawProjects: RawProject[] = [
     be: ['Bagus', 'Fazri'],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FTelkomsel%20%2D%20MII%20%282023%20%2D%202024%29%2FMoana%203%2E0%2FOvertime&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
-    timelineLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7B0BC3124C-2F44-4AD8-9113-5EB25CB07128%7D&file=Slicing%20Overtime.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FTelkomsel%20%2D%20MII%20%282023%20%2D%202024%29%2FMoana%203%2E0%2FOvertime&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
+    timelineLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7B0BC3124C-2F44-4AD8-9113-5EB25CB07128%7D&file=Slicing%20Overtime.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 3,
@@ -98,8 +101,10 @@ const rawProjects: RawProject[] = [
     be: ['Tsel'],
     remarks: 'RFS: 9-Agu-2024',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2F%5BPrime%20Time%5D%2FPrime%20Time%20%2D%20Sprint%203%20%28Meeting%20AI%29&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380&newTargetListUrl=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi&viewpath=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FForms%2FAllItems%2Easpx',
-    timelineLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7B8CC154E3-1876-4236-8D80-E8B65B184C09%7D&file=Resource%20Planning%20(Form%20D%20%26%20Meeting%20AI).xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2F%5BPrime%20Time%5D%2FPrime%20Time%20%2D%20Sprint%203%20%28Meeting%20AI%29&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380&newTargetListUrl=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi&viewpath=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FForms%2FAllItems%2Easpx',
+    timelineLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7B8CC154E3-1876-4236-8D80-E8B65B184C09%7D&file=Resource%20Planning%20(Form%20D%20%26%20Meeting%20AI).xlsx&action=default&mobileredirect=true',
   },
   {
     no: 4,
@@ -119,7 +124,8 @@ const rawProjects: RawProject[] = [
     be: ['Tsel'],
     remarks: 'Reject/Cancelled',
     updateDate: '15-Dec-25',
-    timelineLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/doc2.aspx?sourcedoc=%7BBB2DF18E-7A7D-4841-9B16-88DC736A8B0F%7D&file=Timeline%20MUTASI%202024.xlsx&action=default&mobileredirect=true'
+    timelineLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/doc2.aspx?sourcedoc=%7BBB2DF18E-7A7D-4841-9B16-88DC736A8B0F%7D&file=Timeline%20MUTASI%202024.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 5,
@@ -137,10 +143,12 @@ const rawProjects: RawProject[] = [
     uiux: ['Adam'],
     fe: ['Iqbal', 'Ivanowsky', 'Faton', 'Diaz'],
     be: ['Ivanowsky', 'Bob', 'David'],
-    remarks: 'Sementara sampai SIT karena WAF. Mandays 423 sheet Timeline ODC Awal',
+    remarks:
+      'Sementara sampai SIT karena WAF. Mandays 423 sheet Timeline ODC Awal',
     updateDate: '15-Dec-25',
     repositoryLink: 'ODC HCM Career Page',
-    timelineLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7BCFCD3BB6-F6B6-484F-829E-71D7EE092385%7D&file=(Update)%20%5BInternal%5DTimeline%20ODC%20HCM%20Career%20Page%20(1)1.xlsx&action=default&mobileredirect=true'
+    timelineLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7BCFCD3BB6-F6B6-484F-829E-71D7EE092385%7D&file=(Update)%20%5BInternal%5DTimeline%20ODC%20HCM%20Career%20Page%20(1)1.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 6,
@@ -160,8 +168,10 @@ const rawProjects: RawProject[] = [
     be: ['Nicholas', 'Dandi'],
     remarks: 'RFS: 29 Juli 2025',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FTelkomsel%20%2D%20MII%20%282023%20%2D%202024%29%2FMOANA%20PORTAL%20REVAMP%20CSM%2FTeresa%20NGPAM%20MOANA',
-    timelineLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Telkomsel%20-%20MII%20(2023%20-%202024)/MOANA%20PORTAL%20REVAMP%20CSM/Teresa/Teresa%20Approval%20NGPAM%20Timeline.xlsx?d=wd844996f1fc140e4aeceba64e3faac96&csf=1&web=1&e=We4yW7'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FTelkomsel%20%2D%20MII%20%282023%20%2D%202024%29%2FMOANA%20PORTAL%20REVAMP%20CSM%2FTeresa%20NGPAM%20MOANA',
+    timelineLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Telkomsel%20-%20MII%20(2023%20-%202024)/MOANA%20PORTAL%20REVAMP%20CSM/Teresa/Teresa%20Approval%20NGPAM%20Timeline.xlsx?d=wd844996f1fc140e4aeceba64e3faac96&csf=1&web=1&e=We4yW7',
   },
   {
     no: 7,
@@ -169,7 +179,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Alvin Syarifudin Shahab',
-    description: 'Dashboard yang digunakan atasan untuk melihat jam kerja dan overtime karyawan serta absensi karyawan',
+    description:
+      'Dashboard yang digunakan atasan untuk melihat jam kerja dan overtime karyawan serta absensi karyawan',
     mandays: 32,
     status: 'CLOSED',
     platform: 'OS',
@@ -179,10 +190,13 @@ const rawProjects: RawProject[] = [
     uiux: [],
     fe: ['Nicholas', 'Hasan'],
     be: [],
-    remarks: 'BA sebelumnya Hadid & Suwardi kemudian di Handover ke Tria & Sayyid',
+    remarks:
+      'BA sebelumnya Hadid & Suwardi kemudian di Handover ke Tria & Sayyid',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FTelkomsel%20%2D%20MII%20%282023%20%2D%202024%29%2FMoana%203%2E0%2FLeader%20Dashboard%20Phase%202',
-    timelineLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7B2EF7CB95-701B-429A-A0A6-75E26EEED4E2%7D&file=Timeline%20-%20%5BMoana%5D%20Leader%20Dashboard%20Phase%202.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FTelkomsel%20%2D%20MII%20%282023%20%2D%202024%29%2FMoana%203%2E0%2FLeader%20Dashboard%20Phase%202',
+    timelineLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7B2EF7CB95-701B-429A-A0A6-75E26EEED4E2%7D&file=Timeline%20-%20%5BMoana%5D%20Leader%20Dashboard%20Phase%202.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 8,
@@ -202,8 +216,10 @@ const rawProjects: RawProject[] = [
     be: ['Fazri', 'Bagus'],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FPersonal%20Family%20Info',
-    timelineLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/Personal%20Family%20Info/Timeline%20-%20%5BMoana%5D%20Slicing%20Personal%20Family.xlsx?d=weed056e29515447487349d8f675667a0&csf=1&web=1&e=TGD2gw'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FPersonal%20Family%20Info',
+    timelineLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/Personal%20Family%20Info/Timeline%20-%20%5BMoana%5D%20Slicing%20Personal%20Family.xlsx?d=weed056e29515447487349d8f675667a0&csf=1&web=1&e=TGD2gw',
   },
   {
     no: 9,
@@ -223,8 +239,10 @@ const rawProjects: RawProject[] = [
     be: [],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FTelkomsel%20%2D%20MII%20%282023%20%2D%202024%29%2FMoana%203%2E0%2FTelemedicine&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
-    timelineLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/Telemedicine/Sprint%201%20-%20Telemedicine%20(1).xlsx?d=wf989990a514642c9808af40302742724&csf=1&web=1&e=RPvHLB'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FTelkomsel%20%2D%20MII%20%282023%20%2D%202024%29%2FMoana%203%2E0%2FTelemedicine&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
+    timelineLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/Telemedicine/Sprint%201%20-%20Telemedicine%20(1).xlsx?d=wf989990a514642c9808af40302742724&csf=1&web=1&e=RPvHLB',
   },
   {
     no: 10,
@@ -244,8 +262,10 @@ const rawProjects: RawProject[] = [
     be: ['Tsel'],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FTelkomsel%20%2D%20MII%20%282023%20%2D%202024%29%2FMoana%203%2E0%2FTelemedicine&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
-    timelineLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/Telemedicine/Sprint%201%20-%20Telemedicine%20(1).xlsx?d=wf989990a514642c9808af40302742724&csf=1&web=1&e=RPvHLB'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FTelkomsel%20%2D%20MII%20%282023%20%2D%202024%29%2FMoana%203%2E0%2FTelemedicine&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
+    timelineLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/Telemedicine/Sprint%201%20-%20Telemedicine%20(1).xlsx?d=wf989990a514642c9808af40302742724&csf=1&web=1&e=RPvHLB',
   },
   {
     no: 11,
@@ -265,8 +285,10 @@ const rawProjects: RawProject[] = [
     be: ['Tsel'],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FTelkomsel%20%2D%20MII%20%282023%20%2D%202024%29%2FMoana%203%2E0%2FTelemedicine&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
-    timelineLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Telkomsel%20-%20MII%20(2023%20-%202024)/Moana%203.0/Telemedicine/Sprint%203%20-%20Telemedicine.xlsx?d=wf798e655b4654f9b8fb10c61d2a8f544&csf=1&web=1&e=XoGfkF'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FTelkomsel%20%2D%20MII%20%282023%20%2D%202024%29%2FMoana%203%2E0%2FTelemedicine&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
+    timelineLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Telkomsel%20-%20MII%20(2023%20-%202024)/Moana%203.0/Telemedicine/Sprint%203%20-%20Telemedicine.xlsx?d=wf798e655b4654f9b8fb10c61d2a8f544&csf=1&web=1&e=XoGfkF',
   },
   {
     no: 12,
@@ -274,7 +296,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Alvin Syarifudin Shahab',
-    description: 'Aplikasi untuk memberikan materi Leadership dan benefit jabatan baru melalui email',
+    description:
+      'Aplikasi untuk memberikan materi Leadership dan benefit jabatan baru melalui email',
     mandays: 43,
     status: 'CLOSED',
     platform: 'PHP YII',
@@ -286,8 +309,10 @@ const rawProjects: RawProject[] = [
     be: [],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FLeadership%20Kit%2FDokumentasi',
-    timelineLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/Leadership%20Kit/Dokumentasi/Resources%20Planing%20Leadership%20Kit.xlsx?d=w8016fcc9e31e4d2194356819b5c13d6e&csf=1&web=1&e=FgRxCy'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FLeadership%20Kit%2FDokumentasi',
+    timelineLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/Leadership%20Kit/Dokumentasi/Resources%20Planing%20Leadership%20Kit.xlsx?d=w8016fcc9e31e4d2194356819b5c13d6e&csf=1&web=1&e=FgRxCy',
   },
   {
     no: 13,
@@ -295,7 +320,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Alvin Syarifudin Shahab',
-    description: 'Aplikasi untuk memberikan informasi benefit menjelang pensiun',
+    description:
+      'Aplikasi untuk memberikan informasi benefit menjelang pensiun',
     mandays: 19.5,
     status: 'CLOSED',
     platform: 'PHP YII',
@@ -307,8 +333,10 @@ const rawProjects: RawProject[] = [
     be: ['Bagus', 'Fazri'],
     remarks: 'Menunggu requirement perhitungan dari mba Alya',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/Sijep/Slicing%20Story%20SIJEP%202.xlsx?d=w3575c34fd3904f738db3892a68db1fe1&csf=1&web=1&e=Jwh021',
-    timelineLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/Sijep/Slicing%20Story%20SIJEP%202.xlsx?d=w3575c34fd3904f738db3892a68db1fe1&csf=1&web=1&e=1goYTi'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/Sijep/Slicing%20Story%20SIJEP%202.xlsx?d=w3575c34fd3904f738db3892a68db1fe1&csf=1&web=1&e=Jwh021',
+    timelineLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/Sijep/Slicing%20Story%20SIJEP%202.xlsx?d=w3575c34fd3904f738db3892a68db1fe1&csf=1&web=1&e=1goYTi',
   },
   {
     no: 14,
@@ -328,8 +356,10 @@ const rawProjects: RawProject[] = [
     be: ['Tsel'],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/:f:/r/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/IPMS%20360%20CA%20MAWP?csf=1&web=1&e=kAvei1',
-    timelineLink: 'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7BA5595AD9-B302-4985-A81B-705C599E4F9D%7D&file=Slicing.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/:f:/r/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/IPMS%20360%20CA%20MAWP?csf=1&web=1&e=kAvei1',
+    timelineLink:
+      'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7BA5595AD9-B302-4985-A81B-705C599E4F9D%7D&file=Slicing.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 15,
@@ -349,8 +379,10 @@ const rawProjects: RawProject[] = [
     be: ['Tsel'],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/:f:/r/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/IPMS%20360%20CA%20MAWP?csf=1&web=1&e=kAvei1',
-    timelineLink: 'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7BA5595AD9-B302-4985-A81B-705C599E4F9D%7D&file=Slicing.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/:f:/r/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/IPMS%20360%20CA%20MAWP?csf=1&web=1&e=kAvei1',
+    timelineLink:
+      'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7BA5595AD9-B302-4985-A81B-705C599E4F9D%7D&file=Slicing.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 16,
@@ -370,8 +402,10 @@ const rawProjects: RawProject[] = [
     be: ['Tsel'],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/:f:/r/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/IPMS%20360%20CA%20MAWP?csf=1&web=1&e=kAvei1',
-    timelineLink: 'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7BA5595AD9-B302-4985-A81B-705C599E4F9D%7D&file=Slicing.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/:f:/r/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/IPMS%20360%20CA%20MAWP?csf=1&web=1&e=kAvei1',
+    timelineLink:
+      'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7BA5595AD9-B302-4985-A81B-705C599E4F9D%7D&file=Slicing.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 17,
@@ -391,8 +425,10 @@ const rawProjects: RawProject[] = [
     be: ['Tsel'],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FRepository%20Apps%2FSIAD%2FSIAD%20MOBILE%202025',
-    timelineLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Repository%20Apps/SIAD/SIAD%20MOBILE%202025/SIAD%20Mobile%202025%20-%20Timeline.xlsx?d=w81dd5b6e0e534335bd69f98b943389e0&csf=1&web=1&e=zdpxfk'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FRepository%20Apps%2FSIAD%2FSIAD%20MOBILE%202025',
+    timelineLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Repository%20Apps/SIAD/SIAD%20MOBILE%202025/SIAD%20Mobile%202025%20-%20Timeline.xlsx?d=w81dd5b6e0e534335bd69f98b943389e0&csf=1&web=1&e=zdpxfk',
   },
   {
     no: 18,
@@ -412,8 +448,10 @@ const rawProjects: RawProject[] = [
     be: ['Rayo', 'Dean'],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FEnhance%20Indihome&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380&q=indihome&view=7',
-    timelineLink: 'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7BF2230775-4604-4FD0-B109-5D3D1E8040D3%7D&file=Resources%20Planing%20Enhance%20Indihome.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FEnhance%20Indihome&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380&q=indihome&view=7',
+    timelineLink:
+      'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7BF2230775-4604-4FD0-B109-5D3D1E8040D3%7D&file=Resources%20Planing%20Enhance%20Indihome.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 19,
@@ -432,7 +470,7 @@ const rawProjects: RawProject[] = [
     fe: [],
     be: ['Trifera'],
     remarks: '',
-    updateDate: '15-Dec-25'
+    updateDate: '15-Dec-25',
   },
   {
     no: 20,
@@ -440,7 +478,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Alvin Syarifudin Shahab',
-    description: 'Penambahan tab family info dan download pdf pada employee info, penambahan filter download dan menu baru',
+    description:
+      'Penambahan tab family info dan download pdf pada employee info, penambahan filter download dan menu baru',
     mandays: 301,
     status: 'CLOSED',
     platform: 'PHP YII',
@@ -452,8 +491,10 @@ const rawProjects: RawProject[] = [
     be: ['Dimas', 'Dean', 'Suwandi', 'Jansen'],
     remarks: '',
     updateDate: '17-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/:f:/r/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/Data%20Access%20Enhancement?csf=1&web=1&e=S6StsF',
-    timelineLink: 'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7B84ABCEC2-10B6-4137-B3B6-449E59D2B6DC%7D&file=Data%20Access%20&%20UAM%20Timeline.xlsx=&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/:f:/r/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/Data%20Access%20Enhancement?csf=1&web=1&e=S6StsF',
+    timelineLink:
+      'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7B84ABCEC2-10B6-4137-B3B6-449E59D2B6DC%7D&file=Data%20Access%20&%20UAM%20Timeline.xlsx=&action=default&mobileredirect=true',
   },
   {
     no: 21,
@@ -461,7 +502,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Alvin Syarifudin Shahab',
-    description: 'Aplikasi berupa dashboard yang berikan informasi terkait rotasi/stay posisi employee, pada dashboard dapat melihat list employe, list candidat, dan comparison antar employee',
+    description:
+      'Aplikasi berupa dashboard yang berikan informasi terkait rotasi/stay posisi employee, pada dashboard dapat melihat list employe, list candidat, dan comparison antar employee',
     mandays: 0,
     status: 'ON_HOLD',
     platform: 'OS',
@@ -473,8 +515,10 @@ const rawProjects: RawProject[] = [
     be: ['Tubagus', 'Dimas'],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FTalent%20Management&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
-    timelineLink: 'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7B7B308694-9664-4593-BCE9-3BCE1279B9D4%7D&file=Resources%20Planing.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FTalent%20Management&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
+    timelineLink:
+      'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7B7B308694-9664-4593-BCE9-3BCE1279B9D4%7D&file=Resources%20Planing.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 22,
@@ -482,7 +526,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Alvin Syarifudin Shahab',
-    description: 'Aplikasi berupa dashboard yang berikan informasi terkait rotasi/stay posisi employee, pada dashboard dapat melihat list employe, list candidat, dan comparison antar employee',
+    description:
+      'Aplikasi berupa dashboard yang berikan informasi terkait rotasi/stay posisi employee, pada dashboard dapat melihat list employe, list candidat, dan comparison antar employee',
     mandays: 0,
     status: 'ON_HOLD',
     platform: 'OS',
@@ -494,8 +539,10 @@ const rawProjects: RawProject[] = [
     be: ['Suwandi', 'Fazri'],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FTalent%20Management&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
-    timelineLink: 'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7B7B308694-9664-4593-BCE9-3BCE1279B9D4%7D&file=Resources%20Planing.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FTalent%20Management&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
+    timelineLink:
+      'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7B7B308694-9664-4593-BCE9-3BCE1279B9D4%7D&file=Resources%20Planing.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 23,
@@ -503,7 +550,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Alvin Syarifudin Shahab',
-    description: 'Aplikasi berupa dashboard yang berikan informasi terkait rotasi/stay posisi employee, pada dashboard dapat melihat list employe, list candidat, dan comparison antar employee',
+    description:
+      'Aplikasi berupa dashboard yang berikan informasi terkait rotasi/stay posisi employee, pada dashboard dapat melihat list employe, list candidat, dan comparison antar employee',
     mandays: 0,
     status: 'ON_HOLD',
     platform: 'OS',
@@ -515,8 +563,10 @@ const rawProjects: RawProject[] = [
     be: [],
     remarks: '',
     updateDate: '14-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FTalent%20Management&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
-    timelineLink: 'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7B7B308694-9664-4593-BCE9-3BCE1279B9D4%7D&file=Resources%20Planing.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FTalent%20Management&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
+    timelineLink:
+      'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7B7B308694-9664-4593-BCE9-3BCE1279B9D4%7D&file=Resources%20Planing.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 24,
@@ -524,7 +574,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Alvin Syarifudin Shahab',
-    description: 'Aplikasi Moana berupa dashboard yang berikan informasi terkait rotasi/stay posisi employee, pada dashboard dapat melihat list employe, list candidat, and comparison antar employee',
+    description:
+      'Aplikasi Moana berupa dashboard yang berikan informasi terkait rotasi/stay posisi employee, pada dashboard dapat melihat list employe, list candidat, and comparison antar employee',
     mandays: 200,
     status: 'FUT',
     platform: 'OS',
@@ -536,8 +587,10 @@ const rawProjects: RawProject[] = [
     be: ['Fazri', 'Suwandi', 'Tubagus'],
     remarks: 'FUT: 22 Desember 2025 - 30 Januari 2026',
     updateDate: '07-Jan-26',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FTalent%20Management&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
-    timelineLink: 'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7B7B308694-9664-4593-BCE9-3BCE1279B9D4%7D&file=Resources%20Planing.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FTalent%20Management&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
+    timelineLink:
+      'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7B7B308694-9664-4593-BCE9-3BCE1279B9D4%7D&file=Resources%20Planing.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 25,
@@ -545,7 +598,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Alvin Syarifudin Shahab',
-    description: 'As surrounding app dari project Talent Management: Rekomendasi AI untuk posisi rotasi & promosi, berbasis riwayat karir, nilai, kompetensi',
+    description:
+      'As surrounding app dari project Talent Management: Rekomendasi AI untuk posisi rotasi & promosi, berbasis riwayat karir, nilai, kompetensi',
     mandays: 0,
     status: 'ON_HOLD',
     platform: 'OS',
@@ -557,8 +611,10 @@ const rawProjects: RawProject[] = [
     be: ['Tubagus S.', 'Jansen G.'],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2F%5BPrime%20Time%5D%2FPrime%20Time%20x%20Talent%20Management&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380&newTargetListUrl=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi&viewpath=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FForms%2FAllItems%2Easpx',
-    timelineLink: 'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7B1D9C1CC0-2424-48B4-A4A4-222F9A2ACE59%7D&file=Timeline%20Prime%20Time%20x%20TM.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2F%5BPrime%20Time%5D%2FPrime%20Time%20x%20Talent%20Management&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380&newTargetListUrl=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi&viewpath=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FForms%2FAllItems%2Easpx',
+    timelineLink:
+      'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7B1D9C1CC0-2424-48B4-A4A4-222F9A2ACE59%7D&file=Timeline%20Prime%20Time%20x%20TM.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 26,
@@ -566,7 +622,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Alvin Syarifudin Shahab',
-    description: 'As surrounding app dari project Talent Management: Enhancement dari E-komkar existing',
+    description:
+      'As surrounding app dari project Talent Management: Enhancement dari E-komkar existing',
     mandays: 0,
     status: 'ON_HOLD',
     platform: 'OS',
@@ -578,8 +635,10 @@ const rawProjects: RawProject[] = [
     be: ['Fazri', 'Tubagus S.', 'Suwandi'],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FTalent%20Management&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
-    timelineLink: 'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7B7B308694-9664-4593-BCE9-3BCE1279B9D4%7D&file=Resources%20Planing.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FTalent%20Management&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
+    timelineLink:
+      'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7B7B308694-9664-4593-BCE9-3BCE1279B9D4%7D&file=Resources%20Planing.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 27,
@@ -599,8 +658,10 @@ const rawProjects: RawProject[] = [
     be: ['Andi'],
     remarks: '',
     updateDate: '15-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FTelkomsel%20%2D%20MII%20%282023%20%2D%202024%29%2FMoana%203%2E0%2FTicketing&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
-    timelineLink: 'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7BA6F0DC3B-6410-4FCB-B85C-E839F3E5ABDD%7D&file=Slicing%20Chatbot.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FTelkomsel%20%2D%20MII%20%282023%20%2D%202024%29%2FMoana%203%2E0%2FTicketing&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
+    timelineLink:
+      'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7BA6F0DC3B-6410-4FCB-B85C-E839F3E5ABDD%7D&file=Slicing%20Chatbot.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 28,
@@ -621,7 +682,8 @@ const rawProjects: RawProject[] = [
     remarks: '',
     updateDate: '15-Dec-25',
     repositoryLink: 'Career page Phase 3',
-    timelineLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7B99FD61BE-E823-4C1C-9592-278FE81BFE91%7D&file=Timeline%20HCM%20Career%20Page%20Phase%203.xlsx&action=default&mobileredirect=true'
+    timelineLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7B99FD61BE-E823-4C1C-9592-278FE81BFE91%7D&file=Timeline%20HCM%20Career%20Page%20Phase%203.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 29,
@@ -642,7 +704,7 @@ const rawProjects: RawProject[] = [
     remarks: '',
     updateDate: '26-Mar-26',
     repositoryLink: 'Sprint 2',
-    timelineLink: 'Timeline HCM Career Page Phase 3.xlsx'
+    timelineLink: 'Timeline HCM Career Page Phase 3.xlsx',
   },
   {
     no: 30,
@@ -663,7 +725,7 @@ const rawProjects: RawProject[] = [
     remarks: '',
     updateDate: '17-Dec-25',
     repositoryLink: 'SIAD MOBILE 2025',
-    timelineLink: 'SIAD Mobile 2025 - Timeline.xlsx'
+    timelineLink: 'SIAD Mobile 2025 - Timeline.xlsx',
   },
   {
     no: 31,
@@ -684,7 +746,8 @@ const rawProjects: RawProject[] = [
     remarks: '',
     updateDate: '15-Dec-25',
     repositoryLink: 'ODC HCM Career Page',
-    timelineLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7BCFCD3BB6-F6B6-484F-829E-71D7EE092385%7D&file=(Update)%20%5BInternal%5DTimeline%20ODC%20HCM%20Career%20Page.xlsx&action=default&mobileredirect=true'
+    timelineLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7BCFCD3BB6-F6B6-484F-829E-71D7EE092385%7D&file=(Update)%20%5BInternal%5DTimeline%20ODC%20HCM%20Career%20Page.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 32,
@@ -701,11 +764,20 @@ const rawProjects: RawProject[] = [
     ba: ['Indira', 'Sayyid'],
     uiux: ['Alit'],
     fe: [],
-    be: ['Melvin', 'Nikolas', 'Ivanowsky', 'Dave', 'Rendy', 'Bagas', 'Andi', 'Rizky Nurmega'],
+    be: [
+      'Melvin',
+      'Nikolas',
+      'Ivanowsky',
+      'Dave',
+      'Rendy',
+      'Bagas',
+      'Andi',
+      'Rizky Nurmega',
+    ],
     remarks: 'Lisensi ODC tidak diperpanjang, per 31 Januari 2026 sudah habis',
     updateDate: '03-Mar-26',
     repositoryLink: 'ODC HCM Career Page',
-    timelineLink: '(Update) [Internal]Timeline ODC HCM Career Page.xlsx'
+    timelineLink: '(Update) [Internal]Timeline ODC HCM Career Page.xlsx',
   },
   {
     no: 33,
@@ -722,11 +794,22 @@ const rawProjects: RawProject[] = [
     ba: ['Putri'],
     uiux: [],
     fe: ['Adam'],
-    be: ['Suwandi', 'Dean', 'Jansen', 'Tubagus', 'Dimas', 'Rayo', 'Vernanda', 'Fazri'],
+    be: [
+      'Suwandi',
+      'Dean',
+      'Jansen',
+      'Tubagus',
+      'Dimas',
+      'Rayo',
+      'Vernanda',
+      'Fazri',
+    ],
     remarks: '- Deploy To Production : 05 Maret 2026\nMonitoring s.d 31 Maret',
     updateDate: '08-Apr-26',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FIT%20Corporate%20%2D%20MII%20%282025%20%2D%202026%29%2FMigrasi%20%26%20Upgrade%20PHP%20Server&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
-    timelineLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7BF736BAC7-EB04-4457-BD5F-CDF8BB2B8360%7D&file=Resources%20Planning%20Project%20Upgrade%20Server%20Phase%201%20-%20v1%20-%2020251228.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FIT%20Corporate%20%2D%20MII%20%282025%20%2D%202026%29%2FMigrasi%20%26%20Upgrade%20PHP%20Server&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
+    timelineLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7BF736BAC7-EB04-4457-BD5F-CDF8BB2B8360%7D&file=Resources%20Planning%20Project%20Upgrade%20Server%20Phase%201%20-%20v1%20-%2020251228.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 34,
@@ -744,10 +827,13 @@ const rawProjects: RawProject[] = [
     uiux: [],
     fe: ['Tsel'],
     be: ['Jansen', 'Fazri', 'Tubagus'],
-    remarks: 'Development menunggu BU dari TSEL, semua task yang di berikan sudah 100%',
+    remarks:
+      'Development menunggu BU dari TSEL, semua task yang di berikan sudah 100%',
     updateDate: '26-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/:f:/r/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT-%20HCM/Moana%20Leave%20Postpone?csf=1&web=1&e=3MrVav',
-    timelineLink: 'https://365tsel.sharepoint.com/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/Moana%20Leave%20Postpone/Postpone%20Leave%20Timeline%20(1)%20(1)%20(2).xlsx?d=w7a3bea22ee1b4edd9403d836031f7882&csf=1&web=1&e=LEDnq8'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/:f:/r/sites/Telkomsel-MII/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT-%20HCM/Moana%20Leave%20Postpone?csf=1&web=1&e=3MrVav',
+    timelineLink:
+      'https://365tsel.sharepoint.com/Dokumen%20Berbagi/%5BTelkomsel%5D%20%20IT%20-%20HCM/Moana%20Leave%20Postpone/Postpone%20Leave%20Timeline%20(1)%20(1)%20(2).xlsx?d=w7a3bea22ee1b4edd9403d836031f7882&csf=1&web=1&e=LEDnq8',
   },
   {
     no: 35,
@@ -755,7 +841,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Alvin Syarifudin Shahab',
-    description: 'Aplikasi Mobile Moana untuk Leader Dashboard Insight di Moana',
+    description:
+      'Aplikasi Mobile Moana untuk Leader Dashboard Insight di Moana',
     mandays: 5,
     status: 'CLOSED',
     platform: 'OS',
@@ -767,7 +854,8 @@ const rawProjects: RawProject[] = [
     be: ['Tsel'],
     remarks: '',
     updateDate: '15-Dec-25',
-    timelineLink: 'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7BCD149228-1394-432F-BD12-3999E5609335%7D&file=Timeline%20BA%20Leader%20Dashboard%20Insight.xlsx&action=default&mobileredirect=true'
+    timelineLink:
+      'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7BCD149228-1394-432F-BD12-3999E5609335%7D&file=Timeline%20BA%20Leader%20Dashboard%20Insight.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 36,
@@ -775,7 +863,8 @@ const rawProjects: RawProject[] = [
     po: '4200052151',
     so: 'X-SO-XXX',
     picClient: 'Royan Bachtiar',
-    description: 'Aplikasi web berfungsi untuk pengajuan organisasi berintegrasi dengan AI',
+    description:
+      'Aplikasi web berfungsi untuk pengajuan organisasi berintegrasi dengan AI',
     mandays: 7,
     status: 'CLOSED',
     platform: 'OS',
@@ -787,8 +876,10 @@ const rawProjects: RawProject[] = [
     be: ['Tsel'],
     remarks: 'Develop masih berjalan berbarengan dengan documentation',
     updateDate: '23-Dec-25',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FTalent%20Management%2F01%2E%20Dokumen%2FTalent%20OD%20with%20AI&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
-    timelineLink: 'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7B366D275F-C70F-448E-9ECC-20FFDA1D003E%7D&file=Resource%20Planning%20Talent%20OD.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2F%5BTelkomsel%5D%20%20IT%20%2D%20HCM%2FTalent%20Management%2F01%2E%20Dokumen%2FTalent%20OD%20with%20AI&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
+    timelineLink:
+      'https://365tsel.sharepoint.com/_layouts/15/Doc.aspx?sourcedoc=%7B366D275F-C70F-448E-9ECC-20FFDA1D003E%7D&file=Resource%20Planning%20Talent%20OD.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 37,
@@ -796,7 +887,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Alvin Syarifudin Shahab',
-    description: 'Aplikasi Mobile Moana untuk cek payslip dan rekap benefit tahunan',
+    description:
+      'Aplikasi Mobile Moana untuk cek payslip dan rekap benefit tahunan',
     mandays: 51,
     status: 'CLOSED',
     platform: 'OS & Typescript, Nest.js',
@@ -809,7 +901,7 @@ const rawProjects: RawProject[] = [
     remarks: '',
     updateDate: '05-Mar-26',
     repositoryLink: '16. E-Payslip',
-    timelineLink: 'Timeline E-Payslip.xlsx'
+    timelineLink: 'Timeline E-Payslip.xlsx',
   },
   {
     no: 38,
@@ -817,7 +909,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Alvin Syarifudin Shahab',
-    description: 'Aplikasi “Pencatatan Tugas Tambahan” adalah sistem digital terpusat untuk mencatat dan mengelola penugasan sementara karyawan',
+    description:
+      'Aplikasi “Pencatatan Tugas Tambahan” adalah sistem digital terpusat untuk mencatat dan mengelola penugasan sementara karyawan',
     mandays: 10,
     status: 'CLOSED',
     platform: 'OS & PHP',
@@ -827,10 +920,13 @@ const rawProjects: RawProject[] = [
     uiux: [],
     fe: [],
     be: [],
-    remarks: '- Scope MII Dokumentasi (SRS, SIT & UT) & Bug Fixing After Go Live input di Support\n- Need Update Mandays (After SRS, SIT & UT DONE di tgl 09 Maret 2026)\n- Meeting ke-1 with TSEL : Senin 02 Maret 2026 09.00 AM',
+    remarks:
+      '- Scope MII Dokumentasi (SRS, SIT & UT) & Bug Fixing After Go Live input di Support\n- Need Update Mandays (After SRS, SIT & UT DONE di tgl 09 Maret 2026)\n- Meeting ke-1 with TSEL : Senin 02 Maret 2026 09.00 AM',
     updateDate: '08-Apr-26',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FIT%20Corporate%20%2D%20MII%20%282025%20%2D%202026%29%2FPencatatan%20Tugas%20Tambahan&sortField=LinkFilename&isAscending=true&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
-    timelineLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7B55EF2A71-810D-4F60-99D7-8415B7EAA860%7D&file=01.%20Draft%20Resources%20Planning%20Pencatatan%20Tugas%20Tambahan.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FIT%20Corporate%20%2D%20MII%20%282025%20%2D%202026%29%2FPencatatan%20Tugas%20Tambahan&sortField=LinkFilename&isAscending=true&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
+    timelineLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7B55EF2A71-810D-4F60-99D7-8415B7EAA860%7D&file=01.%20Draft%20Resources%20Planning%20Pencatatan%20Tugas%20Tambahan.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 39,
@@ -838,7 +934,8 @@ const rawProjects: RawProject[] = [
     po: '4200052151',
     so: 'X-SO-XXX',
     picClient: 'Royan Bachtiar',
-    description: 'Aplikasi web berfungsi untuk pengajuan organisasi berintegrasi dengan AI',
+    description:
+      'Aplikasi web berfungsi untuk pengajuan organisasi berintegrasi dengan AI',
     mandays: 78,
     status: 'CLOSED',
     platform: 'OS',
@@ -851,7 +948,7 @@ const rawProjects: RawProject[] = [
     remarks: '',
     updateDate: '08-Apr-26',
     repositoryLink: 'OD 2026',
-    timelineLink: 'Resource Planning Talent OD 2026.xlsx'
+    timelineLink: 'Resource Planning Talent OD 2026.xlsx',
   },
   {
     no: 40,
@@ -871,8 +968,10 @@ const rawProjects: RawProject[] = [
     be: ['Fazri', 'Nicholas', 'Tubagus'],
     remarks: '-',
     updateDate: '17-Apr-26',
-    repositoryLink: 'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FIT%20Corporate%20%2D%20MII%20%282025%20%2D%202026%29%2FMoana%20Notification&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
-    timelineLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7BCB859AE4-576C-4967-B799-D295698C9D6B%7D&file=02.%20Resources%20Planning%20Moana%20Notification.xlsx&action=default&mobileredirect=true'
+    repositoryLink:
+      'https://365tsel.sharepoint.com/sites/Telkomsel-MII/Dokumen%20Berbagi/Forms/AllItems.aspx?id=%2Fsites%2FTelkomsel%2DMII%2FDokumen%20Berbagi%2FIT%20Corporate%20%2D%20MII%20%282025%20%2D%202026%29%2FMoana%20Notification&viewid=448235ac%2D6cf5%2D49ed%2D9850%2Db94f068f3380',
+    timelineLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7BCB859AE4-576C-4967-B799-D295698C9D6B%7D&file=02.%20Resources%20Planning%20Moana%20Notification.xlsx&action=default&mobileredirect=true',
   },
   {
     no: 41,
@@ -893,7 +992,8 @@ const rawProjects: RawProject[] = [
     remarks: '',
     updateDate: '08-Apr-26',
     repositoryLink: 'Haruna Grooming Job Person Matching Data',
-    timelineLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7BB70BE56A-8DDF-4060-9695-B25B96BC27FF%7D&file=Timeline%20Haruna%20Grooming%20Job%20Person%20Matching%20Data%20(1).xlsx&action=default&mobileredirect=true'
+    timelineLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7BB70BE56A-8DDF-4060-9695-B25B96BC27FF%7D&file=Timeline%20Haruna%20Grooming%20Job%20Person%20Matching%20Data%20(1).xlsx&action=default&mobileredirect=true',
   },
   {
     no: 42,
@@ -901,7 +1001,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Alvin Syarifudin Shahab',
-    description: 'Enhancment Data Job Matching Person penambahan filter IJP, Talent dan Primetime',
+    description:
+      'Enhancment Data Job Matching Person penambahan filter IJP, Talent dan Primetime',
     mandays: 32,
     status: 'CLOSED',
     platform: 'PHP YII',
@@ -914,7 +1015,8 @@ const rawProjects: RawProject[] = [
     remarks: '',
     updateDate: '08-Apr-26',
     repositoryLink: 'Haruna Grooming Job Person Matching Data',
-    timelineLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7BB70BE56A-8DDF-4060-9695-B25B96BC27FF%7D&file=Timeline%20Haruna%20Grooming%20Job%20Person%20Matching%20Data%20(1).xlsx&action=default&mobileredirect=true'
+    timelineLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7BB70BE56A-8DDF-4060-9695-B25B96BC27FF%7D&file=Timeline%20Haruna%20Grooming%20Job%20Person%20Matching%20Data%20(1).xlsx&action=default&mobileredirect=true',
   },
   {
     no: 43,
@@ -935,7 +1037,7 @@ const rawProjects: RawProject[] = [
     remarks: '',
     updateDate: '06-May-26',
     repositoryLink: 'HR metric Dashboard',
-    timelineLink: 'HR metric Dashboard Timeline.xlsx'
+    timelineLink: 'HR metric Dashboard Timeline.xlsx',
   },
   {
     no: 44,
@@ -943,7 +1045,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Alvin Syarifudin Shahab',
-    description: 'Enhancment Data Job Matching Person penambahan filter IJP, Talent dan Primetime,EMR',
+    description:
+      'Enhancment Data Job Matching Person penambahan filter IJP, Talent dan Primetime,EMR',
     mandays: 28,
     status: 'CLOSED',
     platform: 'PHP YII',
@@ -956,7 +1059,8 @@ const rawProjects: RawProject[] = [
     remarks: '',
     updateDate: '21-Apr-26',
     repositoryLink: 'Haruna Grooming Job Person Matching Data',
-    timelineLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7BB70BE56A-8DDF-4060-9695-B25B96BC27FF%7D&file=Timeline%20Haruna%20Grooming%20Job%20Person%20Matching%20Data%20(1).xlsx&action=default&mobileredirect=true'
+    timelineLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7BB70BE56A-8DDF-4060-9695-B25B96BC27FF%7D&file=Timeline%20Haruna%20Grooming%20Job%20Person%20Matching%20Data%20(1).xlsx&action=default&mobileredirect=true',
   },
   {
     no: 45,
@@ -977,7 +1081,7 @@ const rawProjects: RawProject[] = [
     remarks: '',
     updateDate: '28-May-26',
     repositoryLink: '17. T-Time AI IPMS',
-    timelineLink: 'Timeline T-Time AI IPMS.xlsx'
+    timelineLink: 'Timeline T-Time AI IPMS.xlsx',
   },
   {
     no: 46,
@@ -998,7 +1102,7 @@ const rawProjects: RawProject[] = [
     remarks: '',
     updateDate: '19-May-26',
     repositoryLink: 'Serasa BOD',
-    timelineLink: 'SERANA Timeline.xlsx'
+    timelineLink: 'SERANA Timeline.xlsx',
   },
   {
     no: 47,
@@ -1006,7 +1110,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Alvin Syarifudin Shahab',
-    description: 'Enhancment Data Job Matching Person penambahan filter IJP, Talent dan Primetime,EMR',
+    description:
+      'Enhancment Data Job Matching Person penambahan filter IJP, Talent dan Primetime,EMR',
     mandays: 29,
     status: 'On Progress Development',
     platform: 'PHP YII',
@@ -1019,7 +1124,8 @@ const rawProjects: RawProject[] = [
     remarks: '',
     updateDate: '22-May-26',
     repositoryLink: 'Haruna Grooming Job Person Matching Data',
-    timelineLink: 'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7BB70BE56A-8DDF-4060-9695-B25B96BC27FF%7D&file=Timeline%20Haruna%20Grooming%20Job%20Person%20Matching%20Data%20(1).xlsx&action=default&mobileredirect=true'
+    timelineLink:
+      'https://365tsel.sharepoint.com/:x:/r/sites/Telkomsel-MII/_layouts/15/Doc.aspx?sourcedoc=%7BB70BE56A-8DDF-4060-9695-B25B96BC27FF%7D&file=Timeline%20Haruna%20Grooming%20Job%20Person%20Matching%20Data%20(1).xlsx&action=default&mobileredirect=true',
   },
   {
     no: 48,
@@ -1038,7 +1144,7 @@ const rawProjects: RawProject[] = [
     fe: [],
     be: [],
     remarks: '',
-    updateDate: '26-May-26'
+    updateDate: '26-May-26',
   },
   {
     no: 49,
@@ -1057,7 +1163,7 @@ const rawProjects: RawProject[] = [
     fe: [],
     be: [],
     remarks: '',
-    updateDate: '26-May-26'
+    updateDate: '26-May-26',
   },
   {
     no: 50,
@@ -1076,7 +1182,7 @@ const rawProjects: RawProject[] = [
     fe: [],
     be: [],
     remarks: '',
-    updateDate: '26-May-26'
+    updateDate: '26-May-26',
   },
   {
     no: 51,
@@ -1095,7 +1201,7 @@ const rawProjects: RawProject[] = [
     fe: [],
     be: [],
     remarks: '',
-    updateDate: '26-May-26'
+    updateDate: '26-May-26',
   },
   {
     no: 52,
@@ -1114,7 +1220,7 @@ const rawProjects: RawProject[] = [
     fe: ['Shafira'],
     be: [],
     remarks: '',
-    updateDate: '19-May-26'
+    updateDate: '19-May-26',
   },
   {
     no: 53,
@@ -1135,7 +1241,7 @@ const rawProjects: RawProject[] = [
     remarks: '',
     updateDate: '26-May-26',
     repositoryLink: 'Sprint 3',
-    timelineLink: 'Timeline HCM Career Page Phase 3.xlsx'
+    timelineLink: 'Timeline HCM Career Page Phase 3.xlsx',
   },
   {
     no: 54,
@@ -1143,7 +1249,8 @@ const rawProjects: RawProject[] = [
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
     picClient: 'Royan Bachtiar',
-    description: 'Aplikasi web berfungsi untuk pengajuan organisasi berintegrasi dengan AI',
+    description:
+      'Aplikasi web berfungsi untuk pengajuan organisasi berintegrasi dengan AI',
     mandays: 398,
     status: 'On Progress Development',
     platform: 'OS',
@@ -1156,7 +1263,7 @@ const rawProjects: RawProject[] = [
     remarks: '',
     updateDate: '26-May-26',
     repositoryLink: 'OD 2026',
-    timelineLink: 'Resource Planning Talent OD 2026.xlsx'
+    timelineLink: 'Resource Planning Talent OD 2026.xlsx',
   },
   {
     no: 55,
@@ -1175,8 +1282,8 @@ const rawProjects: RawProject[] = [
     fe: [],
     be: [],
     remarks: '',
-    updateDate: '28-May-26'
-  }
+    updateDate: '28-May-26',
+  },
 ];
 
 function parseDateString(str: string): Date | null {
@@ -1189,8 +1296,18 @@ function parseDateString(str: string): Date | null {
   if (year < 100) year += 2000;
 
   const months: Record<string, number> = {
-    jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
-    jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
+    jan: 0,
+    feb: 1,
+    mar: 2,
+    apr: 3,
+    may: 4,
+    jun: 5,
+    jul: 6,
+    aug: 7,
+    sep: 8,
+    oct: 9,
+    nov: 10,
+    dec: 11,
   };
   const month = months[monthStr];
   if (month === undefined) return null;
@@ -1202,7 +1319,10 @@ async function bootstrap() {
   const dataSource = app.get(DataSource);
   const configService = app.get(ConfigService);
 
-  const defaultPassword = configService.get<string>('DEFAULT_PASSWORD', 'Password123');
+  const defaultPassword = configService.get<string>(
+    'DEFAULT_PASSWORD',
+    'Password123',
+  );
   const salt = await bcrypt.genSalt();
   const passwordHash = await bcrypt.hash(defaultPassword, salt);
 
@@ -1225,14 +1345,30 @@ async function bootstrap() {
 
   // 1. Seed Roles
   const roles = [
-    { code: 'ADMIN', name: 'Administrator', description: 'System Administrator' },
+    {
+      code: 'ADMIN',
+      name: 'Administrator',
+      description: 'System Administrator',
+    },
     { code: 'PM', name: 'Project Manager', description: 'Project Manager' },
     { code: 'BA', name: 'Business Analyst', description: 'Business Analyst' },
     { code: 'UIUX', name: 'UI/UX Designer', description: 'UI/UX Designer' },
-    { code: 'DEV_FE', name: 'Developer Front-End', description: 'Developer Front-End' },
-    { code: 'DEV_BE', name: 'Developer Back-End', description: 'Developer Back-End' },
+    {
+      code: 'DEV_FE',
+      name: 'Developer Front-End',
+      description: 'Developer Front-End',
+    },
+    {
+      code: 'DEV_BE',
+      name: 'Developer Back-End',
+      description: 'Developer Back-End',
+    },
     { code: 'TL', name: 'Tech Lead', description: 'Technical Lead' },
-    { code: 'QC', name: 'Quality Control', description: 'Quality Control / Tester' },
+    {
+      code: 'QC',
+      name: 'Quality Control',
+      description: 'Quality Control / Tester',
+    },
   ];
 
   const savedRoles: Record<string, Role> = {};
@@ -1250,12 +1386,19 @@ async function bootstrap() {
   }
 
   // Helper to get or create User and assign UserRole
-  const getOrCreateUser = async (name: string, defaultRoleCode: string): Promise<User> => {
+  const getOrCreateUser = async (
+    name: string,
+    defaultRoleCode: string,
+  ): Promise<User> => {
     const cleanedName = name.trim();
     const email = `${cleanedName.toLowerCase().replace(/[^a-z0-9]/g, '')}@mii.co.id`;
     let user = await userRepo.findOneBy({ email });
     if (!user) {
-      const employeeId = `EMP-${cleanedName.toUpperCase().replace(/[^A-Z0-9]/g, '')}`.slice(0, 50);
+      const employeeId =
+        `EMP-${cleanedName.toUpperCase().replace(/[^A-Z0-9]/g, '')}`.slice(
+          0,
+          50,
+        );
       user = userRepo.create({
         email,
         fullName: cleanedName,
@@ -1270,11 +1413,16 @@ async function bootstrap() {
     // Ensure UserRole exists
     const role = savedRoles[defaultRoleCode];
     if (role) {
-      const hasRole = await userRoleRepo.findOneBy({ userId: user.id, roleId: role.id });
+      const hasRole = await userRoleRepo.findOneBy({
+        userId: user.id,
+        roleId: role.id,
+      });
       if (!hasRole) {
         const userRole = userRoleRepo.create({ user, role });
         await userRoleRepo.save(userRole);
-        console.log(`Assigned role ${defaultRoleCode} to user ${user.fullName}`);
+        console.log(
+          `Assigned role ${defaultRoleCode} to user ${user.fullName}`,
+        );
       }
     }
 
@@ -1304,9 +1452,17 @@ async function bootstrap() {
     const cleanStatus = raw.status.trim().toUpperCase().replace(/\s+/g, '_');
     if (cleanStatus === 'FUT') {
       status = ProjectStatus.FUT;
-    } else if (cleanStatus === 'PLANNING' || cleanStatus === 'ON_PLANNING' || cleanStatus === 'ON_ASSESSMENT' || cleanStatus === 'DOCUMENTATION') {
+    } else if (
+      cleanStatus === 'PLANNING' ||
+      cleanStatus === 'ON_PLANNING' ||
+      cleanStatus === 'ON_ASSESSMENT' ||
+      cleanStatus === 'DOCUMENTATION'
+    ) {
       status = ProjectStatus.PLANNING;
-    } else if (cleanStatus === 'IN_PROGRESS' || cleanStatus === 'ON_PROGRESS_DEVELOPMENT') {
+    } else if (
+      cleanStatus === 'IN_PROGRESS' ||
+      cleanStatus === 'ON_PROGRESS_DEVELOPMENT'
+    ) {
       status = ProjectStatus.IN_PROGRESS;
     } else if (cleanStatus === 'SIT') {
       status = ProjectStatus.SIT;
@@ -1332,9 +1488,13 @@ async function bootstrap() {
         platform: raw.platform,
         isActive: true,
       };
-      const newMaster = masterProjectRepo.create(masterPayload as any) as unknown as MasterProject;
+      const newMaster = masterProjectRepo.create(
+        masterPayload as any,
+      ) as unknown as MasterProject;
       masterProject = await masterProjectRepo.save(newMaster);
-      console.log(`Created MasterProject: ${masterProject.name} (${masterProject.projectCode})`);
+      console.log(
+        `Created MasterProject: ${masterProject.name} (${masterProject.projectCode})`,
+      );
     } else {
       console.log(`MasterProject already exists: ${masterProject.name}`);
     }
@@ -1355,14 +1515,18 @@ async function bootstrap() {
         repositoryLink: raw.repositoryLink || null,
         timelineLink: raw.timelineLink || null,
       };
-      const newProj = projectRepo.create(projectPayload as any) as unknown as Project;
+      const newProj = projectRepo.create(
+        projectPayload as any,
+      ) as unknown as Project;
       project = await projectRepo.save(newProj);
-      console.log(`Created Project: id=${project.id} for master ${masterProject.name}`);
+      console.log(
+        `Created Project: id=${project.id} for master ${masterProject.name}`,
+      );
     } else {
       console.log(`Project already exists for master: ${masterProject.name}`);
     }
 
-    const activeProject: Project = project!;
+    const activeProject: Project = project;
 
     // Create PurchaseOrder (only if it has a real PO number)
     let po: PurchaseOrder | null = null;
@@ -1381,7 +1545,9 @@ async function bootstrap() {
           endDate: endDate || undefined,
           isActive: true,
         };
-        const newPo = poRepo.create(poPayload as any) as unknown as PurchaseOrder;
+        const newPo = poRepo.create(
+          poPayload as any,
+        ) as unknown as PurchaseOrder;
         po = await poRepo.save(newPo);
         console.log(`Created PurchaseOrder: ${po.poNumber}`);
       } else {
@@ -1406,7 +1572,9 @@ async function bootstrap() {
           createdAt: new Date(),
         });
         await poProjectRepo.save(poProject);
-        console.log(`Linked Project ${masterProject.name} to PO ${activePo.poNumber}`);
+        console.log(
+          `Linked Project ${masterProject.name} to PO ${activePo.poNumber}`,
+        );
       }
     }
 
@@ -1435,16 +1603,20 @@ async function bootstrap() {
             actualMandays: 0,
             isActive: true,
           };
-          const newMember = memberRepo.create(memberPayload as any) as unknown as ProjectMember;
+          const newMember = memberRepo.create(
+            memberPayload as any,
+          ) as unknown as ProjectMember;
           member = await memberRepo.save(newMember);
-          console.log(`Assigned User ${user.fullName} to Project ${masterProject.name} as ${roleCode}`);
+          console.log(
+            `Assigned User ${user.fullName} to Project ${masterProject.name} as ${roleCode}`,
+          );
         }
 
-        const activeMember: ProjectMember = member!;
+        const activeMember: ProjectMember = member;
 
         // If PO exists, assign this ProjectMember to PO in PoMember
         if (activePo) {
-          let poMember = await poMemberRepo.findOneBy({
+          const poMember = await poMemberRepo.findOneBy({
             poId: activePo.id,
             projectMemberId: activeMember.id,
             roleId: role.id,
@@ -1463,9 +1635,13 @@ async function bootstrap() {
               endDate: endDate || undefined,
               isBillable: true,
             };
-            const newPoMember = poMemberRepo.create(poMemberPayload as any) as unknown as PoMember;
+            const newPoMember = poMemberRepo.create(
+              poMemberPayload as any,
+            ) as unknown as PoMember;
             await poMemberRepo.save(newPoMember);
-            console.log(`Linked member ${user.fullName} to PO ${activePo.poNumber} in role ${roleCode}`);
+            console.log(
+              `Linked member ${user.fullName} to PO ${activePo.poNumber} in role ${roleCode}`,
+            );
           }
         }
       }

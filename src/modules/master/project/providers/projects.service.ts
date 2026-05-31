@@ -3,7 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import { MasterProject } from '../entities/project.entity';
 import { CreateMasterProjectDto } from '../dto/project.dto';
-import { BaseResponseDto, PaginatedResponseDto } from '../../../../common/dtos/response.dto';
+import {
+  BaseResponseDto,
+  PaginatedResponseDto,
+} from '../../../../common/dtos/response.dto';
 import { PaginationDto } from '../../../../common/dtos/pagination.dto';
 import { applyPagination } from '../../../../common/utils/query.util';
 import { MasterProjectResponseDto } from '../dto/project-response.dto';
@@ -15,9 +18,12 @@ export class MasterProjectsService {
   constructor(
     @InjectRepository(MasterProject)
     private readonly projectRepo: Repository<MasterProject>,
-  ) { }
+  ) {}
 
-  async create(dto: CreateMasterProjectDto, userId: number): Promise<BaseResponseDto<MasterProjectResponseDto>> {
+  async create(
+    dto: CreateMasterProjectDto,
+    userId: number,
+  ): Promise<BaseResponseDto<MasterProjectResponseDto>> {
     const projectCode = await this.generateProjectCode();
 
     const project = this.projectRepo.create({
@@ -30,7 +36,9 @@ export class MasterProjectsService {
     return { success: true, data: mapToDto(MasterProjectResponseDto, saved) };
   }
 
-  async findAll(query: PaginationDto): Promise<PaginatedResponseDto<MasterProjectResponseDto>> {
+  async findAll(
+    query: PaginationDto,
+  ): Promise<PaginatedResponseDto<MasterProjectResponseDto>> {
     const qb = this.projectRepo.createQueryBuilder('project');
 
     applyPagination(qb, query, ['projectCode', 'name', 'platform']);
@@ -51,7 +59,9 @@ export class MasterProjectsService {
     };
   }
 
-  async findOne(id: number): Promise<BaseResponseDto<MasterProjectResponseDto>> {
+  async findOne(
+    id: number,
+  ): Promise<BaseResponseDto<MasterProjectResponseDto>> {
     const project = await this.projectRepo.findOne({ where: { id } });
     if (!project) throw new NotFoundException(`Master Project ${id} not found`);
     return { success: true, data: mapToDto(MasterProjectResponseDto, project) };
@@ -67,7 +77,11 @@ export class MasterProjectsService {
     return this.projectRepo.findOne({ where: { name } });
   }
 
-  async update(id: number, dto: Partial<CreateMasterProjectDto>, userId: number): Promise<BaseResponseDto<MasterProjectResponseDto>> {
+  async update(
+    id: number,
+    dto: Partial<CreateMasterProjectDto>,
+    userId: number,
+  ): Promise<BaseResponseDto<MasterProjectResponseDto>> {
     const project = await this.projectRepo.findOne({ where: { id } });
     if (!project) throw new NotFoundException(`Master Project ${id} not found`);
 

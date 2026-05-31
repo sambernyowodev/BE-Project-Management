@@ -7,26 +7,36 @@ import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { ApiBaseResponse } from '../../../common/decorators/api-response.decorator';
 import { AuthResponseDto } from '../dto/auth-response.dto';
 import { UserResponseDto } from '../../master/users/dto/user-response.dto';
-import { BaseResponseDto, SuccessResponseDto } from '../../../common/dtos/response.dto';
+import {
+  BaseResponseDto,
+  SuccessResponseDto,
+} from '../../../common/dtos/response.dto';
 import type { JwtPayload } from '../interfaces/jwt-payload.interface';
 import { UsersService } from 'src/modules/master/users/providers/users.service';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService, private readonly userService: UsersService) { }
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UsersService,
+  ) {}
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
   @ApiBaseResponse(AuthResponseDto)
-  async register(@Body() dto: RegisterDto): Promise<BaseResponseDto<AuthResponseDto>> {
+  async register(
+    @Body() dto: RegisterDto,
+  ): Promise<BaseResponseDto<AuthResponseDto>> {
     return this.authService.register(dto);
   }
 
   @Post('login')
   @ApiOperation({ summary: 'Login user' })
   @ApiBaseResponse(AuthResponseDto)
-  async login(@Body() dto: LoginDto): Promise<BaseResponseDto<AuthResponseDto>> {
+  async login(
+    @Body() dto: LoginDto,
+  ): Promise<BaseResponseDto<AuthResponseDto>> {
     return this.authService.login(dto);
   }
 
@@ -35,7 +45,9 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get current logged in user' })
   @ApiBaseResponse(UserResponseDto)
-  getProfile(@CurrentUser() user: JwtPayload): Promise<BaseResponseDto<UserResponseDto>> {
+  getProfile(
+    @CurrentUser() user: JwtPayload,
+  ): Promise<BaseResponseDto<UserResponseDto>> {
     return this.userService.findOne(user.sub);
   }
 
@@ -46,7 +58,7 @@ export class AuthController {
   @ApiBaseResponse(BaseResponseDto<SuccessResponseDto>)
   async changePassword(
     @CurrentUser() user: JwtPayload,
-    @Body() dto: ChangePasswordDto
+    @Body() dto: ChangePasswordDto,
   ): Promise<BaseResponseDto<SuccessResponseDto>> {
     return this.authService.changePassword(user.sub, dto);
   }

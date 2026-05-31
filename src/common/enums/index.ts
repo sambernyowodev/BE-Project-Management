@@ -68,5 +68,3 @@ export enum BillingStatus {
   FINALIZED = 'FINALIZED',
   CANCELLED = 'CANCELLED',
 }
-
-

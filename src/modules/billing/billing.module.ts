@@ -30,6 +30,4 @@ import { ProjectActivity } from '../project-activities/entities/project-activity
   providers: [BillingService],
   exports: [BillingService],
 })
-export class BillingModule { }
-
-
+export class BillingModule {}

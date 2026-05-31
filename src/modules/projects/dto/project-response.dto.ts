@@ -7,7 +7,6 @@ import { MasterProjectResponseDto } from '../../master/project/dto/project-respo
 import { ProjectStatus } from '../../../common/enums';
 
 export class ProjectMemberResponseDto extends BaseDto {
-
   @ApiProperty()
   @Expose()
   projectId: number;
@@ -48,7 +47,6 @@ export class ProjectMemberResponseDto extends BaseDto {
 }
 
 export class ProjectResponseDto {
-
   @ApiProperty()
   @Expose()
   id: number;
@@ -68,8 +66,6 @@ export class ProjectResponseDto {
   @ApiPropertyOptional()
   @Expose()
   customer?: string;
-
-
 
   @ApiPropertyOptional()
   @Expose()

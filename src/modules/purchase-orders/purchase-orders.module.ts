@@ -12,4 +12,4 @@ import { Project } from '../projects/entities/project.entity';
   providers: [PurchaseOrdersService],
   exports: [PurchaseOrdersService],
 })
-export class PurchaseOrdersModule { }
+export class PurchaseOrdersModule {}

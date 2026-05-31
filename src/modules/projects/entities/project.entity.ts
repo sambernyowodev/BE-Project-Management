@@ -1,16 +1,10 @@
 import { BaseEntity } from '../../../common/entities/base.entity';
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { ProjectStatus } from '../../../common/enums';
 import { MasterProject } from '../../master/project/entities/project.entity';
 
 @Entity('projects')
 export class Project extends BaseEntity {
-
   @Column({ type: 'bigint', unsigned: true, name: 'project_id' })
   projectId: number;
 
@@ -20,7 +14,12 @@ export class Project extends BaseEntity {
   @Column({ type: 'varchar', length: 255, nullable: true })
   customer: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true, name: 'pic_internal' })
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+    name: 'pic_internal',
+  })
   picInternal: string;
 
   @Column({

@@ -47,6 +47,6 @@ import { AuthModule } from './modules/auth/auth.module';
     SupportTicketsModule,
     BillingModule,
     AuthModule,
-  ]
+  ],
 })
-export class AppModule { }
+export class AppModule {}

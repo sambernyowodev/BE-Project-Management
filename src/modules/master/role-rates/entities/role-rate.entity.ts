@@ -1,15 +1,9 @@
 import { BaseEntity } from '../../../../common/entities/base.entity';
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity';
 
 @Entity('role_rates')
 export class RoleRate extends BaseEntity {
-
   @Column({ type: 'bigint', unsigned: true, name: 'role_id' })
   roleId: number;
 
@@ -41,4 +35,3 @@ export class RoleRate extends BaseEntity {
   @JoinColumn({ name: 'role_id' })
   role: Role;
 }
-

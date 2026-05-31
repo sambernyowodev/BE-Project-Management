@@ -1,18 +1,11 @@
 import { BaseEntity } from '../../../common/entities/base.entity';
-import {
-  Entity,
-  Column,
-  ManyToMany,
-  JoinTable,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { Project } from '../../projects/entities/project.entity';
 import { BillingStatus } from '../../../common/enums';
 import { BillingDetail } from '../entities/billing-detail.entity';
 
 @Entity('billings')
 export class Billing extends BaseEntity {
-
   @Column({
     type: 'varchar',
     length: 100,

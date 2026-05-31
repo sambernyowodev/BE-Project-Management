@@ -30,7 +30,10 @@ export class CreateProjectDto {
   @IsString()
   picInternal?: string;
 
-  @ApiProperty({ required: false, description: 'Parent project ID (self-ref for support projects)' })
+  @ApiProperty({
+    required: false,
+    description: 'Parent project ID (self-ref for support projects)',
+  })
   @IsOptional()
   @IsNumber()
   parentProjectId?: number;

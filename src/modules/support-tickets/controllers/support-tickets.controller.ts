@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Query, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Query,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { SupportTicketsService } from '../providers/support-tickets.service';
 import {
@@ -9,10 +20,17 @@ import {
 } from '../dto/support-ticket.dto';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
-import { ApiBaseResponse, ApiBaseListResponse } from '../../../common/decorators/api-response.decorator';
+import {
+  ApiBaseResponse,
+  ApiBaseListResponse,
+} from '../../../common/decorators/api-response.decorator';
 import { SupportTicketResponseDto } from '../dto/support-ticket-response.dto';
 import { SupportTicketAssigneeResponseDto } from '../dto/support-ticket-assignee-response.dto';
-import { BaseResponseDto, PaginatedResponseDto, SuccessResponseDto } from '../../../common/dtos/response.dto';
+import {
+  BaseResponseDto,
+  PaginatedResponseDto,
+  SuccessResponseDto,
+} from '../../../common/dtos/response.dto';
 import { PaginationDto } from '../../../common/dtos/pagination.dto';
 import type { JwtPayload } from 'src/modules/auth/interfaces/jwt-payload.interface';
 
@@ -21,7 +39,7 @@ import type { JwtPayload } from 'src/modules/auth/interfaces/jwt-payload.interfa
 @UseGuards(JwtAuthGuard)
 @Controller('support-tickets')
 export class SupportTicketsController {
-  constructor(private readonly ticketsService: SupportTicketsService) { }
+  constructor(private readonly ticketsService: SupportTicketsService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new support ticket' })
@@ -36,14 +54,18 @@ export class SupportTicketsController {
   @Get()
   @ApiOperation({ summary: 'Get all support tickets' })
   @ApiBaseListResponse(SupportTicketResponseDto)
-  findAll(@Query() query: PaginationDto): Promise<PaginatedResponseDto<SupportTicketResponseDto>> {
+  findAll(
+    @Query() query: PaginationDto,
+  ): Promise<PaginatedResponseDto<SupportTicketResponseDto>> {
     return this.ticketsService.findAll(query);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get ticket details' })
   @ApiBaseResponse(SupportTicketResponseDto)
-  findOne(@Param('id') id: string): Promise<BaseResponseDto<SupportTicketResponseDto>> {
+  findOne(
+    @Param('id') id: string,
+  ): Promise<BaseResponseDto<SupportTicketResponseDto>> {
     return this.ticketsService.findOne(+id);
   }
 
@@ -61,7 +83,9 @@ export class SupportTicketsController {
   @Get(':id/assignees')
   @ApiOperation({ summary: 'Get ticket assignees' })
   @ApiBaseListResponse(SupportTicketAssigneeResponseDto)
-  getAssignees(@Param('id') id: string): Promise<BaseResponseDto<SupportTicketAssigneeResponseDto[]>> {
+  getAssignees(
+    @Param('id') id: string,
+  ): Promise<BaseResponseDto<SupportTicketAssigneeResponseDto[]>> {
     return this.ticketsService.getAssignees(+id);
   }
 
@@ -74,7 +98,12 @@ export class SupportTicketsController {
     @Body() dto: UpdateSupportTicketAssigneeDto,
     @CurrentUser() user: JwtPayload,
   ): Promise<BaseResponseDto<SupportTicketAssigneeResponseDto>> {
-    return this.ticketsService.updateAssignee(ticketId, assigneeId, dto, user.sub);
+    return this.ticketsService.updateAssignee(
+      ticketId,
+      assigneeId,
+      dto,
+      user.sub,
+    );
   }
 
   @Delete(':id/assignees/:assigneeId')
@@ -101,7 +130,9 @@ export class SupportTicketsController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete support ticket' })
   @ApiBaseResponse(SuccessResponseDto)
-  remove(@Param('id') id: string): Promise<BaseResponseDto<SuccessResponseDto>> {
+  remove(
+    @Param('id') id: string,
+  ): Promise<BaseResponseDto<SuccessResponseDto>> {
     return this.ticketsService.remove(+id);
   }
 }

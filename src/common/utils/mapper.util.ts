@@ -35,7 +35,10 @@ export function mapToDtoStrict<T, V>(dto: ClassConstructor<T>, plain: V): T {
 /**
  * Helper to map arrays of plain objects to DTO instances strictly.
  */
-export function mapToDtoArrayStrict<T, V>(dto: ClassConstructor<T>, plain: V[]): T[] {
+export function mapToDtoArrayStrict<T, V>(
+  dto: ClassConstructor<T>,
+  plain: V[],
+): T[] {
   return plainToInstance(dto, plain, {
     excludeExtraneousValues: true,
     enableImplicitConversion: true,
@@ -45,7 +48,10 @@ export function mapToDtoArrayStrict<T, V>(dto: ClassConstructor<T>, plain: V[]):
 export function parseRelationIds(value: any): number[] {
   if (Array.isArray(value)) return value.map(Number);
   if (typeof value === 'string') {
-    return value.split(',').filter((v) => v.trim() !== '').map((v) => Number(v.trim()));
+    return value
+      .split(',')
+      .filter((v) => v.trim() !== '')
+      .map((v) => Number(v.trim()));
   }
   return value ? [Number(value)] : [];
 }

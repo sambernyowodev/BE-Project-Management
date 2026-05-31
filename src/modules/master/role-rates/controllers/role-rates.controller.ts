@@ -1,11 +1,28 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Query, Put, Delete, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Query,
+  Put,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { RoleRatesService } from '../providers/role-rates.service';
 import { CreateRoleRateDto } from '../dto/create-role-rate.dto';
 import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
-import { ApiBaseResponse, ApiBaseListResponse } from '../../../../common/decorators/api-response.decorator';
+import {
+  ApiBaseResponse,
+  ApiBaseListResponse,
+} from '../../../../common/decorators/api-response.decorator';
 import { RoleRateResponseDto } from '../dto/role-rate-response.dto';
-import { BaseResponseDto, PaginatedResponseDto } from '../../../../common/dtos/response.dto';
+import {
+  BaseResponseDto,
+  PaginatedResponseDto,
+} from '../../../../common/dtos/response.dto';
 import { PaginationDto } from '../../../../common/dtos/pagination.dto';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import type { JwtPayload } from 'src/modules/auth/interfaces/jwt-payload.interface';
@@ -15,12 +32,14 @@ import type { JwtPayload } from 'src/modules/auth/interfaces/jwt-payload.interfa
 @UseGuards(JwtAuthGuard)
 @Controller('role-rates')
 export class RoleRatesController {
-  constructor(private readonly roleRatesService: RoleRatesService) { }
+  constructor(private readonly roleRatesService: RoleRatesService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get all role rates' })
   @ApiBaseListResponse(RoleRateResponseDto)
-  findAll(@Query() query: PaginationDto): Promise<PaginatedResponseDto<RoleRateResponseDto>> {
+  findAll(
+    @Query() query: PaginationDto,
+  ): Promise<PaginatedResponseDto<RoleRateResponseDto>> {
     return this.roleRatesService.findAll(query);
   }
 
@@ -36,7 +55,7 @@ export class RoleRatesController {
   @ApiBaseResponse(RoleRateResponseDto)
   create(
     @Body() dto: CreateRoleRateDto,
-    @CurrentUser() user: JwtPayload
+    @CurrentUser() user: JwtPayload,
   ): Promise<BaseResponseDto<RoleRateResponseDto>> {
     return this.roleRatesService.create(dto, user.sub);
   }
@@ -47,7 +66,7 @@ export class RoleRatesController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: Partial<CreateRoleRateDto>,
-    @CurrentUser() user: JwtPayload
+    @CurrentUser() user: JwtPayload,
   ): Promise<BaseResponseDto<RoleRateResponseDto>> {
     return this.roleRatesService.update(id, dto, user.sub);
   }
@@ -55,7 +74,9 @@ export class RoleRatesController {
   @Get(':id')
   @ApiOperation({ summary: 'Get role rate by id' })
   @ApiBaseResponse(RoleRateResponseDto)
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<BaseResponseDto<RoleRateResponseDto>> {
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<BaseResponseDto<RoleRateResponseDto>> {
     return this.roleRatesService.findOne(id);
   }
 
@@ -64,9 +85,8 @@ export class RoleRatesController {
   @ApiBaseResponse(RoleRateResponseDto)
   remove(
     @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: JwtPayload
+    @CurrentUser() user: JwtPayload,
   ): Promise<BaseResponseDto<any>> {
     return this.roleRatesService.remove(id, user.sub);
   }
 }
-

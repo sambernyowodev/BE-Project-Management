@@ -1,15 +1,10 @@
 import { BaseEntity } from '../../../common/entities/base.entity';
-import {
-  Entity,
-  Column,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 import { PurchaseOrderStatus } from '../../../common/enums';
 import { PoProject } from './po-project.entity';
 
 @Entity('purchase_orders')
 export class PurchaseOrder extends BaseEntity {
-
   @Column({ type: 'varchar', length: 100, unique: true, name: 'po_number' })
   poNumber: string;
 
@@ -61,5 +56,4 @@ export class PurchaseOrder extends BaseEntity {
 
   @OneToMany(() => PoProject, (poProject) => poProject.purchaseOrder)
   poProjects: PoProject[];
-
 }

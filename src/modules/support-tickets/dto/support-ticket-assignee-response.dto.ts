@@ -7,7 +7,6 @@ import { RoleResponseDto } from '../../master/roles/dto/role-response.dto';
 import { SupportTicketDetailStatus } from '../../../common/enums';
 
 export class SupportTicketAssigneeResponseDto extends BaseDto {
-
   @ApiProperty()
   @Expose()
   supportTicketId: number;

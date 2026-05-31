@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, EntityManager } from 'typeorm';
+import { Repository } from 'typeorm';
 import { PoMember } from '../entities/po-member.entity';
 import { PurchaseOrder } from '../../purchase-orders/entities/purchase-order.entity';
 import { AssignPoMemberDto } from '../dto/po-member.dto';
@@ -15,27 +15,36 @@ export class PoMembersService {
     private readonly memberRepo: Repository<PoMember>,
     @InjectRepository(PurchaseOrder)
     private readonly poRepo: Repository<PurchaseOrder>,
-  ) { }
+  ) {}
 
-  async assign(dto: AssignPoMemberDto, userId: number): Promise<BaseResponseDto<PoMemberResponseDto>> {
+  async assign(
+    dto: AssignPoMemberDto,
+    userId: number,
+  ): Promise<BaseResponseDto<PoMemberResponseDto>> {
     const member = this.memberRepo.create({
       ...dto,
       createdAt: new Date(),
-      createdBy: userId
+      createdBy: userId,
     });
     const saved = await this.memberRepo.save(member);
     return { success: true, data: mapToDto(PoMemberResponseDto, saved) };
   }
 
-  async findByPo(poId: number): Promise<BaseResponseDto<PoMemberResponseDto[]>> {
+  async findByPo(
+    poId: number,
+  ): Promise<BaseResponseDto<PoMemberResponseDto[]>> {
     const data = await this.memberRepo.find({
       where: { poId },
-      relations: { projectMember: { user: true }, role: true }
+      relations: { projectMember: { user: true }, role: true },
     });
     return { success: true, data: mapToDtoArray(PoMemberResponseDto, data) };
   }
 
-  async updateActuals(id: number, actualMandays: number, userId: number): Promise<BaseResponseDto<PoMemberResponseDto>> {
+  async updateActuals(
+    id: number,
+    actualMandays: number,
+    userId: number,
+  ): Promise<BaseResponseDto<PoMemberResponseDto>> {
     const member = await this.memberRepo.findOne({ where: { id } });
     if (!member) {
       throw new NotFoundException(`PoMember ${id} not found`);
@@ -52,9 +61,7 @@ export class PoMembersService {
     if (!member) {
       throw new NotFoundException(`PoMember ${id} not found`);
     }
-    const poId = member.poId;
     await this.memberRepo.remove(member);
     return { success: true, data: undefined };
   }
 }
-

@@ -1,18 +1,11 @@
 import { BaseEntity } from '../../../common/entities/base.entity';
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  Unique,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
 import { PurchaseOrder } from './purchase-order.entity';
 import { Project } from '../../projects/entities/project.entity';
 
 @Entity('po_projects')
 @Unique(['poId', 'projectId'])
 export class PoProject extends BaseEntity {
-
   @Column({ type: 'bigint', unsigned: true, name: 'po_id' })
   poId: number;
 
@@ -31,7 +24,9 @@ export class PoProject extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   remarks?: string;
 
-  @ManyToOne(() => PurchaseOrder, (po) => po.poProjects, { onDelete: 'CASCADE' })
+  @ManyToOne(() => PurchaseOrder, (po) => po.poProjects, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'po_id' })
   purchaseOrder: PurchaseOrder;
 

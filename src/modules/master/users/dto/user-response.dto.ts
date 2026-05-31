@@ -3,7 +3,6 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Exclude } from 'class-transformer';
 
 export class UserResponseDto extends BaseDto {
-
   @ApiProperty()
   @Expose()
   email: string;
