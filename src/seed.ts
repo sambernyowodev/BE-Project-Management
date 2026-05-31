@@ -649,7 +649,7 @@ const rawProjects: RawProject[] = [
     name: 'SIAD Mobile Enhancment Internship 2025',
     po: 'X-PO-XXX',
     so: 'X-SO-XXX',
-    picClient: 'HCM (Pak Defri)',
+    picClient: 'Defri',
     description: 'Aplikasi Untuk Karyawan Non-Organik(Intership) Tsel',
     mandays: 150,
     status: 'CLOSED',
